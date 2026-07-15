@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Generador de declaracions d'ús de la intel·ligència artificial basat en l'escala IRIS del Marc FECC.">
+<title>Generador IRIS · Declaració d'ús de la IA (Marc FECC)</title>
+<style>
+  :root{
+    --ink:#12313b; --muted:#5b7078; --paper:#ffffff; --wash:#f4f8f8; --line:#dbe6e6;
+    --teal:#0e7c8a; --teal-dark:#0a5b66; --red:#c31e39;
+    --n0:#4e9a54; --n0-bg:#e9f4ea; --n1:#c0392b; --n1-bg:#fbeae7; --n2:#7c5ca8; --n2-bg:#f1ecf8;
+    --n3:#84961f; --n3-bg:#f3f5df; --n4:#3d8fb5; --n4-bg:#e6f2f8; --n5:#cf8f1f; --n5-bg:#fcf2dd;
+    --ok:#177a52; --warn:#9a5b00; --bad:#b42318;
+    --shadow:0 18px 45px rgba(14,60,70,.10); --radius:20px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--ink); line-height:1.55;
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,ui-sans-serif,system-ui,sans-serif;
+    background:
+      radial-gradient(circle at 8% 0%, rgba(14,124,138,.10), transparent 30rem),
+      radial-gradient(circle at 96% 12%, rgba(195,30,57,.06), transparent 26rem),
+      var(--wash);
+  }
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  .shell{width:min(1240px,calc(100% - 32px));margin:0 auto}
+
+  /* ---------- Capçalera ---------- */
+  header{padding:40px 0 22px}
+  .brand{display:flex;align-items:center;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+  .mark{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--teal),var(--teal-dark));box-shadow:0 10px 26px rgba(14,124,138,.30)}
+  .mark svg{width:32px;height:32px}
+  .brand-name strong{display:block;font-size:1.06rem;letter-spacing:-.01em}
+  .brand-name span{color:var(--muted);font-size:.84rem}
+  .brand-tags{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .tag{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-dark);
+    background:#e3f0f1;border:1px solid #c6e0e2;padding:5px 10px;border-radius:999px}
+  .hero{display:grid;grid-template-columns:1.4fr .6fr;gap:36px;align-items:end}
+  h1{margin:6px 0 12px;font-size:clamp(1.9rem,4.6vw,3.4rem);line-height:1.04;letter-spacing:-.035em}
+  h1 em{font-style:normal;color:var(--teal)}
+  .lead{margin:0;max-width:640px;color:var(--muted);font-size:clamp(.98rem,1.5vw,1.12rem)}
+  .privacy{border:1px solid #bfdcd2;background:rgba(255,255,255,.8);border-radius:16px;padding:15px 17px;
+    color:#1c5a48;font-size:.88rem}
+  .privacy strong{display:block;margin-bottom:2px;color:#12463a}
+
+  /* ---------- Disposició ---------- */
+  main{padding:20px 0 60px}
+  .layout{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(370px,.98fr);gap:24px;align-items:start}
+  .card{background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .form-card{padding:clamp(20px,3.4vw,34px)}
+  .aside{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow:auto;display:grid;gap:16px;
+    padding:4px;scrollbar-width:thin}
+
+  .section{padding:2px 0 26px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+  .section:last-of-type{border-bottom:0;margin-bottom:0;padding-bottom:4px}
+  .section-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+  .step{flex:0 0 auto;width:30px;height:30px;display:grid;place-items:center;border-radius:10px;
+    background:#e3f0f1;color:var(--teal-dark);font-weight:800}
+  h2,h3{margin:0;letter-spacing:-.02em}
+  h2{font-size:1.18rem}
+  .hint{color:var(--muted);margin:3px 0 0;font-size:.88rem}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label.field{display:grid;gap:6px;font-weight:700;font-size:.86rem}
+  label.field small{font-weight:500;color:var(--muted)}
+  input[type="text"],input[type="month"],select,textarea{
+    width:100%;border:1px solid var(--line);border-radius:12px;background:#fbfdfd;
+    padding:11px 12px;outline:none;transition:border-color .15s, box-shadow .15s}
+  textarea{min-height:80px;resize:vertical}
+  input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(14,124,138,.12)}
+
+  /* ---------- Xips de perfil ---------- */
+  .pills{display:flex;flex-wrap:wrap;gap:9px}
+  .pill{position:relative}
+  .pill input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .pill span{display:inline-block;padding:9px 14px;border-radius:999px;border:1.5px solid var(--line);
+    background:#fbfdfd;font-size:.88rem;font-weight:600;transition:all .15s}
+  .pill input:checked + span{border-color:var(--teal);background:var(--teal);color:#fff;box-shadow:0 6px 16px rgba(14,124,138,.28)}
+  .pill input:focus-visible + span{outline:3px solid rgba(14,124,138,.35);outline-offset:2px}
+
+  /* ---------- Selector de nivell ---------- */
+  .mode-toggle{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+  .mode-toggle button{border:0;background:#fbfdfd;padding:8px 14px;font-weight:700;font-size:.85rem;color:var(--muted)}
+  .mode-toggle button.active{background:var(--teal);color:#fff}
+  .levels{display:grid;gap:10px}
+  .level-card{position:relative;display:block}
+  .level-card input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .level-card .lc{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
+    border:1.5px solid var(--line);border-left-width:6px;border-radius:14px;background:#fff;
+    padding:12px 14px;transition:all .15s}
+  .level-card:hover .lc{border-color:#9fbcc0;border-left-color:var(--lv)}
+  .level-card .lc{border-left-color:var(--lv)}
+  .level-card input:checked + .lc{border-color:var(--lv);background:var(--lv-bg);box-shadow:0 8px 22px rgba(14,60,70,.10)}
+  .level-card input:focus-visible + .lc{outline:3px solid rgba(14,124,138,.35);outline-offset:2px}
+  .lv-num{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;
+    font-weight:800;font-size:1.05rem;background:var(--lv)}
+  .lc b{display:block;font-size:.95rem}
+  .lc small{display:block;color:var(--muted);margin-top:1px;font-size:.82rem}
+  .alg{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.74rem;font-weight:700;
+    color:var(--lv);background:#fff;border:1px solid var(--lv);border-radius:8px;padding:4px 8px;white-space:nowrap}
+  .note{margin-top:14px;padding:11px 14px;border-left:4px solid var(--teal);background:#eef6f7;
+    border-radius:10px;color:#15505a;font-size:.85rem}
+
+  /* ---------- Assistent ---------- */
+  .wizard{border:1.5px dashed #b9d3d6;border-radius:14px;padding:18px;background:#f7fbfb}
+  .wizard p.q{margin:0 0 12px;font-weight:700}
+  .wizard .opts{display:grid;gap:8px}
+  .wizard .opts button{text-align:left;border:1.5px solid var(--line);border-radius:12px;background:#fff;
+    padding:11px 13px;font-size:.9rem;transition:all .15s}
+  .wizard .opts button:hover{border-color:var(--teal);background:#eef6f7}
+  .wizard .opts button b{display:block}
+  .wizard .opts button small{color:var(--muted)}
+  .wizard .back{margin-top:12px;border:0;background:none;color:var(--teal-dark);font-weight:700;font-size:.84rem;text-decoration:underline}
+  .wizard .verdict{padding:12px 14px;border-radius:12px;font-size:.92rem;background:var(--lv-bg,#eef6f7);
+    border:1.5px solid var(--lv,var(--teal))}
+
+  /* ---------- Caselles ---------- */
+  .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .choice{position:relative;display:flex;align-items:flex-start;gap:10px;padding:11px 12px;
+    border:1.5px solid var(--line);border-radius:12px;background:#fbfdfd;font-size:.87rem;transition:all .15s}
+  .choice:hover{border-color:#9fbcc0}
+  .choice:has(input:checked){border-color:var(--teal);background:#eef6f7}
+  .choice input{margin-top:3px;accent-color:var(--teal)}
+  .choice span{display:block}
+  .choice small{display:block;margin-top:1px;color:var(--muted);font-size:.78rem}
+  .choice .reco{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:800;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--teal-dark);background:#d8ecee;border-radius:6px;padding:2px 6px;vertical-align:1px}
+  .choice.responsibility{border-color:#bfdcd2;background:#f2faf6}
+
+  /* ---------- Fitxa de nivell ---------- */
+  .fitxa{overflow:hidden}
+  .fitxa-head{padding:16px 20px;color:#fff;background:var(--lv,var(--teal));display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .fitxa-head .lv-num{background:rgba(255,255,255,.22);width:42px;height:42px}
+  .fitxa-head b{font-size:1.08rem;display:block;letter-spacing:-.01em}
+  .fitxa-head small{opacity:.92;display:block;font-size:.8rem}
+  .fitxa-head .alg{margin-left:auto;color:#fff;border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.14)}
+  .fitxa-body{padding:18px 20px;display:grid;gap:14px}
+  .fitxa-empty{padding:34px 24px;text-align:center;color:var(--muted);font-size:.92rem}
+  .resum{font-size:.9rem;color:#284b53;border-left:4px solid var(--lv,var(--teal));
+    background:var(--lv-bg,#eef6f7);border-radius:10px;padding:11px 13px;margin:0}
+  .kchips{display:flex;flex-wrap:wrap;gap:6px}
+  .kchips span{font-size:.75rem;font-weight:700;color:var(--lv,var(--teal));border:1px solid var(--lv,var(--teal));
+    border-radius:999px;padding:3px 10px;background:#fff}
+  .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfdfd}
+  .mini h4{margin:0 0 3px;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  .mini p{margin:0;font-size:.84rem}
+  .pio{width:100%;border-collapse:collapse;font-size:.82rem}
+  .pio th{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+    text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  .pio td{padding:8px;vertical-align:top;border-bottom:1px solid #edf3f3}
+  details.more{border:1px solid var(--line);border-radius:12px;background:#fbfdfd}
+  details.more summary{cursor:pointer;font-weight:700;font-size:.86rem;padding:10px 13px;color:var(--teal-dark)}
+  details.more .inner{padding:2px 13px 13px;display:grid;gap:10px;font-size:.85rem}
+  details.more .inner h4{margin:0 0 2px;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  details.more .inner p{margin:0}
+
+  /* ---------- Alertes ---------- */
+  .alerts{display:grid;gap:9px}
+  .alert{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:11px 13px;font-size:.85rem;border:1.5px solid}
+  .alert svg{flex:0 0 auto;width:18px;height:18px;margin-top:1px}
+  .alert.bad{border-color:#f1c1bb;background:#fdf1ef;color:#7d1d12}
+  .alert.warn{border-color:#ecd6a4;background:#fdf6e7;color:#6d4a06}
+  .alert.info{border-color:#bcd9dd;background:#eef6f7;color:#15505a}
+  .alert.ok{border-color:#bfdcd2;background:#effaf4;color:#14573f}
+
+  /* ---------- Declaració ---------- */
+  .result-card{padding:22px}
+  .result-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}
+  .badge{padding:6px 12px;border-radius:999px;color:#fff;background:var(--lv,#8ea6ab);font-size:.78rem;font-weight:800}
+  .declaration{border:1.5px solid var(--lv,var(--line));border-radius:16px;background:#fff;overflow:hidden}
+  .decl-band{height:7px;background:var(--lv,var(--line))}
+  .decl-inner{padding:20px 22px;font-family:Georgia,"Times New Roman",ui-serif,serif;font-size:.98rem;line-height:1.7}
+  .decl-inner h4{margin:0 0 12px;font-family:inherit;font-size:1.02rem;letter-spacing:.01em}
+  .decl-inner p{margin:0 0 11px}
+  .decl-inner p:last-child{margin-bottom:0}
+  .decl-inner .sig{margin-top:14px;color:#4d6167;font-size:.9rem}
+  .placeholder{color:#7d9298;display:grid;place-items:center;text-align:center;min-height:190px;padding:28px;
+    font-family:inherit;font-size:.92rem}
+  .actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+  .btn{border:0;border-radius:11px;padding:10px 14px;font-weight:800;font-size:.88rem;transition:transform .12s, box-shadow .12s}
+  .btn:hover:not(:disabled){transform:translateY(-1px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-primary{color:#fff;background:linear-gradient(135deg,var(--teal),var(--teal-dark));box-shadow:0 8px 20px rgba(14,124,138,.25)}
+  .btn-secondary{background:#e3f0f1;color:var(--teal-dark)}
+  .btn-quiet{color:var(--muted);background:transparent;border:1px solid var(--line)}
+  .status{min-height:1.3em;margin-top:9px;color:var(--ok);font-size:.83rem;font-weight:700}
+  .disclaimer{margin-top:12px;color:var(--muted);font-size:.76rem}
+
+  footer{padding:26px 0 44px;color:var(--muted);font-size:.8rem;text-align:center;line-height:1.7}
+  footer b{color:var(--ink)}
+
+  @media (max-width:1020px){
+    .hero,.layout{grid-template-columns:1fr}
+    .aside{position:static;max-height:none}
+    .privacy{max-width:560px}
+  }
+  @media (max-width:600px){
+    .grid-2,.choices,.mini-grid{grid-template-columns:1fr}
+    header{padding-top:24px}
+    .brand-tags{margin-left:0}
+  }
+  @media print{
+    body{background:#fff}
+    header,.form-card,.aside > :not(.result-card),.actions,.status,.disclaimer,.result-top,#sealPreview,footer{display:none !important}
+    .shell,.layout,.aside{display:block;width:100%;position:static;max-height:none;overflow:visible;padding:0}
+    .card{border:0;box-shadow:none}
+    .result-card{padding:0}
+    .declaration{border-color:#999}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="shell">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="6" fill="#fff"/>
+          <g stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".85">
+            <line x1="20" y1="4" x2="20" y2="10"/><line x1="20" y1="30" x2="20" y2="36"/>
+            <line x1="4" y1="20" x2="10" y2="20"/><line x1="30" y1="20" x2="36" y2="20"/>
+            <line x1="8.7" y1="8.7" x2="12.9" y2="12.9"/><line x1="27.1" y1="27.1" x2="31.3" y2="31.3"/>
+            <line x1="8.7" y1="31.3" x2="12.9" y2="27.1"/><line x1="27.1" y1="12.9" x2="31.3" y2="8.7"/>
+          </g>
+        </svg>
+      </div>
+      <div class="brand-name">
+        <strong>Generador IRIS</strong>
+        <span>Escala d'integritat i responsabilitat en la introducció de la IA</span>
+      </div>
+      <div class="brand-tags">
+        <span class="tag">Marc FECC</span><span class="tag">Escala IRIS</span><span class="tag">Model PIO</span>
+      </div>
+    </div>
+    <div class="hero">
+      <div>
+        <h1>Declara com has utilitzat la IA, <em>amb rigor i en un minut</em>.</h1>
+        <p class="lead">Respon unes preguntes breus i obtén una declaració d'ús de la intel·ligència artificial
+        alineada amb l'escala IRIS del Marc FECC, preparada per incorporar a qualsevol treball, document o publicació.</p>
+      </div>
+      <div class="privacy">
+        <strong>Les teves respostes no surten del navegador</strong>
+        Aquesta eina funciona íntegrament en local: no desa ni transmet cap dada.
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="layout">
+
+    <!-- ==================== FORMULARI ==================== -->
+    <form class="card form-card" id="irisForm" autocomplete="off">
+
+      <section class="section">
+        <div class="section-head">
+          <span class="step">1</span>
+          <div><h2>Qui declara i sobre què</h2><p class="hint">Identifica el perfil, el tipus de treball i, si vols, l'autoria.</p></div>
+        </div>
+        <div class="pills" id="profilePills" role="radiogroup" aria-label="Perfil de qui declara">
+          <label class="pill"><input type="radio" name="profile" value="alumnat-eso"><span>Alumnat d'ESO</span></label>
+          <label class="pill"><input type="radio" name="profile" value="alumnat-batx"><span>Alumnat de batxillerat</span></label>
+          <label class="pill"><input type="radio" name="profile" value="docent"><span>Docent</span></label>
+          <label class="pill"><input type="radio" name="profile" value="familia"><span>Família</span></label>
+          <label class="pill"><input type="radio" name="profile" value="directiu"><span>Equip directiu</span></label>
+          <label class="pill"><input type="radio" name="profile" value="ptgas"><span>PTGAS</span></label>
+          <label class="pill"><input type="radio" name="profile" value="altres"><span>Altres</span></label>
+        </div>
+        <div class="grid-2" style="margin-top:14px">
+          <label class="field">Tipus de treball o document
+            <select id="docType">
+              <option value="treball">treball acadèmic</option>
+              <option value="treball de recerca">treball de recerca</option>
+              <option value="activitat">activitat d'aprenentatge</option>
+              <option value="material didàctic">material didàctic</option>
+              <option value="instrument d'avaluació">prova o instrument d'avaluació</option>
+              <option value="document institucional">document institucional</option>
+              <option value="document administratiu">document administratiu o comunicació</option>
+              <option value="document">altre tipus de document</option>
+            </select>
+          </label>
+          <label class="field">Títol o descripció breu <small>(opcional)</small>
+            <input type="text" id="title" placeholder="Ex.: Treball de recerca sobre el canvi climàtic">
+          </label>
+          <label class="field">Nom o autoria responsable <small>(opcional)</small>
+            <input type="text" id="author" placeholder="Nom i cognoms, o autoria col·lectiva">
+          </label>
+          <label class="field">Data de la declaració
+            <input type="month" id="declDate">
+          </label>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <span class="step">2</span>
+          <div><h2>Nivell IRIS d'integració de la IA</h2>
+          <p class="hint">Tria el nivell directament o deixa que l'assistent el determini a partir de com ha estat la interacció.</p></div>
+        </div>
+
+        <div class="mode-toggle" role="tablist">
+          <button type="button" id="modeDirect" class="active" aria-selected="true">Tria directa</button>
+          <button type="button" id="modeWizard" aria-selected="false">Ajuda'm a determinar-lo</button>
+        </div>
+
+        <div class="levels" id="levelCards" role="radiogroup" aria-label="Nivell IRIS"></div>
+
+        <div class="wizard" id="wizard" hidden></div>
+
+        <div class="note"><strong>Recorda-ho:</strong> els nivells IRIS descriuen tipus de relació amb la IA,
+        no una jerarquia de valor pedagògic. Un nivell 0 o 1 pot ser la decisió educativa més adequada en molts contextos.</div>
+      </section>
+
+      <section class="section" id="toolsSection">
+        <div class="section-head">
+          <span class="step">3</span>
+          <div><h2>Eines utilitzades</h2><p class="hint">Indica l'eina principal i, si la coneixes, la versió o el model.</p></div>
+        </div>
+        <div class="grid-2">
+          <label class="field">Eina principal
+            <input type="text" id="tool" list="toolList" placeholder="Ex.: ChatGPT, Claude, Gemini, Copilot…">
+            <datalist id="toolList">
+              <option value="ChatGPT"><option value="Claude"><option value="Gemini"><option value="Copilot">
+              <option value="NotebookLM"><option value="Perplexity"><option value="Mistral (Le Chat)">
+            </datalist>
+          </label>
+          <label class="field">Model o versió <small>(opcional)</small>
+            <input type="text" id="version" placeholder="Ex.: GPT-5, Claude Fable 5…">
+          </label>
+          <label class="field">Altres eines <small>(opcional, separades per comes)</small>
+            <input type="text" id="otherTools" placeholder="Ex.: Canva, DeepL…">
+          </label>
+          <label class="field">Període d'ús <small>(opcional)</small>
+            <input type="month" id="useDate">
+          </label>
+        </div>
+      </section>
+
+      <section class="section" id="tasksSection">
+        <div class="section-head">
+          <span class="step">4</span>
+          <div><h2>En quines tasques ha intervingut la IA?</h2>
+          <p class="hint">El Marc FECC demana una descripció sintètica de les tasques. Marca només allò que s'hagi fet realment.</p></div>
+        </div>
+        <div class="choices" id="tasks"></div>
+        <label class="field" style="margin-top:12px">Altres usos <small>(opcional)</small>
+          <textarea id="otherUse" placeholder="Descriu breument qualsevol altre ús de la IA"></textarea>
+        </label>
+      </section>
+
+      <section class="section" id="safeguardsSection">
+        <div class="section-head">
+          <span class="step">5</span>
+          <div><h2>Garanties aplicades</h2>
+          <p class="hint">Selecciona només allò que s'ha fet de debò. Les etiquetes indiquen les garanties que el Marc FECC recomana per al nivell triat.</p></div>
+        </div>
+        <div class="choices" id="safeguards"></div>
+        <label class="choice responsibility" style="margin-top:10px">
+          <input type="checkbox" id="responsibility" checked>
+          <span><b>Responsabilitat final humana</b>
+          <small>L'autoria declarant assumeix la responsabilitat del procés i del resultat final. Segons el Marc FECC, l'autonomia no es transfereix: es construeix amb un ús crític de la IA.</small></span>
+        </label>
+        <label class="field" style="margin-top:12px">Observacions <small>(opcional)</small>
+          <textarea id="comments" placeholder="Limitacions, incidències o decisions rellevants del procés"></textarea>
+        </label>
+      </section>
+
+      <div class="actions">
+        <button class="btn btn-quiet" type="reset">Neteja el formulari</button>
+      </div>
+    </form>
+
+    <!-- ==================== TAULER ==================== -->
+    <div class="aside">
+
+      <div class="card result-card" aria-live="polite" id="resultCard">
+        <div class="result-top">
+          <h3>Declaració generada</h3>
+          <span class="badge" id="levelBadge">Cap nivell triat</span>
+        </div>
+        <div class="declaration" id="declBox">
+          <div class="decl-band" id="declBand"></div>
+          <div class="decl-inner" id="output">
+            <div class="placeholder">Tria un nivell IRIS al pas 2 i la declaració s'anirà redactant aquí automàticament, a mesura que completis el formulari.</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" id="copyBtn" disabled>Copia el text</button>
+          <button class="btn btn-secondary" type="button" id="copyRichBtn" disabled>Copia amb format</button>
+          <button class="btn btn-quiet" type="button" id="downloadBtn" disabled>Descarrega .txt</button>
+          <button class="btn btn-secondary" type="button" id="sealTextBtn" disabled>Segell + declaració (PNG)</button>
+          <button class="btn btn-quiet" type="button" id="sealBtn" disabled>Segell + QR (PNG)</button>
+          <button class="btn btn-quiet" type="button" id="printBtn" disabled>Imprimeix / PDF</button>
+        </div>
+        <div id="sealPreview" hidden style="margin-top:12px"></div>
+        <div class="status" id="status" role="status"></div>
+        <p class="disclaimer">La declaració és orientativa i ha de ser revisada i assumida per la persona responsable.
+        L'objectiu del Marc FECC no és penalitzar l'ús de la IA, sinó fer-lo visible, comprensible i traçable.</p>
+      </div>
+
+      <div class="alerts" id="alerts" aria-live="polite"></div>
+
+      <div class="card fitxa" id="fitxa">
+        <div class="fitxa-empty">La fitxa del nivell IRIS seleccionat es mostrarà aquí, amb el resum oficial,
+        el model PIO, els riscos i les evidències recomanades pel Marc FECC.</div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="shell">
+  <b>Escala IRIS</b> · Marc FECC per a la integritat i responsabilitat de la introducció de la IA en les tasques escolars<br>
+  Escala d'integritat acadèmica de la IA inspirada en els marcs AIAS · MIAE · SEIA, vinculada al model PIO i a les dimensions FECC<br>
+  Comissió d'Experts en l'Àmbit Digital de la FECC (curs 25-26) — Coordinador: Miquel Àngel Prats (Blanquerna FPCEE) ·
+  Montse Ballestero (FEDE) · Joan Calvo (Natzaret) · Òscar de Paula (FEDAC) · Montse Jiménez (Vedruna) ·
+  Christian Negre (Escola Pia) · Santi Serrano (Smart School) · Susana Tuset (Sagrat Cor Sarrià)
+</footer>
+
+<script>
+/* QR Code Generator, (c) Kazuhiko Arase - llicencia MIT (incrustada per a us sense connexio).
+   "QR Code" es marca registrada de DENSO WAVE INCORPORATED. */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(o*r,n*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+</script>
+<script>
+/* ================================================================
+   CONFIGURACIÓ DEL CENTRE
+   Si es publica aquest mateix fitxer HTML en un web (p. ex.
+   https://www.fecc.cat/iris/generador-iris.html), escriviu-ne
+   l'adreça aquí sota, entre les cometes. A partir d'aquell moment,
+   el QR del segell deixarà de contenir text pla i es convertirà en
+   un enllaç que obre la declaració formatada a qualsevol mòbil.
+   Si es deixa buida, el QR conté el text pla de la declaració.
+   ================================================================ */
+const URL_PUBLICA_DEL_GENERADOR = "https://smart-education-lleida.github.io/generador-iris.html";
+
+/* ================================================================
+   DADES DE L'ESCALA IRIS — extretes del Marc FECC (curs 25-26)
+   ================================================================ */
+const LEVELS = {
+  0:{
+    nom:"Sense IA", alg:"H", etapa:"Etapa bàsica (accés)",
+    color:"var(--n0)", bg:"var(--n0-bg)",
+    curta:"La tasca es duu a terme íntegrament sense l'ajut de la IA.",
+    resum:"Tot el procés cognitiu i de producció és humà: la persona cerca, elabora i produeix el contingut sense cap intervenció de la IA.",
+    claus:["procés íntegrament humà","construcció autònoma","fonts pròpies"],
+    risc:"Sobrecàrrega de treball i limitació per processar grans volums de dades de manera manual.",
+    valor:"Construcció autònoma del coneixement i connexió directa amb la matèria.",
+    quan:"Introducció de continguts, consolidació i avaluació individual.",
+    d4:"—",
+    pio:null, dims:null,
+    treballar:"La cerca en fonts primàries i fiables i la capacitat de síntesi. Cal assegurar que l'usuari domina el contingut abans d'introduir cap tecnologia.",
+    pregunta:"S'ha produït contingut propi, sense dependència de la IA?",
+    evidencia:"El producte final; qualitat lingüística i conceptual del text lliurat.",
+    delegacio:"Nul·la o mínima: tot el procés cognitiu és humà."
+  },
+  1:{
+    nom:"IA correctora", alg:"H-IAg", etapa:"Etapa bàsica (accés)",
+    color:"var(--n1)", bg:"var(--n1-bg)",
+    curta:"La IA es fa servir per a tasques mecàniques sobre un material proporcionat. No aporta idees.",
+    resum:"La IA actua exclusivament com a eina de revisió formal, sense intervenir en la generació o transformació del contingut, en un procés centrat principalment en la revisió i el discerniment dels resultats.",
+    claus:["revisió","no generació","no transformació"],
+    risc:"Dependència superficial: prioritzar la forma per sobre del fons.",
+    valor:"Qualitat formal i lingüística en tasques mecàniques, sobre un material ja creat per l'humà.",
+    quan:"Revisió final i millora lingüística.",
+    d4:"Discernir (Discern)",
+    pio:{p:"Integritat i autoria del contingut", i:"Ús restringit a revisió formal", o:"Correccions lingüístiques sense alteració del significat"},
+    dims:["Ètica digital","Competència digital bàsica"],
+    treballar:"Validar que la IA no ha alterat la intencionalitat ni el significat original. Usar la IA com a darrera capa de qualitat, mantenint sempre l'autoria íntegra.",
+    pregunta:"S'ha mantingut l'autoria del contingut malgrat la revisió formal de la IA?",
+    evidencia:"Comparació entre el text original i el text revisat; absència de canvis en el contingut.",
+    delegacio:"Mínima i conscient: la IA intervé en la forma, no en el pensament."
+  },
+  2:{
+    nom:"IA inspiradora", alg:"H-IAg(idea)-H", etapa:"Etapa bàsica (accés)",
+    color:"var(--n2)", bg:"var(--n2-bg)",
+    curta:"La IA proposa opcions a partir d'una indicació puntual. No genera el producte: només influeix en les idees.",
+    resum:"La IA actua com a eina d'inspiració, proposant idees o opcions a partir d'una demanda puntual. L'usuari selecciona, interpreta i desenvolupa el contingut de manera autònoma, sense que la IA generi el producte final.",
+    claus:["inspiració","demanda puntual","selecció","criteri propi"],
+    risc:"Acceptació acrítica d'idees genèriques, sense aplicar un criteri de selecció propi.",
+    valor:"Generació i selecció d'opcions per iniciar tasques o desbloquejar la creativitat.",
+    quan:"Inici de tasques i desbloqueig d'idees.",
+    d4:"Descriure + Discernir (Describe + Discern)",
+    pio:{p:"Autonomia intel·lectual", i:"Selecció i apropiació d'idees proposades per la IA", o:"Ús puntual de la IA per generar opcions, amb desenvolupament propi"},
+    dims:null,
+    treballar:"La precisió en la demanda i la selecció crítica entre les opcions proposades. L'usuari ha de poder justificar per què tria unes idees i en descarta d'altres.",
+    pregunta:"S'han seleccionat, contrastat i transformat les propostes de la IA amb criteri propi?",
+    evidencia:"Comparació entre les propostes de la IA i el contingut final elaborat.",
+    delegacio:"Parcial i selectiva: el risc és l'acceptació acrítica de les propostes."
+  },
+  3:{
+    nom:"IA generadora de primers esborranys", alg:"H-IAg(draft)-H", etapa:"Etapa transitòria (intermèdia)",
+    color:"var(--n3)", bg:"var(--n3-bg)",
+    curta:"La IA produeix un esborrany inicial i l'usuari el desenvolupa, el revisa i el modifica.",
+    resum:"La IA genera un esborrany inicial que l'usuari revisa, contrasta i transforma amb criteri propi, assumint la responsabilitat del producte final, en un procés que requereix especialment capacitats de desenvolupament i discerniment crític.",
+    claus:["esborrany inicial","contrast","transformació","responsabilitat"],
+    risc:"No verificar el contingut i donar per vàlides dades que podrien ser errònies o inventades.",
+    valor:"Eficiència operativa en crear una primera versió, amb pensament crític aplicat en transformar-la.",
+    quan:"Estructuració de continguts i primeres versions.",
+    d4:"Discernir + Desenvolupar (Discern + Develop)",
+    pio:{p:"Responsabilitat sobre el contingut", i:"Contrast i transformació del text generat", o:"Reescriptura significativa i validació de la informació"},
+    dims:null,
+    treballar:"El contrast de dades amb fonts externes i la reescriptura significativa, per aportar veu pròpia i eliminar les parts genèriques.",
+    pregunta:"S'ha contrastat, transformat i desenvolupat l'esborrany generat per la IA?",
+    evidencia:"Esborranys intermedis; diferències significatives entre el producte de la IA i el producte final.",
+    delegacio:"Parcial i seqüencial: el risc augmenta si es modifica superficialment sense contrastar."
+  },
+  4:{
+    nom:"IA cocreadora", alg:"H-(IAg-H)n", etapa:"Etapa transitòria (intermèdia)",
+    color:"var(--n4)", bg:"var(--n4-bg)",
+    curta:"L'usuari i la IA dialoguen de manera contínua i bidireccional (iteren) per generar un producte.",
+    resum:"La IA i l'usuari interactuen de manera contínua i iterativa, ajustant progressivament el contingut fins a construir conjuntament el producte final, en un procés que combina desenvolupament, reformulació i discerniment continu.",
+    claus:["iteració","diàleg","ajust progressiu","cocreació"],
+    risc:"Delegació excessiva —i progressivament inconscient— de la responsabilitat cognitiva a la màquina.",
+    valor:"Refinament i metacognició mitjançant una interacció iterativa per millorar un producte conjuntament.",
+    quan:"Millora profunda i presa de decisions.",
+    d4:"Delegar (Delegate)",
+    pio:{p:"Coconstrucció reflexiva", i:"Iteració i ajust progressiu del contingut", o:"Diàleg sostingut amb la IA amb modificacions successives"},
+    dims:["Metacognició","Aprenentatge profund"],
+    treballar:"La metacognició i l'argumentació: qüestionar, reformular i prendre decisions constants durant el diàleg, documentant l'evolució del producte entre iteracions.",
+    pregunta:"S'ha argumentat, reformulat i pres decisions al llarg del diàleg amb la IA?",
+    evidencia:"Historial de la conversa amb la IA; evolució del producte entre iteracions.",
+    delegacio:"Compartida i iterativa: el risc augmenta si s'accepten les propostes sense qüestionar-les."
+  },
+  5:{
+    nom:"IA productora", alg:"(H-IAg)n · IAg", etapa:"Etapa avançada (innovació)",
+    color:"var(--n5)", bg:"var(--n5-bg)",
+    curta:"La IA genera el producte de manera autònoma a partir de l'expertesa de l'usuari, que el supervisa i el valida.",
+    resum:"L'usuari configura un sistema d'IA que genera el producte de manera autònoma, mentre n'assumeix la supervisió, la validació i la responsabilitat final, en un procés que implica la delegació conscient de tasques i el discerniment crític dels resultats.",
+    claus:["configuració prèvia","delegació","producció autònoma","supervisió final"],
+    risc:"Pèrdua d'autoria i de control si falla la supervisió i la validació final de l'humà.",
+    valor:"Governança i capacitat de gestió de processos complexos mitjançant agents configurats per l'expert.",
+    quan:"Processos complexos i automatització supervisada.",
+    d4:"Delegar (Delegate)",
+    pio:{p:"Governança i responsabilitat", i:"Configuració i delegació controlada", o:"Automatització amb supervisió i validació del resultat"},
+    dims:["Lideratge digital","Gestió i organització"],
+    treballar:"La configuració conscient de sistemes i la validació final: definir regles, contextos i dades prèvies amb rigor, assumint la responsabilitat ètica i legal del resultat.",
+    pregunta:"S'ha supervisat, validat i assumit la responsabilitat del producte generat de manera autònoma per la IA?",
+    evidencia:"Configuració documentada de l'eina o agent; justificació escrita o oral del resultat.",
+    delegacio:"Màxima: només és pedagògicament vàlida amb una comprensió profunda del que s'ha delegat i per què."
+  }
+};
+
+/* Frase de procés que s'insereix a la declaració, per nivell */
+const PROCESS_SENTENCE = {
+  1:"La IA ha actuat exclusivament com a eina de revisió formal, sense intervenir en la generació ni en la transformació del contingut.",
+  2:"La IA ha actuat com a eina d'inspiració: ha proposat idees o opcions a partir de demandes puntuals, i la selecció, la interpretació i el desenvolupament del contingut han estat íntegrament humans.",
+  3:"La IA ha generat un esborrany inicial que s'ha revisat, contrastat i transformat amb criteri propi fins a arribar al producte final.",
+  4:"El producte final s'ha construït mitjançant un diàleg iteratiu amb la IA, amb ajustos progressius i un discerniment continu de cada aportació.",
+  5:"La IA ha generat el producte de manera autònoma a partir d'una configuració prèvia basada en el coneixement i l'expertesa de l'autoria, que n'ha supervisat i validat el resultat."
+};
+
+/* Frase de responsabilitat, per nivell */
+const RESPONSIBILITY_SENTENCE = {
+  low:"En cap cas la intel·ligència artificial no ha substituït el criteri de l'autoria, ni ha generat de manera autònoma les decisions d'enfocament, les aportacions originals o les conclusions del treball, que corresponen en exclusiva a les persones autores.",
+  4:"El producte final és el resultat de decisions humanes contínues al llarg del diàleg amb la IA: la responsabilitat sobre el procés i sobre el resultat recau íntegrament en l'autoria.",
+  5:"Tot i que la IA ha generat el producte de manera autònoma, la supervisió, la validació i la responsabilitat final recauen íntegrament en l'autoria, que n'ha comprès el funcionament i n'assumeix el resultat amb criteri propi."
+};
+
+/* Tasques seleccionables: minim = nivell mínim coherent segons el Marc */
+const TASKS = [
+  {id:"t-orto",  min:1, label:"Revisar ortografia, gramàtica i estil", decl:"la revisió de l'ortografia, la gramàtica i l'estil"},
+  {id:"t-trad",  min:1, label:"Traduir continguts", decl:"la traducció de continguts"},
+  {id:"t-format",min:1, label:"Millorar el format i la presentació", decl:"la millora del format i la presentació"},
+  {id:"t-idees", min:2, label:"Obtenir idees o enfocaments inicials", decl:"l'obtenció d'idees i enfocaments inicials"},
+  {id:"t-alter", min:2, label:"Explorar alternatives i possibilitats", decl:"l'exploració d'alternatives i possibilitats"},
+  {id:"t-retro", min:2, label:"Obtenir retroacció sobre el treball", decl:"l'obtenció de retroacció sobre el treball"},
+  {id:"t-info",  min:2, label:"Organitzar o sintetitzar informació", decl:"l'organització i síntesi d'informació"},
+  {id:"t-esq",   min:3, label:"Generar un esquema o una estructura inicial", decl:"la generació d'un esquema o estructura inicial"},
+  {id:"t-esb",   min:3, label:"Generar primers esborranys de text", decl:"la generació de primers esborranys de text"},
+  {id:"t-dades", min:3, label:"Analitzar o representar dades", decl:"l'anàlisi i representació de dades"},
+  {id:"t-media", min:3, label:"Crear imatges o materials multimèdia", decl:"la creació d'imatges o materials multimèdia"},
+  {id:"t-iter",  min:4, label:"Reformular el contingut en un diàleg iteratiu", decl:"la reformulació del contingut en un diàleg iteratiu"},
+  {id:"t-agent", min:5, label:"Generar el producte amb un agent o sistema configurat", decl:"la generació del producte mitjançant un agent o sistema configurat prèviament"}
+];
+
+/* Garanties: reco = nivells on el Marc les recomana; crit = nivells on són especialment crítiques */
+const SAFEGUARDS = [
+  {id:"g-verif", reco:[2,3,4,5], crit:[3,5],
+   label:"Verificació i contrast amb fonts fiables",
+   small:"S'ha comprovat la informació generada amb fonts externes.",
+   decl:"s'ha verificat i contrastat la informació amb fonts fiables"},
+  {id:"g-transf", reco:[3], crit:[3],
+   label:"Reescriptura significativa",
+   small:"El contingut generat s'ha revisat i transformat amb veu pròpia.",
+   decl:"el contingut generat s'ha revisat i reescrit de manera significativa, amb veu pròpia"},
+  {id:"g-evid", reco:[3,4,5], crit:[4],
+   label:"Conservació d'evidències del procés",
+   small:"Converses, esborranys i versions intermèdies.",
+   decl:"s'han conservat les evidències del procés (converses, esborranys i versions intermèdies)"},
+  {id:"g-dades", reco:[1,2,3,4,5], crit:[],
+   label:"Protecció de dades",
+   small:"No s'hi han introduït dades personals ni informació confidencial.",
+   decl:"no s'hi han introduït dades personals ni informació confidencial"},
+  {id:"g-biaix", reco:[2,3,4,5], crit:[],
+   label:"Revisió d'errors i biaixos",
+   small:"S'han revisat possibles errors, biaixos o informacions inventades.",
+   decl:"s'han revisat possibles errors, biaixos o informacions inventades"},
+  {id:"g-config", reco:[5], crit:[5],
+   label:"Configuració documentada",
+   small:"S'ha documentat la configuració de l'eina o de l'agent.",
+   decl:"s'ha documentat la configuració de l'eina o de l'agent utilitzat"},
+  {id:"g-valid", reco:[4,5], crit:[5],
+   label:"Validació final del producte",
+   small:"El resultat s'ha validat abans d'utilitzar-lo.",
+   decl:"el producte final s'ha validat abans d'utilitzar-lo"}
+];
+
+const PROFILE_LABEL = {
+  "alumnat-eso":"alumnat d'ESO", "alumnat-batx":"alumnat de batxillerat", "docent":"docent",
+  "familia":"família", "directiu":"equip directiu", "ptgas":"PTGAS", "altres":""
+};
+
+/* ================================================================
+   CONSTRUCCIÓ DE LA INTERFÍCIE
+   ================================================================ */
+const $ = id => document.getElementById(id);
+const form = $("irisForm");
+
+/* Targetes de nivell */
+$("levelCards").innerHTML = Object.entries(LEVELS).map(([n,l]) => `
+  <label class="level-card" style="--lv:${l.color};--lv-bg:${l.bg}">
+    <input type="radio" name="level" value="${n}">
+    <span class="lc">
+      <span class="lv-num">${n}</span>
+      <span><b>${l.nom}</b><small>${l.curta}</small></span>
+      <span class="alg">${l.alg}</span>
+    </span>
+  </label>`).join("");
+
+/* Tasques */
+$("tasks").innerHTML = TASKS.map(t => `
+  <label class="choice"><input type="checkbox" id="${t.id}" data-min="${t.min}">
+  <span>${t.label}</span></label>`).join("");
+
+/* Garanties (les etiquetes "recomanada" es refresquen segons el nivell) */
+$("safeguards").innerHTML = SAFEGUARDS.map(g => `
+  <label class="choice"><input type="checkbox" id="${g.id}">
+  <span><b>${g.label}</b><span class="reco" id="${g.id}-reco" hidden>recomanada</span>
+  <small>${g.small}</small></span></label>`).join("");
+
+/* Data per defecte: mes actual */
+(() => {
+  const d = new Date();
+  $("declDate").value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+})();
+
+/* ================================================================
+   ASSISTENT PER DETERMINAR EL NIVELL
+   ================================================================ */
+const WIZ = {
+  q1:{q:"Has utilitzat alguna eina d'IA generativa en algun moment de la tasca?",
+      opts:[
+        {b:"No, cap ni una", s:"Tot el procés ha estat humà.", go:{level:0}},
+        {b:"Sí, n'he utilitzat alguna", s:"Encara que hagi estat de manera puntual.", go:{next:"q2"}}
+      ]},
+  q2:{q:"La IA ha aportat idees o contingut, o només ha revisat aspectes formals?",
+      opts:[
+        {b:"Només ha revisat la forma", s:"Ortografia, gramàtica, traducció o format d'un material fet per mi. No ha aportat idees.", go:{level:1}},
+        {b:"Ha aportat idees o contingut", s:"Propostes, esborranys, dades o productes.", go:{next:"q3"}}
+      ]},
+  q3:{q:"Quin d'aquests fluxos descriu millor la interacció?",
+      opts:[
+        {b:"Petició puntual d'idees", s:"La IA ha proposat opcions i jo he triat i desenvolupat el contingut pel meu compte. · H-IAg(idea)-H", go:{level:2}},
+        {b:"Esborrany que he transformat", s:"La IA ha generat un primer esborrany i jo l'he revisat, contrastat i reescrit. · H-IAg(draft)-H", go:{level:3}},
+        {b:"Diàleg continu d'anada i tornada", s:"Hem iterat: jo proposava, la IA responia, jo ajustava… fins al producte final. · H-(IAg-H)n", go:{level:4}},
+        {b:"Configuració prèvia i producció autònoma", s:"He configurat una eina o agent amb el meu coneixement i la IA ha produït el resultat, que he supervisat i validat. · (H-IAg)n · IAg", go:{level:5}}
+      ]}
+};
+let wizStack = [];
+
+function renderWizard(step){
+  const w = $("wizard");
+  if (step === undefined){
+    wizStack = ["q1"]; step = "q1";
+  }
+  const node = WIZ[step];
+  w.innerHTML = `
+    <p class="q">${node.q}</p>
+    <div class="opts">${node.opts.map((o,i) =>
+      `<button type="button" data-i="${i}"><b>${o.b}</b><small>${o.s}</small></button>`).join("")}</div>
+    ${wizStack.length > 1 ? '<button type="button" class="back">&larr; Torna a la pregunta anterior</button>' : ""}`;
+  w.querySelectorAll(".opts button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const go = node.opts[+btn.dataset.i].go;
+      if (go.next){ wizStack.push(go.next); renderWizard(go.next); }
+      else showWizardVerdict(go.level);
+    });
+  });
+  const back = w.querySelector(".back");
+  if (back) back.addEventListener("click", () => { wizStack.pop(); renderWizard(wizStack[wizStack.length-1]); });
+}
+
+function showWizardVerdict(level){
+  const l = LEVELS[level];
+  const w = $("wizard");
+  w.innerHTML = `
+    <div class="verdict" style="--lv:${l.color};--lv-bg:${l.bg}">
+      Segons l'algorisme de l'escala IRIS, la interacció descrita correspon al
+      <b>nivell ${level} — ${l.nom}</b> <span class="alg" style="--lv:${l.color}">${l.alg}</span>.
+    </div>
+    <div class="opts" style="margin-top:12px">
+      <button type="button" id="wizApply"><b>Aplica aquest nivell</b><small>Se selecciona a la llista i la declaració s'actualitza.</small></button>
+      <button type="button" id="wizRestart"><b>Torna a començar</b><small>Respon de nou les preguntes.</small></button>
+    </div>`;
+  $("wizApply").addEventListener("click", () => {
+    form.querySelector(`input[name="level"][value="${level}"]`).checked = true;
+    setMode("direct");
+    update();
+    const card = form.querySelector(`input[name="level"][value="${level}"]`).closest(".level-card");
+    if (card.scrollIntoView) card.scrollIntoView({behavior:"smooth", block:"center"});
+  });
+  $("wizRestart").addEventListener("click", () => renderWizard());
+}
+
+function setMode(mode){
+  const direct = mode === "direct";
+  $("modeDirect").classList.toggle("active", direct);
+  $("modeWizard").classList.toggle("active", !direct);
+  $("modeDirect").setAttribute("aria-selected", direct);
+  $("modeWizard").setAttribute("aria-selected", !direct);
+  $("levelCards").hidden = !direct;
+  $("wizard").hidden = direct;
+  if (!direct) renderWizard();
+}
+$("modeDirect").addEventListener("click", () => setMode("direct"));
+$("modeWizard").addEventListener("click", () => setMode("wizard"));
+
+/* ================================================================
+   LECTURA DE L'ESTAT DEL FORMULARI
+   ================================================================ */
+function readState(){
+  const levelInput = form.querySelector('input[name="level"]:checked');
+  return {
+    level: levelInput ? +levelInput.value : null,
+    profile: (form.querySelector('input[name="profile"]:checked') || {}).value || "",
+    docType: $("docType").value,
+    title: $("title").value.trim(),
+    author: $("author").value.trim(),
+    declDate: $("declDate").value,
+    tool: $("tool").value.trim(),
+    version: $("version").value.trim(),
+    otherTools: $("otherTools").value.trim(),
+    useDate: $("useDate").value,
+    tasks: TASKS.filter(t => $(t.id).checked),
+    otherUse: $("otherUse").value.trim(),
+    safeguards: SAFEGUARDS.filter(g => $(g.id).checked),
+    responsibility: $("responsibility").checked,
+    comments: $("comments").value.trim()
+  };
+}
+
+function monthName(raw){
+  if (!raw) return "";
+  const [y,m] = raw.split("-");
+  return new Intl.DateTimeFormat("ca-ES",{month:"long",year:"numeric"}).format(new Date(+y, +m-1, 1));
+}
+function joinNatural(items){
+  return items.length < 2 ? (items[0] || "") :
+    items.slice(0,-1).join("; ") + (items.length > 2 ? "; i " : " i ") + items.at(-1);
+}
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* ================================================================
+   REDACCIÓ DE LA DECLARACIÓ
+   ================================================================ */
+function buildDeclaration(st){
+  const l = LEVELS[st.level];
+  const P = [];
+  const title = st.title ? ` «${st.title}»` : "";
+  const fem = st.docType.startsWith("activitat") || st.docType.startsWith("prova");
+  const doc = `${fem ? "aquesta" : "aquest"} ${st.docType}`;
+  const perfil = PROFILE_LABEL[st.profile] || "";
+  const authorLine = st.author
+    ? st.author + (perfil ? ` (${perfil})` : "")
+    : (perfil ? `L'autoria responsable (${perfil})` : "L'autoria responsable");
+
+  if (st.level === 0){
+    P.push(`${authorLine} declara que ${doc}${title} s'ha elaborat íntegrament sense l'ajut d'eines d'intel·ligència artificial generativa.`);
+    P.push(`D'acord amb l'escala IRIS del Marc FECC, l'elaboració se situa al nivell IRIS-0 (Sense IA): tot el procés cognitiu i de producció ha estat humà.`);
+  } else {
+    let p1 = `En l'elaboració d'${doc}${title} s'ha utilitzat intel·ligència artificial generativa com a eina de suport, seguint l'escala IRIS del Marc FECC.`;
+    if (st.tool){
+      p1 += ` L'eina emprada ha estat ${st.tool}${st.version ? ` (${st.version})` : ""}`;
+      if (st.otherTools) p1 += `, juntament amb ${st.otherTools}`;
+      if (st.useDate) p1 += `, durant el ${monthName(st.useDate)}`;
+      p1 += ".";
+    }
+    P.push(p1);
+
+    const usos = [...st.tasks.map(t => t.decl), ...(st.otherUse ? [st.otherUse] : [])];
+    let p2 = `L'ús de la IA s'ha situat al nivell IRIS-${st.level} (${l.nom})`;
+    p2 += usos.length ? ` i s'ha limitat a ${joinNatural(usos)}.` : `.`;
+    p2 += ` ${PROCESS_SENTENCE[st.level]}`;
+    P.push(p2);
+
+    if (st.safeguards.length)
+      P.push(`Com a garanties del procés, ${joinNatural(st.safeguards.map(g => g.decl))}.`);
+
+    if (st.responsibility){
+      const resp = st.level >= 4 ? RESPONSIBILITY_SENTENCE[st.level] : RESPONSIBILITY_SENTENCE.low;
+      P.push(`${resp} L'ús de la IA s'ha realitzat de manera crítica i supervisada, en coherència amb els principis orientadors de l'escala IRIS: pensament, criteri pedagògic, responsabilitat, transparència, i context i mesura.`);
+    } else {
+      P.push(`Atenció: no s'ha confirmat l'assumpció explícita de responsabilitat sobre el resultat final. Segons el Marc FECC, la responsabilitat sobre el procés i el resultat recau sempre en les persones autores.`);
+    }
+  }
+
+  if (st.comments) P.push(`Observacions: ${st.comments}`);
+
+  const sig = [st.author, perfil, monthName(st.declDate)].filter(Boolean).join(" · ");
+  return {
+    heading:"Nota sobre l'ús d'intel·ligència artificial (escala IRIS)",
+    paragraphs:P,
+    signature:sig
+  };
+}
+
+function declarationAsText(d){
+  return `${d.heading.toUpperCase()}\n\n${d.paragraphs.join("\n\n")}${d.signature ? `\n\n— ${d.signature}` : ""}`;
+}
+function declarationAsHTML(d){
+  return `<div style="border:1.5px solid #888;border-radius:10px;padding:18px 22px;font-family:Georgia,serif;line-height:1.6">
+    <h4 style="margin:0 0 10px">${esc(d.heading)}</h4>
+    ${d.paragraphs.map(p => `<p style="margin:0 0 10px">${esc(p)}</p>`).join("")}
+    ${d.signature ? `<p style="margin:8px 0 0;color:#555;font-size:.92em">— ${esc(d.signature)}</p>` : ""}
+  </div>`;
+}
+
+/* ================================================================
+   ALERTES DE COHERÈNCIA (basades en els riscos del Marc FECC)
+   ================================================================ */
+const ICONS = {
+  bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7.5" x2="12" y2="13"/><circle cx="12" cy="16.5" r=".5" fill="currentColor"/></svg>',
+  warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4 3 19h18L12 4z" stroke-linejoin="round"/><line x1="12" y1="10" x2="12" y2="14"/><circle cx="12" cy="16.6" r=".5" fill="currentColor"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r=".5" fill="currentColor"/></svg>',
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+
+function computeAlerts(st){
+  const A = [];
+  if (st.level === null) return A;
+  const l = LEVELS[st.level];
+
+  if (!st.responsibility)
+    A.push({t:"bad", m:"No s'ha marcat la responsabilitat final humana. Per al Marc FECC aquest punt no és opcional: l'autoria i la responsabilitat del procés continuen sent humanes a tots els nivells."});
+
+  if (st.level === 0 && (st.tool || st.tasks.length || st.otherUse))
+    A.push({t:"bad", m:"Has triat el nivell 0 (Sense IA), però has indicat eines o tasques amb IA. Revisa el nivell o buida aquests camps."});
+
+  if (st.level > 0){
+    const above = st.tasks.filter(t => t.min > st.level);
+    if (above.length)
+      A.push({t:"warn", m:`Aquestes tasques van més enllà del que descriu el nivell ${st.level} (${l.nom}): ${above.map(t => t.label.toLowerCase()).join(", ")}. Si realment s'han fet, probablement el nivell IRIS és superior; si no, desmarca-les.`});
+
+    if (!st.tool)
+      A.push({t:"info", m:"Indica l'eina d'IA utilitzada: la declaració guanya traçabilitat i transparència."});
+
+    if (!st.tasks.length && !st.otherUse)
+      A.push({t:"info", m:"El Marc FECC demana una descripció sintètica de les tasques en què ha intervingut la IA. Marca'n almenys una al pas 4."});
+
+    if (st.level === 3 && !$("g-verif").checked)
+      A.push({t:"warn", m:"Risc clau del nivell 3 segons el Marc FECC: donar per vàlides dades errònies o inventades. Si has verificat i contrastat la informació, marca-ho; si no ho has fet, fes-ho abans de declarar."});
+    if (st.level === 3 && !$("g-transf").checked)
+      A.push({t:"info", m:"Al nivell 3, l'observable principal del model PIO és la reescriptura significativa del text generat. Marca-la si s'ha fet."});
+    if (st.level === 4 && !$("g-evid").checked)
+      A.push({t:"info", m:"Per al nivell 4, el Marc FECC recomana conservar l'historial de la conversa: és l'evidència principal de la cocreació."});
+    if (st.level === 5 && !$("g-config").checked)
+      A.push({t:"warn", m:"Per al nivell 5, cal poder documentar la configuració de l'eina o agent: és l'evidència que preveu el Marc FECC per a la delegació controlada."});
+    if (st.level === 5 && !$("g-valid").checked)
+      A.push({t:"warn", m:"Risc clau del nivell 5: la pèrdua d'autoria i de control si falla la supervisió. Valida el producte final abans d'utilitzar-lo i marca-ho."});
+  }
+
+  if ((st.profile === "alumnat-eso" || st.profile === "alumnat-batx") && st.level === 5)
+    A.push({t:"info", m:"Nota del Marc FECC: per a l'alumnat, el nivell 5 té caràcter aspiracional. Implica l'ús supervisat d'eines avançades, no el disseny de sistemes autònoms, i requereix acompanyament docent."});
+
+  if (st.profile === "familia" && st.level >= 3)
+    A.push({t:"info", m:"Recomanació del Marc FECC per a les famílies: no superar el nivell 2 sense acompanyament o formació específica del centre. Els nivells 3-5 requereixen competència digital suficient per contrastar i validar el contingut generat."});
+
+  if (!A.length)
+    A.push({t:"ok", m:"La declaració és coherent amb el nivell triat i amb les recomanacions del Marc FECC."});
+  return A;
+}
+
+/* ================================================================
+   FITXA DEL NIVELL
+   ================================================================ */
+function renderFitxa(st){
+  const box = $("fitxa");
+  if (st.level === null){
+    box.innerHTML = `<div class="fitxa-empty">La fitxa del nivell IRIS seleccionat es mostrarà aquí, amb el resum oficial, el model PIO, els riscos i les evidències recomanades pel Marc FECC.</div>`;
+    return;
+  }
+  const l = LEVELS[st.level];
+  box.style.setProperty("--lv", l.color);
+  box.style.setProperty("--lv-bg", l.bg);
+  box.innerHTML = `
+    <div class="fitxa-head" style="--lv:${l.color}">
+      <span class="lv-num">${st.level}</span>
+      <span><b>${l.nom}</b><small>${l.etapa}</small></span>
+      <span class="alg">${l.alg}</span>
+    </div>
+    <div class="fitxa-body" style="--lv:${l.color};--lv-bg:${l.bg}">
+      <p class="resum">${l.resum}</p>
+      <div class="kchips">${l.claus.map(k => `<span>${k}</span>`).join("")}</div>
+      <div class="mini-grid">
+        <div class="mini"><h4>Risc principal</h4><p>${l.risc}</p></div>
+        <div class="mini"><h4>Valor pedagògic</h4><p>${l.valor}</p></div>
+        <div class="mini"><h4>Quan és adequat</h4><p>${l.quan}</p></div>
+        <div class="mini"><h4>4D principal</h4><p>${l.d4}</p></div>
+      </div>
+      ${l.pio ? `
+      <table class="pio">
+        <thead><tr><th>Principi dominant</th><th>Indicador clau</th><th>Observable principal</th></tr></thead>
+        <tbody><tr><td><b>${l.pio.p}</b></td><td>${l.pio.i}</td><td>${l.pio.o}</td></tr></tbody>
+      </table>` : ""}
+      ${l.dims ? `<div class="kchips">${l.dims.map(d => `<span>Dimensió FECC: ${d}</span>`).join("")}</div>` : ""}
+      <details class="more">
+        <summary>Què cal treballar molt bé i com acreditar-ho</summary>
+        <div class="inner">
+          <div><h4>Què cal treballar molt bé</h4><p>${l.treballar}</p></div>
+          <div><h4>Pregunta clau d'avaluació</h4><p>${l.pregunta}</p></div>
+          <div><h4>Evidències possibles</h4><p>${l.evidencia}</p></div>
+          <div><h4>Delegació cognitiva</h4><p>${l.delegacio}</p></div>
+        </div>
+      </details>
+    </div>`;
+}
+
+/* ================================================================
+   ACTUALITZACIÓ GLOBAL (en temps real)
+   ================================================================ */
+let currentDecl = null;
+
+function update(){
+  if (window.__irisViewer) return;
+  const st = readState();
+  const hasLevel = st.level !== null;
+  const l = hasLevel ? LEVELS[st.level] : null;
+
+  /* Seccions condicionades pel nivell 0 */
+  const zero = st.level === 0;
+  $("toolsSection").style.display = zero ? "none" : "";
+  $("tasksSection").style.display = zero ? "none" : "";
+
+  /* Etiquetes de garanties recomanades */
+  SAFEGUARDS.forEach(g => {
+    const chip = $(g.id + "-reco");
+    const show = hasLevel && !zero && g.reco.includes(st.level);
+    chip.hidden = !show;
+    chip.textContent = hasLevel && g.crit.includes(st.level) ? "clau en aquest nivell" : "recomanada";
+  });
+  $("safeguardsSection").style.display = zero ? "none" : "";
+
+  /* Fitxa i alertes */
+  renderFitxa(st);
+  const alerts = computeAlerts(st);
+  $("alerts").innerHTML = alerts.map(a =>
+    `<div class="alert ${a.t}">${ICONS[a.t]}<div>${a.m}</div></div>`).join("");
+
+  /* Declaració */
+  const badge = $("levelBadge");
+  const card = $("resultCard");
+  if (!hasLevel){
+    badge.textContent = "Cap nivell triat";
+    card.style.removeProperty("--lv");
+    $("output").innerHTML = `<div class="placeholder">Tria un nivell IRIS al pas 2 i la declaració s'anirà redactant aquí automàticament, a mesura que completis el formulari.</div>`;
+    ["copyBtn","copyRichBtn","downloadBtn","printBtn","sealBtn","sealTextBtn"].forEach(id => $(id).disabled = true);
+    currentDecl = null;
+    return;
+  }
+  card.style.setProperty("--lv", l.color);
+  $("declBand").style.background = l.color;
+  badge.textContent = `IRIS-${st.level} · ${l.nom}`;
+  badge.style.background = l.color;
+
+  currentDecl = buildDeclaration(st);
+  $("output").innerHTML =
+    `<h4>${esc(currentDecl.heading)}</h4>` +
+    currentDecl.paragraphs.map(p => `<p>${esc(p)}</p>`).join("") +
+    (currentDecl.signature ? `<p class="sig">— ${esc(currentDecl.signature)}</p>` : "");
+  ["copyBtn","copyRichBtn","downloadBtn","printBtn","sealBtn","sealTextBtn"].forEach(id => $(id).disabled = false);
+}
+
+form.addEventListener("input", update);
+form.addEventListener("change", update);
+form.addEventListener("submit", e => { e.preventDefault(); update(); });
+form.addEventListener("reset", () => setTimeout(() => { setMode("direct"); update(); $("status").textContent = ""; }, 0));
+
+/* ================================================================
+   ACCIONS: COPIA, DESCÀRREGA, IMPRESSIÓ
+   ================================================================ */
+function flash(msg){ $("status").textContent = msg; clearTimeout(flash.t); flash.t = setTimeout(() => $("status").textContent = "", 4000); }
+
+$("copyBtn").addEventListener("click", async () => {
+  if (!currentDecl) return;
+  try { await navigator.clipboard.writeText(declarationAsText(currentDecl)); flash("Text copiat al porta-retalls."); }
+  catch { selectOutput(); flash("Text seleccionat: copia'l amb Ctrl+C o ⌘C."); }
+});
+
+$("copyRichBtn").addEventListener("click", async () => {
+  if (!currentDecl) return;
+  try {
+    await navigator.clipboard.write([new ClipboardItem({
+      "text/html": new Blob([declarationAsHTML(currentDecl)], {type:"text/html"}),
+      "text/plain": new Blob([declarationAsText(currentDecl)], {type:"text/plain"})
+    })]);
+    flash("Copiat amb format: enganxa-ho al processador de textos.");
+  } catch {
+    selectOutput(); flash("Selecció feta: copia-la amb Ctrl+C o ⌘C.");
+  }
+});
+
+function selectOutput(){
+  const range = document.createRange(); range.selectNodeContents($("output"));
+  const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+}
+
+$("downloadBtn").addEventListener("click", () => {
+  if (!currentDecl) return;
+  const blob = new Blob([declarationAsText(currentDecl)], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "declaracio-us-ia-iris.txt"; a.click();
+  URL.revokeObjectURL(url);
+  flash("Declaració descarregada.");
+});
+
+$("printBtn").addEventListener("click", () => window.print());
+
+
+/* ================================================================
+   SEGELL IRIS EN PNG (amb codi QR de la declaració completa)
+   ================================================================ */
+const LEVEL_HEX = {0:"#4e9a54",1:"#c0392b",2:"#7c5ca8",3:"#84961f",4:"#3d8fb5",5:"#cf8f1f"};
+qrcode.stringToBytes = s => Array.from(new TextEncoder().encode(s));
+
+function makeQRMatrix(text){
+  for (const ecl of ["M","L"]){
+    try { const qr = qrcode(0, ecl); qr.addData(text, "Byte"); qr.make(); return qr; }
+    catch(e){ /* prova el nivell de correcció següent */ }
+  }
+  return null;
+}
+
+function rrect(x,cx,cy,w,h,r){
+  x.beginPath();
+  x.moveTo(cx+r,cy); x.arcTo(cx+w,cy,cx+w,cy+h,r); x.arcTo(cx+w,cy+h,cx,cy+h,r);
+  x.arcTo(cx,cy+h,cx,cy,r); x.arcTo(cx,cy,cx+w,cy,r); x.closePath();
+}
+function wrapText(x,text,maxW){
+  const words = text.split(" "), lines = []; let cur = "";
+  for (const w of words){
+    const t = cur ? cur + " " + w : w;
+    if (x.measureText(t).width > maxW && cur){ lines.push(cur); cur = w; } else cur = t;
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function b64uEncode(s){
+  let bin = ""; new TextEncoder().encode(s).forEach(v => bin += String.fromCharCode(v));
+  return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function b64uDecode(s){
+  s = s.replace(/-/g,"+").replace(/_/g,"/"); while (s.length % 4) s += "=";
+  return new TextDecoder().decode(Uint8Array.from(atob(s), c => c.charCodeAt(0)));
+}
+
+/* --- Base i banda de nivell, compartides pels dos segells --- */
+function drawSealBase(W, H, color){
+  const cv = document.createElement("canvas");
+  cv.width = W*2; cv.height = H*2;              /* resoluciÃ³ doble */
+  const x = cv.getContext("2d"); x.scale(2,2);
+  rrect(x,3,3,W-6,H-6,30); x.fillStyle = "#ffffff"; x.fill();
+  x.lineWidth = 6; x.strokeStyle = color; x.stroke();
+  return { cv, x };
+}
+function drawBadge(x, level, l, color, W, H, blockW){
+  const FONT = '"Segoe UI",Arial,sans-serif';
+  x.save(); rrect(x,3,3,W-6,H-6,30); x.clip();
+  x.fillStyle = color; x.fillRect(3,3,blockW,H-6);
+  x.restore();
+  const cx = 3 + blockW/2;
+  const off = Math.max(0, (H - 560) * 0.3);
+  x.textAlign = "center"; x.fillStyle = "#ffffff";
+  x.globalAlpha = .9; x.font = "700 30px " + FONT;
+  x.fillText("E S C A L A   I R I S", cx, 92 + off);
+  x.globalAlpha = 1; x.font = "800 122px " + FONT;
+  x.fillText("IRIS-" + level, cx, 238 + off);
+  const nameSize = l.nom.length > 22 ? 31 : 38, nameLH = l.nom.length > 22 ? 39 : 46;
+  x.font = "700 " + nameSize + "px " + FONT;
+  const nameLines = wrapText(x, l.nom, blockW - 70).slice(0,3);
+  nameLines.forEach((ln,i) => x.fillText(ln, cx, 300 + off + i*nameLH));
+  const yAlg = Math.min(300 + off + nameLines.length*nameLH + 42, H - 95);
+  x.font = "700 28px Consolas,Menlo,monospace";
+  const wAlg = Math.min(x.measureText(l.alg).width + 44, blockW - 30);
+  rrect(x, cx - wAlg/2, yAlg - 32, wAlg, 48, 12);
+  x.globalAlpha = .18; x.fillStyle = "#ffffff"; x.fill(); x.globalAlpha = 1;
+  x.fillStyle = "#ffffff"; x.fillText(l.alg, cx, yAlg);
+  x.globalAlpha = .85; x.font = "700 24px " + FONT;
+  x.fillText("MARC FECC", cx, H - 40); x.globalAlpha = 1;
+  x.textAlign = "left";
+}
+
+/* --- Segell amb la declaraciÃ³ completa impresa (no cal escanejar res) --- */
+function drawSealText(st, decl){
+  const l = LEVELS[st.level], color = LEVEL_HEX[st.level];
+  const FONT = '"Segoe UI",Arial,sans-serif';
+  const W = 1700, blockW = 400, tx = 450, tw = 1190;
+  const meas = document.createElement("canvas").getContext("2d");
+  meas.font = "800 34px " + FONT;
+  const headLines = wrapText(meas, decl.heading, tw);
+  meas.font = "400 25px " + FONT;
+  const paraLines = decl.paragraphs.map(p => wrapText(meas, p, tw));
+  meas.font = "italic 600 24px " + FONT;
+  const sigLines = decl.signature ? wrapText(meas, "— " + decl.signature, tw) : [];
+  let contentH = 88 + headLines.length*44 + 22;
+  paraLines.forEach(ls => contentH += ls.length*36 + 14);
+  if (sigLines.length) contentH += 14 + sigLines.length*34;
+  const H = Math.max(520, contentH + 44);
+  const { cv, x } = drawSealBase(W, H, color);
+  drawBadge(x, st.level, l, color, W, H, blockW);
+  let yy = 88;
+  x.fillStyle = "#12313b"; x.font = "800 34px " + FONT;
+  for (const ln of headLines){ x.fillText(ln, tx, yy); yy += 44; }
+  x.fillStyle = color; x.fillRect(tx, yy - 22, 90, 6); yy += 22;
+  x.font = "400 25px " + FONT; x.fillStyle = "#233c44";
+  for (const ls of paraLines){
+    for (const ln of ls){ x.fillText(ln, tx, yy); yy += 36; }
+    yy += 14;
+  }
+  if (sigLines.length){
+    yy += 0; x.font = "italic 600 24px " + FONT; x.fillStyle = "#5b7078";
+    for (const ln of sigLines){ x.fillText(ln, tx, yy); yy += 34; }
+  }
+  return cv;
+}
+
+/* --- Segell compacte amb codi QR (el QR contÃ© el text pla) --- */
+function drawSealQR(st, decl){
+  const text = declarationAsText(decl);
+  const url = (URL_PUBLICA_DEL_GENERADOR || "").trim();
+  const payload = url ? url.split("#")[0] + "#d=" + b64uEncode(text) : text;
+  const qr = makeQRMatrix(payload);
+  if (!qr){ flash("La declaraciÃ³ Ã©s massa llarga per cabre en un codi QR: escurÃ§a les observacions o el tÃ­tol."); return null; }
+  const l = LEVELS[st.level], color = LEVEL_HEX[st.level];
+  const FONT = '"Segoe UI",Arial,sans-serif';
+  const W = 1500, H = 560;
+  const { cv, x } = drawSealBase(W, H, color);
+  drawBadge(x, st.level, l, color, W, H, 470);
+
+  /* Zona central de text (cursor vertical: mai no se solapa) */
+  let yy = 112;
+  x.fillStyle = "#12313b"; x.font = "800 38px " + FONT;
+  for (const ln of wrapText(x, "Declaració d'ús de la intel·ligència artificial", 450).slice(0,3)){
+    x.fillText(ln, 520, yy); yy += 48;
+  }
+  yy += 10;
+  if (st.title){
+    x.font = "italic 600 30px Georgia,serif"; x.fillStyle = "#28444d";
+    for (const ln of wrapText(x, "«" + st.title + "»", 450).slice(0,2)){
+      x.fillText(ln, 520, yy); yy += 40;
+    }
+    yy += 10;
+  }
+  if (decl.signature){
+    x.font = "400 28px " + FONT; x.fillStyle = "#5b7078";
+    for (const ln of wrapText(x, decl.signature, 450).slice(0,2)){
+      x.fillText(ln, 520, yy); yy += 36;
+    }
+  }
+  x.font = "600 26px " + FONT; x.fillStyle = "#12313b";
+  const caption = url
+    ? "Escaneja el QR amb qualsevol mòbil per obrir la declaració completa"
+    : "El QR conté el text de la declaració: llegiu-lo amb una app de lectura de QR";
+  const noteLines = wrapText(x, caption, 450).slice(0,3);
+  noteLines.forEach((ln,i) => x.fillText(ln, 520, H - 66 - (noteLines.length - 1 - i)*34));
+
+  /* QR a la dreta */
+  const n = qr.getModuleCount();
+  const area = 470, mod = Math.max(2, Math.floor(area/n)), qsz = mod*n;
+  const qx = W - 40 - qsz - Math.floor((area - qsz)/2), qy = Math.floor((H - qsz)/2);
+  x.fillStyle = "#12313b";
+  for (let r = 0; r < n; r++)
+    for (let c = 0; c < n; c++)
+      if (qr.isDark(r,c)) x.fillRect(qx + c*mod, qy + r*mod, mod, mod);
+  return cv;
+}
+
+function deliverSeal(cv, filename){
+  const prev = $("sealPreview");
+  prev.hidden = false; prev.innerHTML = "";
+  const img = new Image();
+  img.src = cv.toDataURL("image/png");
+  img.alt = "Segell IRIS"; img.style.maxWidth = "100%"; img.style.borderRadius = "10px";
+  img.style.boxShadow = "0 8px 24px rgba(14,60,70,.18)";
+  prev.appendChild(img);
+  cv.toBlob(b => {
+    const url = URL.createObjectURL(b);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+$("sealTextBtn").addEventListener("click", () => {
+  if (!currentDecl) return;
+  const st = readState(); if (st.level === null) return;
+  try {
+    deliverSeal(drawSealText(st, currentDecl), `segell-iris-nivell-${st.level}-declaracio.png`);
+    flash("Segell amb la declaració completa descarregat en PNG.");
+  } catch(e){ flash("No s'ha pogut generar el segell en aquest navegador."); }
+});
+
+$("sealBtn").addEventListener("click", () => {
+  if (!currentDecl) return;
+  const st = readState(); if (st.level === null) return;
+  try {
+    const cv = drawSealQR(st, currentDecl); if (!cv) return;
+    deliverSeal(cv, `segell-iris-nivell-${st.level}-qr.png`);
+    flash("Segell amb codi QR descarregat en PNG.");
+  } catch(e){ flash("No s'ha pogut generar el segell en aquest navegador."); }
+});
+
+/* Renderització inicial */
+update();
+
+/* ================================================================
+   MODE VISOR: obre una declaració rebuda per codi QR (#d=...)
+   ================================================================ */
+function enterViewerMode(text){
+  window.__irisViewer = true;
+  const blocks = text.split("\n\n").map(s => s.trim()).filter(Boolean);
+  let heading = "Nota sobre l'ús d'intel·ligència artificial (escala IRIS)";
+  if (blocks.length && /INTEL·LIG/i.test(blocks[0]) && blocks[0].length < 120) heading = blocks.shift();
+  let signature = "";
+  if (blocks.length && blocks[blocks.length-1].startsWith("— ")) signature = blocks.pop().slice(2);
+  currentDecl = { heading, paragraphs: blocks, signature };
+
+  document.querySelector(".form-card").style.display = "none";
+  $("alerts").style.display = "none";
+  $("sealBtn").style.display = "none";
+  $("sealTextBtn").style.display = "none";
+
+  const m = text.match(/IRIS-([0-5])/);
+  if (m){
+    const lvl = +m[1], l = LEVELS[lvl];
+    $("levelBadge").textContent = `IRIS-${lvl} · ${l.nom}`;
+    $("levelBadge").style.background = LEVEL_HEX[lvl];
+    $("declBand").style.background = LEVEL_HEX[lvl];
+    $("resultCard").style.setProperty("--lv", LEVEL_HEX[lvl]);
+    renderFitxa({ level: lvl });
+  } else {
+    $("levelBadge").textContent = "Declaració rebuda";
+    $("fitxa").style.display = "none";
+  }
+  $("output").innerHTML =
+    `<h4>${esc(heading)}</h4>` +
+    blocks.map(p => `<p>${esc(p)}</p>`).join("") +
+    (signature ? `<p class="sig">— ${esc(signature)}</p>` : "");
+  ["copyBtn","copyRichBtn","downloadBtn","printBtn"].forEach(id => $(id).disabled = false);
+  $("status").textContent = "Declaració oberta des d'un codi QR. Recarrega la pàgina sense l'enllaç per crear-ne una de nova.";
+}
+if (location.hash.startsWith("#d=")){
+  try { enterViewerMode(b64uDecode(location.hash.slice(3))); } catch(e){ /* enllaç malmès: s'ignora */ }
+}
+</script>
+</body>
+</html>
