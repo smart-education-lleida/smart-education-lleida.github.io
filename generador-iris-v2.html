@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Generador de declaracions d'ús de la IA basat en l'escala IRIS del Marc FECC.">
+<title>Generador IRIS · Escala IRIS (Marc FECC)</title>
+<style>
+  :root{
+    --ink:#12313b; --muted:#5b7078; --wash:#f4f8f8; --line:#dbe6e6;
+    --teal:#0e7c8a; --teal-dark:#0a5b66;
+    --n0:#4e9a54; --n1:#c0392b; --n2:#7c5ca8; --n3:#84961f; --n4:#3d8fb5; --n5:#cf8f1f;
+    --n0-bg:#e9f4ea; --n1-bg:#fbeae7; --n2-bg:#f1ecf8; --n3-bg:#f3f5df; --n4-bg:#e6f2f8; --n5-bg:#fcf2dd;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);background:var(--wash);line-height:1.45;
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+  button,input,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  .shell{width:min(1080px,calc(100% - 28px));margin:0 auto}
+
+  header{display:flex;align-items:center;gap:12px;padding:18px 0 10px;flex-wrap:wrap}
+  .mark{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--teal),var(--teal-dark))}
+  .mark svg{width:26px;height:26px}
+  .brand b{display:block;font-size:1rem;letter-spacing:-.01em}
+  .brand span{color:var(--muted);font-size:.78rem}
+  .langs{margin-left:auto;display:flex;gap:5px}
+  .langs button{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:5px 10px;
+    font-weight:800;font-size:.78rem;color:var(--muted)}
+  .langs button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+
+  main{padding:8px 0 40px}
+  .grid{display:grid;grid-template-columns:315px minmax(0,1fr);gap:22px;align-items:start}
+
+  /* ------- Insígnia ------- */
+  .out{position:sticky;top:12px;display:grid;gap:10px}
+  .badge{border:3px solid var(--lv,#9db3b8);border-radius:16px;background:#fff;overflow:hidden;
+    box-shadow:0 14px 34px rgba(14,60,70,.12)}
+  .badge-head{background:var(--lv,#9db3b8);color:#fff;text-align:center;padding:14px 12px 12px}
+  .badge-head .big{font-size:2.5rem;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .badge-head .nom{font-weight:700;font-size:.95rem;margin-top:3px}
+  .badge-body{padding:11px 14px;text-align:center;display:grid;gap:6px}
+  .badge-alg{font-family:Consolas,Menlo,monospace;font-weight:700;font-size:.8rem;color:var(--lv,var(--muted));
+    border:1.5px solid var(--lv,var(--line));border-radius:8px;padding:3px 9px;justify-self:center}
+  .badge-line{font-size:.8rem;color:var(--muted)}
+  .badge-line b{color:var(--ink)}
+  .badge-foot{border-top:1px solid var(--line);padding:7px;font-size:.68rem;font-weight:800;
+    letter-spacing:.08em;color:var(--muted);text-align:center;text-transform:uppercase}
+  .badge-empty{padding:30px 16px;text-align:center;color:var(--muted);font-size:.9rem}
+
+  .decl{border:1.5px solid var(--lv,var(--line));border-radius:14px;background:#fff;padding:14px 16px;
+    font-family:Georgia,"Times New Roman",serif;font-size:.82rem;line-height:1.55;max-height:295px;overflow:auto}
+  .decl h4{margin:0 0 8px;font-size:.86rem}
+  .decl p{margin:0 0 8px}
+  .decl .sig{color:#4d6167;font-size:.78rem}
+  .decl .ph{color:#7d9298;text-align:center;padding:14px 4px;font-family:inherit}
+
+  .outbtns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .outbtns button{border:0;border-radius:10px;padding:10px 6px;font-weight:800;font-size:.8rem;
+    background:var(--teal);color:#fff;transition:transform .12s}
+  .outbtns button:hover:not(:disabled){transform:translateY(-1px)}
+  .outbtns button:disabled{background:#c3d4d6;cursor:not-allowed}
+  .status{min-height:1.2em;font-size:.76rem;font-weight:700;color:#177a52;text-align:center}
+
+  /* ------- Formulari ------- */
+  h1{margin:2px 0 4px;font-size:clamp(1.35rem,3vw,1.9rem);letter-spacing:-.025em;line-height:1.1}
+  h1 em{font-style:normal;color:var(--teal)}
+  .hint{margin:0 0 16px;color:var(--muted);font-size:.9rem}
+  h2{margin:20px 0 8px;font-size:.86rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-dark)}
+  h2 small{text-transform:none;letter-spacing:0;font-weight:600;color:var(--muted)}
+
+  .levels{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .lvl{position:relative}
+  .lvl input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .lvl .c{display:flex;gap:9px;align-items:center;border:1.5px solid var(--line);border-left:5px solid var(--lv);
+    border-radius:11px;background:#fff;padding:8px 10px;transition:all .13s;min-height:56px}
+  .lvl:hover .c{border-color:#9fbcc0;border-left-color:var(--lv)}
+  .lvl input:checked + .c{border-color:var(--lv);background:var(--lv-bg);box-shadow:0 5px 14px rgba(14,60,70,.10)}
+  .lvl input:focus-visible + .c{outline:3px solid rgba(14,124,138,.4);outline-offset:2px}
+  .lvl .n{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    color:#fff;font-weight:800;background:var(--lv)}
+  .lvl b{display:block;font-size:.82rem;line-height:1.15}
+  .lvl small{display:block;color:var(--muted);font-size:.72rem;line-height:1.25;margin-top:1px}
+  .resum{margin:8px 0 0;font-size:.8rem;color:#28444d;border-left:4px solid var(--lv,var(--teal));
+    background:var(--lv-bg,#eef6f7);border-radius:8px;padding:8px 11px;display:none}
+  .resum.show{display:block}
+
+  .helpLink{border:0;background:none;color:var(--teal-dark);font-weight:700;font-size:.8rem;
+    text-decoration:underline;padding:0;margin-top:8px}
+  .wizard{border:1.5px dashed #b9d3d6;border-radius:12px;padding:13px;background:#f7fbfb;margin-top:9px}
+  .wizard p{margin:0 0 9px;font-weight:700;font-size:.86rem}
+  .wizard .opts{display:grid;gap:6px}
+  .wizard .opts button{text-align:left;border:1.5px solid var(--line);border-radius:10px;background:#fff;
+    padding:8px 11px;font-size:.82rem}
+  .wizard .opts button:hover{border-color:var(--teal);background:#eef6f7}
+  .wizard .opts button small{display:block;color:var(--muted);font-size:.74rem}
+
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .chk{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);border-radius:10px;
+    background:#fff;padding:8px 10px;font-size:.8rem;transition:all .13s}
+  .chk:hover{border-color:#9fbcc0}
+  .chk:has(input:checked){border-color:var(--teal);background:#eef6f7}
+  .chk input{accent-color:var(--teal);margin:0;flex:0 0 auto}
+  .other{display:flex;gap:8px;align-items:center;margin-top:7px;font-size:.8rem;font-weight:700}
+  .other input{flex:1;border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:7px 10px;
+    font-weight:400;outline:none}
+  .other input:focus{border-color:var(--teal)}
+
+  details.det{border:1.5px solid var(--line);border-radius:12px;background:#fff;margin-top:18px}
+  details.det summary{cursor:pointer;font-weight:800;font-size:.82rem;padding:10px 13px;color:var(--teal-dark);
+    letter-spacing:.04em;text-transform:uppercase}
+  .det-in{padding:2px 13px 13px;display:grid;gap:10px}
+  .pills{display:flex;flex-wrap:wrap;gap:6px}
+  .pill{position:relative}
+  .pill input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .pill span{display:inline-block;padding:6px 11px;border-radius:999px;border:1.5px solid var(--line);
+    background:#fff;font-size:.78rem;font-weight:600}
+  .pill input:checked + span{border-color:var(--teal);background:var(--teal);color:#fff}
+  .fld{display:grid;gap:4px;font-weight:700;font-size:.78rem}
+  .fld input{border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:8px 10px;
+    font-weight:400;outline:none}
+  .fld input:focus{border-color:var(--teal)}
+
+  .alerts{display:grid;gap:6px;margin-top:14px}
+  .alert{border-radius:10px;padding:8px 11px;font-size:.78rem;border:1.5px solid}
+  .alert.warn{border-color:#ecd6a4;background:#fdf6e7;color:#6d4a06}
+  .alert.info{border-color:#bcd9dd;background:#eef6f7;color:#15505a}
+
+  .reset{border:0;background:none;color:#a33;font-weight:700;font-size:.78rem;text-decoration:underline;
+    padding:0;margin-top:16px}
+
+  footer{padding:14px 0 32px;color:var(--muted);font-size:.72rem;text-align:center;line-height:1.6;
+    border-top:1px solid var(--line)}
+  footer b{color:var(--ink)}
+
+  .viewer-only{display:none}
+  body.viewer .form-col{display:none}
+  body.viewer .viewer-only{display:block}
+  body.viewer .grid{grid-template-columns:minmax(0,420px);justify-content:center}
+  body.viewer .decl{max-height:none}
+
+  @media (max-width:820px){
+    .grid{grid-template-columns:1fr}
+    .out{position:static;order:2}
+    .form-col{order:1}
+    .levels,.checks{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:#fff}
+    header,.form-col,.outbtns,.status,footer,.badge,.viewer-only{display:none !important}
+    .shell,.grid,.out{display:block;width:100%;position:static}
+    .decl{border:1.5px solid #999;max-height:none;overflow:visible;font-size:1rem;padding:24px}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="6" fill="#fff"/>
+        <g stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".85">
+          <line x1="20" y1="4" x2="20" y2="10"/><line x1="20" y1="30" x2="20" y2="36"/>
+          <line x1="4" y1="20" x2="10" y2="20"/><line x1="30" y1="20" x2="36" y2="20"/>
+          <line x1="8.7" y1="8.7" x2="12.9" y2="12.9"/><line x1="27.1" y1="27.1" x2="31.3" y2="31.3"/>
+          <line x1="8.7" y1="31.3" x2="12.9" y2="27.1"/><line x1="27.1" y1="12.9" x2="31.3" y2="8.7"/>
+        </g>
+      </svg>
+    </div>
+    <div class="brand"><b>Generador IRIS</b><span data-i18n="brandSub"></span></div>
+    <div class="langs" role="group" aria-label="Idioma">
+      <button type="button" data-lang="ca">CA</button>
+      <button type="button" data-lang="es">ES</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+
+      <!-- ========= SORTIDA ========= -->
+      <div class="out">
+        <div class="badge" id="badge">
+          <div class="badge-empty" id="badgeEmpty" data-i18n="badgeEmpty"></div>
+          <div id="badgeFull" hidden>
+            <div class="badge-head">
+              <div class="big" id="bLvl">IRIS-0</div>
+              <div class="nom" id="bNom"></div>
+            </div>
+            <div class="badge-body">
+              <span class="badge-alg" id="bAlg"></span>
+              <div class="badge-line" id="bTitle" hidden></div>
+              <div class="badge-line" id="bAuthor" hidden></div>
+              <div class="badge-line"><span data-i18n="badgeDate"></span>: <b id="bDate"></b></div>
+            </div>
+            <div class="badge-foot">Escala IRIS · Marc FECC</div>
+          </div>
+        </div>
+
+        <div class="decl" id="decl"><div class="ph" data-i18n="declPh"></div></div>
+
+        <div class="outbtns">
+          <button type="button" id="btnPng" disabled>PNG</button>
+          <button type="button" id="btnTxt" disabled data-i18n="btnTxt"></button>
+          <button type="button" id="btnUrl" disabled data-i18n="btnUrl"></button>
+          <button type="button" id="btnPrint" disabled data-i18n="btnPrint"></button>
+        </div>
+        <div class="status" id="status" role="status"></div>
+        <div class="viewer-only" style="text-align:center">
+          <button type="button" class="helpLink" id="viewerNew" data-i18n="viewerNew"></button>
+        </div>
+      </div>
+
+      <!-- ========= FORMULARI ========= -->
+      <div class="form-col">
+        <h1 id="h1"></h1>
+        <p class="hint" data-i18n="hint"></p>
+
+        <h2 data-i18n="secLevel"></h2>
+        <div class="levels" id="levels" role="radiogroup"></div>
+        <p class="resum" id="resum"></p>
+        <button type="button" class="helpLink" id="helpBtn" data-i18n="helpMe"></button>
+        <div class="wizard" id="wizard" hidden></div>
+
+        <div id="aiBlocks">
+          <h2 data-i18n="secTasks"></h2>
+          <div class="checks" id="tasks"></div>
+          <div class="other"><span data-i18n="otherLabel"></span><input type="text" id="otherUse"></div>
+
+          <h2 data-i18n="secGuar"></h2>
+          <div class="checks" id="guars"></div>
+        </div>
+
+        <details class="det">
+          <summary data-i18n="secDetails"></summary>
+          <div class="det-in">
+            <div class="pills" id="profiles" role="radiogroup"></div>
+            <label class="fld"><span data-i18n="lblTitle"></span><input type="text" id="wTitle"></label>
+            <label class="fld"><span data-i18n="lblName"></span><input type="text" id="wName"></label>
+            <label class="fld"><span data-i18n="lblTool"></span><input type="text" id="wTool" placeholder="ChatGPT, Claude, Gemini…"></label>
+          </div>
+        </details>
+
+        <div class="alerts" id="alerts"></div>
+        <button type="button" class="reset" id="resetBtn" data-i18n="reset"></button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <b>Escala IRIS</b> · <span data-i18n="foot1"></span><br>
+    <span data-i18n="foot2"></span><br>
+    <span data-i18n="footPriv"></span>
+  </footer>
+</div>
+
+<script>
+/* QR Code Generator, (c) Kazuhiko Arase - MIT (incrustada per a ús sense connexió).
+   "QR Code" és marca registrada de DENSO WAVE INCORPORATED. */
+/*__QRLIB__*/
+</script>
+<script>
+"use strict";
+/* ================================================================
+   CONFIGURACIÓ DEL CENTRE
+   Adreça pública d'aquest mateix fitxer. Si es trasllada, editeu-la.
+   Si es deixa buida, el QR conté el text pla de la declaració.
+   ================================================================ */
+const URL_PUBLICA_DEL_GENERADOR = "https://smart-education-lleida.github.io/generador-iris.html";
+
+/* ================================================================
+   ESCALA IRIS (Marc FECC) — dades i traduccions
+   ================================================================ */
+const LEVEL_HEX = {0:"#4e9a54",1:"#c0392b",2:"#7c5ca8",3:"#84961f",4:"#3d8fb5",5:"#cf8f1f"};
+const ALG = {0:"H",1:"H-IAg",2:"H-IAg(idea)-H",3:"H-IAg(draft)-H",4:"H-(IAg-H)n",5:"(H-IAg)n · IAg"};
+
+const I18N = {
+ca:{
+  brandSub:"Declaració d'ús de la IA · Escala IRIS · Marc FECC",
+  h1:"Com t'ha acompanyat <em>la IA</em> en aquesta tasca?",
+  hint:"Tria el nivell, marca què ha fet la IA i el segell es genera sol.",
+  secLevel:"Nivell IRIS", helpMe:"No ho tens clar? Respon tres preguntes",
+  secTasks:"Què ha fet la IA?", otherLabel:"Altres:",
+  secGuar:"Garanties aplicades", secDetails:"Detalls (opcional)",
+  lblTitle:"Títol del treball", lblName:"Nom o autoria", lblTool:"Eina d'IA utilitzada",
+  btnTxt:"COPIA EL TEXT", btnUrl:"ENLLAÇ", btnPrint:"IMPRIMEIX",
+  badgeEmpty:"Tria un nivell IRIS i la insígnia apareixerà aquí.",
+  badgeDate:"Data de creació", declPh:"La declaració es redactarà aquí automàticament.",
+  reset:"Esborra-ho tot", viewerNew:"Crea una declaració nova",
+  copied:"Copiat al porta-retalls", pngOk:"Segell PNG descarregat",
+  urlOk:"Enllaç copiat: en obrir-lo es mostra la declaració completa",
+  cantPng:"No s'ha pogut generar el segell en aquest navegador",
+  tooLong:"Text massa llarg per al codi QR: escurça'l una mica",
+  viewerNote:"Declaració oberta des d'un enllaç o codi QR.",
+  foot1:"Marc FECC per a la integritat i responsabilitat de la introducció de la IA en les tasques escolars",
+  foot2:"Escala d'integritat acadèmica de la IA inspirada en els marcs AIAS · MIAE · SEIA, vinculada al model PIO i a les dimensions FECC",
+  footPriv:"Tot passa al teu navegador: no es desa ni s'envia cap dada.",
+  badgeScan:"Escaneja per llegir la declaració completa",
+  levels:{
+    0:{nom:"Sense IA", d:"La tasca es fa íntegrament sense IA.",
+       r:"Tot el procés cognitiu i de producció és humà."},
+    1:{nom:"IA correctora", d:"La IA només revisa la forma: no aporta idees.",
+       r:"La IA actua només com a eina de revisió formal, sense generar ni transformar contingut."},
+    2:{nom:"IA inspiradora", d:"La IA proposa idees; tu tries i desenvolupes.",
+       r:"La IA proposa idees a partir d'una demanda puntual; tu selecciones i desenvolupes amb criteri propi."},
+    3:{nom:"IA generadora d'esborranys", d:"La IA fa un esborrany que tu transformes.",
+       r:"La IA genera un esborrany inicial que tu revises, contrastes i transformes, assumint-ne la responsabilitat."},
+    4:{nom:"IA cocreadora", d:"Dialogueu i itereu fins al producte final.",
+       r:"Persona i IA iteren en diàleg continu fins a construir conjuntament el producte final."},
+    5:{nom:"IA productora", d:"Configures la IA, que produeix; tu valides.",
+       r:"Configures un sistema d'IA que produeix de manera autònoma; tu en supervises i valides el resultat."}
+  },
+  tasks:[
+    {id:"t1",min:1,l:"Revisió lingüística i d'estil",p:"la revisió lingüística i d'estil"},
+    {id:"t2",min:1,l:"Traducció",p:"la traducció de continguts"},
+    {id:"t3",min:2,l:"Idees i enfocaments inicials",p:"l'obtenció d'idees i enfocaments inicials"},
+    {id:"t4",min:2,l:"Exploració d'alternatives",p:"l'exploració d'alternatives"},
+    {id:"t5",min:2,l:"Organització i síntesi d'informació",p:"l'organització i síntesi d'informació"},
+    {id:"t6",min:3,l:"Esquema o estructura inicial",p:"la generació d'un esquema o estructura inicial"},
+    {id:"t7",min:3,l:"Primers esborranys de text",p:"la generació de primers esborranys de text"},
+    {id:"t8",min:3,l:"Anàlisi o representació de dades",p:"l'anàlisi i representació de dades"},
+    {id:"t9",min:3,l:"Imatges o materials multimèdia",p:"la creació d'imatges o materials multimèdia"},
+    {id:"t10",min:4,l:"Millora iterativa en diàleg",p:"la millora iterativa del contingut en diàleg amb la IA"},
+    {id:"t11",min:5,l:"Producció amb un agent configurat",p:"la generació del producte mitjançant un agent configurat prèviament"}
+  ],
+  guars:[
+    {id:"g1",l:"Informació verificada amb fonts fiables",p:"s'ha verificat la informació amb fonts fiables"},
+    {id:"g2",l:"Contingut reescrit amb veu pròpia",p:"el contingut generat s'ha reescrit amb veu pròpia"},
+    {id:"g3",l:"Evidències del procés conservades",p:"s'han conservat les evidències del procés"},
+    {id:"g4",l:"Sense dades personals a la IA",p:"no s'han introduït dades personals a les eines d'IA"}
+  ],
+  profiles:[
+    {id:"eso",l:"Alumnat d'ESO",decl:"alumnat d'ESO"},
+    {id:"batx",l:"Alumnat de batxillerat",decl:"alumnat de batxillerat"},
+    {id:"docent",l:"Docent",decl:"docent"},
+    {id:"familia",l:"Família",decl:"família"},
+    {id:"directiu",l:"Equip directiu",decl:"equip directiu"},
+    {id:"ptgas",l:"PTGAS",decl:"PTGAS"}
+  ],
+  heading:"Nota sobre l'ús d'intel·ligència artificial (escala IRIS)",
+  n0a:t=>`Aquest treball${t} s'ha elaborat íntegrament sense l'ajut d'eines d'intel·ligència artificial generativa.`,
+  n0b:"D'acord amb l'escala IRIS del Marc FECC, se situa al nivell IRIS-0 (Sense IA): tot el procés cognitiu i de producció ha estat humà.",
+  p1:(t,tool)=>`En l'elaboració d'aquest treball${t} s'ha utilitzat intel·ligència artificial generativa com a eina de suport${tool?` (${tool})`:""}, seguint l'escala IRIS del Marc FECC.`,
+  p2:(n,nom,usos)=>`L'ús de la IA s'ha situat al nivell IRIS-${n} (${nom})`+(usos?` i s'ha limitat a ${usos}.`:"."),
+  proc:{
+    1:"La IA ha actuat exclusivament com a eina de revisió formal, sense intervenir en la generació ni en la transformació del contingut.",
+    2:"La IA ha proposat idees a partir de demandes puntuals; la selecció i el desenvolupament del contingut han estat íntegrament humans.",
+    3:"La IA ha generat un esborrany inicial que s'ha revisat, contrastat i transformat amb criteri propi.",
+    4:"El producte final s'ha construït en un diàleg iteratiu amb la IA, amb ajustos progressius i discerniment continu.",
+    5:"La IA ha generat el producte de manera autònoma a partir d'una configuració prèvia, sota supervisió i validació humanes."
+  },
+  guarIntro:g=>`Com a garanties del procés, ${g}.`,
+  resp:{
+    low:"La intel·ligència artificial no ha substituït el criteri de l'autoria: les decisions d'enfocament, les aportacions originals i les conclusions corresponen en exclusiva a les persones autores, que n'assumeixen la responsabilitat final.",
+    4:"El producte final és el resultat de decisions humanes contínues al llarg del diàleg amb la IA: la responsabilitat sobre el procés i el resultat recau íntegrament en l'autoria.",
+    5:"Tot i la producció autònoma de la IA, la supervisió, la validació i la responsabilitat final recauen íntegrament en l'autoria."
+  },
+  join:a=>a.length<2?(a[0]||""):a.slice(0,-1).join("; ")+(a.length>2?"; i ":" i ")+a[a.length-1],
+  wizard:{
+    q1:"Has utilitzat alguna eina d'IA generativa en la tasca?",
+    q1a:["No, cap ni una","Sí"],
+    q2:"La IA ha aportat idees o contingut, o només ha revisat la forma?",
+    q2a:["Només la forma (ortografia, traducció, format)","Ha aportat idees o contingut"],
+    q3:"Com ha estat la interacció?",
+    q3a:["Petició puntual d'idees; jo he desenvolupat","Un esborrany que jo he transformat","Diàleg continu d'anada i tornada","He configurat una eina i la IA ha produït"],
+    apply:"Aplica aquest nivell", again:"Torna a començar",
+    verdict:n=>`La interacció descrita correspon al nivell ${n}.`
+  },
+  alerts:{
+    above:t=>`Aquestes accions van més enllà del nivell triat: ${t}. Potser el nivell és superior, o cal desmarcar-les.`,
+    n0:"Has triat el nivell 0, però has marcat accions fetes amb IA.",
+    asp:"Nota del Marc FECC: per a l'alumnat, el nivell 5 és aspiracional i implica ús supervisat, no disseny de sistemes autònoms.",
+    fam:"Recomanació del Marc FECC: per a les famílies, no superar el nivell 2 sense acompanyament del centre.",
+    verif:"Risc clau del nivell 3: donar per bones dades errònies. Si has verificat la informació, marca-ho."
+  }
+},
+es:{
+  brandSub:"Declaración de uso de la IA · Escala IRIS · Marco FECC",
+  h1:"¿Cómo te ha acompañado <em>la IA</em> en esta tarea?",
+  hint:"Elige el nivel, marca qué ha hecho la IA y el sello se genera solo.",
+  secLevel:"Nivel IRIS", helpMe:"¿No lo tienes claro? Responde tres preguntas",
+  secTasks:"¿Qué ha hecho la IA?", otherLabel:"Otros:",
+  secGuar:"Garantías aplicadas", secDetails:"Detalles (opcional)",
+  lblTitle:"Título del trabajo", lblName:"Nombre o autoría", lblTool:"Herramienta de IA utilizada",
+  btnTxt:"COPIAR TEXTO", btnUrl:"ENLACE", btnPrint:"IMPRIMIR",
+  badgeEmpty:"Elige un nivel IRIS y la insignia aparecerá aquí.",
+  badgeDate:"Fecha de creación", declPh:"La declaración se redactará aquí automáticamente.",
+  reset:"Borrar todo", viewerNew:"Crear una declaración nueva",
+  copied:"Copiado al portapapeles", pngOk:"Sello PNG descargado",
+  urlOk:"Enlace copiado: al abrirlo se muestra la declaración completa",
+  cantPng:"No se ha podido generar el sello en este navegador",
+  tooLong:"Texto demasiado largo para el código QR: acórtalo un poco",
+  viewerNote:"Declaración abierta desde un enlace o código QR.",
+  foot1:"Marco FECC para la integridad y responsabilidad de la introducción de la IA en las tareas escolares",
+  foot2:"Escala de integridad académica de la IA inspirada en los marcos AIAS · MIAE · SEIA, vinculada al modelo PIO y a las dimensiones FECC",
+  footPriv:"Todo ocurre en tu navegador: no se guarda ni se envía ningún dato.",
+  badgeScan:"Escanea para leer la declaración completa",
+  levels:{
+    0:{nom:"Sin IA", d:"La tarea se realiza íntegramente sin IA.",
+       r:"Todo el proceso cognitivo y de producción es humano."},
+    1:{nom:"IA correctora", d:"La IA solo revisa la forma: no aporta ideas.",
+       r:"La IA actúa solo como herramienta de revisión formal, sin generar ni transformar contenido."},
+    2:{nom:"IA inspiradora", d:"La IA propone ideas; tú eliges y desarrollas.",
+       r:"La IA propone ideas a partir de una petición puntual; tú seleccionas y desarrollas con criterio propio."},
+    3:{nom:"IA generadora de borradores", d:"La IA hace un borrador que tú transformas.",
+       r:"La IA genera un borrador inicial que tú revisas, contrastas y transformas, asumiendo la responsabilidad."},
+    4:{nom:"IA cocreadora", d:"Dialogáis e iteráis hasta el producto final.",
+       r:"Persona e IA iteran en diálogo continuo hasta construir conjuntamente el producto final."},
+    5:{nom:"IA productora", d:"Configuras la IA, que produce; tú validas.",
+       r:"Configuras un sistema de IA que produce de forma autónoma; tú supervisas y validas el resultado."}
+  },
+  tasks:[
+    {id:"t1",min:1,l:"Revisión lingüística y de estilo",p:"la revisión lingüística y de estilo"},
+    {id:"t2",min:1,l:"Traducción",p:"la traducción de contenidos"},
+    {id:"t3",min:2,l:"Ideas y enfoques iniciales",p:"la obtención de ideas y enfoques iniciales"},
+    {id:"t4",min:2,l:"Exploración de alternativas",p:"la exploración de alternativas"},
+    {id:"t5",min:2,l:"Organización y síntesis de información",p:"la organización y síntesis de información"},
+    {id:"t6",min:3,l:"Esquema o estructura inicial",p:"la generación de un esquema o estructura inicial"},
+    {id:"t7",min:3,l:"Primeros borradores de texto",p:"la generación de primeros borradores de texto"},
+    {id:"t8",min:3,l:"Análisis o representación de datos",p:"el análisis y representación de datos"},
+    {id:"t9",min:3,l:"Imágenes o materiales multimedia",p:"la creación de imágenes o materiales multimedia"},
+    {id:"t10",min:4,l:"Mejora iterativa en diálogo",p:"la mejora iterativa del contenido en diálogo con la IA"},
+    {id:"t11",min:5,l:"Producción con un agente configurado",p:"la generación del producto mediante un agente configurado previamente"}
+  ],
+  guars:[
+    {id:"g1",l:"Información verificada con fuentes fiables",p:"se ha verificado la información con fuentes fiables"},
+    {id:"g2",l:"Contenido reescrito con voz propia",p:"el contenido generado se ha reescrito con voz propia"},
+    {id:"g3",l:"Evidencias del proceso conservadas",p:"se han conservado las evidencias del proceso"},
+    {id:"g4",l:"Sin datos personales en la IA",p:"no se han introducido datos personales en las herramientas de IA"}
+  ],
+  profiles:[
+    {id:"eso",l:"Alumnado de ESO",decl:"alumnado de ESO"},
+    {id:"batx",l:"Alumnado de bachillerato",decl:"alumnado de bachillerato"},
+    {id:"docent",l:"Docente",decl:"docente"},
+    {id:"familia",l:"Familia",decl:"familia"},
+    {id:"directiu",l:"Equipo directivo",decl:"equipo directivo"},
+    {id:"ptgas",l:"PAS",decl:"personal de administración y servicios"}
+  ],
+  heading:"Nota sobre el uso de inteligencia artificial (escala IRIS)",
+  n0a:t=>`Este trabajo${t} se ha elaborado íntegramente sin la ayuda de herramientas de inteligencia artificial generativa.`,
+  n0b:"De acuerdo con la escala IRIS del Marco FECC, se sitúa en el nivel IRIS-0 (Sin IA): todo el proceso cognitivo y de producción ha sido humano.",
+  p1:(t,tool)=>`En la elaboración de este trabajo${t} se ha utilizado inteligencia artificial generativa como herramienta de apoyo${tool?` (${tool})`:""}, siguiendo la escala IRIS del Marco FECC.`,
+  p2:(n,nom,usos)=>`El uso de la IA se ha situado en el nivel IRIS-${n} (${nom})`+(usos?` y se ha limitado a ${usos}.`:"."),
+  proc:{
+    1:"La IA ha actuado exclusivamente como herramienta de revisión formal, sin intervenir en la generación ni en la transformación del contenido.",
+    2:"La IA ha propuesto ideas a partir de peticiones puntuales; la selección y el desarrollo del contenido han sido íntegramente humanos.",
+    3:"La IA ha generado un borrador inicial que se ha revisado, contrastado y transformado con criterio propio.",
+    4:"El producto final se ha construido en un diálogo iterativo con la IA, con ajustes progresivos y discernimiento continuo.",
+    5:"La IA ha generado el producto de forma autónoma a partir de una configuración previa, bajo supervisión y validación humanas."
+  },
+  guarIntro:g=>`Como garantías del proceso, ${g}.`,
+  resp:{
+    low:"La inteligencia artificial no ha sustituido el criterio de la autoría: las decisiones de enfoque, las aportaciones originales y las conclusiones corresponden en exclusiva a las personas autoras, que asumen la responsabilidad final.",
+    4:"El producto final es el resultado de decisiones humanas continuas a lo largo del diálogo con la IA: la responsabilidad sobre el proceso y el resultado recae íntegramente en la autoría.",
+    5:"Pese a la producción autónoma de la IA, la supervisión, la validación y la responsabilidad final recaen íntegramente en la autoría."
+  },
+  join:a=>a.length<2?(a[0]||""):a.slice(0,-1).join("; ")+(a.length>2?"; e ":" y ")+a[a.length-1],
+  wizard:{
+    q1:"¿Has utilizado alguna herramienta de IA generativa en la tarea?",
+    q1a:["No, ninguna","Sí"],
+    q2:"¿La IA ha aportado ideas o contenido, o solo ha revisado la forma?",
+    q2a:["Solo la forma (ortografía, traducción, formato)","Ha aportado ideas o contenido"],
+    q3:"¿Cómo ha sido la interacción?",
+    q3a:["Petición puntual de ideas; yo he desarrollado","Un borrador que yo he transformado","Diálogo continuo de ida y vuelta","He configurado una herramienta y la IA ha producido"],
+    apply:"Aplicar este nivel", again:"Volver a empezar",
+    verdict:n=>`La interacción descrita corresponde al nivel ${n}.`
+  },
+  alerts:{
+    above:t=>`Estas acciones van más allá del nivel elegido: ${t}. Quizá el nivel es superior, o conviene desmarcarlas.`,
+    n0:"Has elegido el nivel 0, pero has marcado acciones hechas con IA.",
+    asp:"Nota del Marco FECC: para el alumnado, el nivel 5 es aspiracional e implica uso supervisado, no diseño de sistemas autónomos.",
+    fam:"Recomendación del Marco FECC: para las familias, no superar el nivel 2 sin acompañamiento del centro.",
+    verif:"Riesgo clave del nivel 3: dar por buenos datos erróneos. Si has verificado la información, márcalo."
+  }
+},
+en:{
+  brandSub:"AI use statement · IRIS scale · FECC Framework",
+  h1:"How did <em>AI</em> accompany you in this task?",
+  hint:"Pick the level, tick what the AI did, and your badge builds itself.",
+  secLevel:"IRIS level", helpMe:"Not sure? Answer three questions",
+  secTasks:"What did the AI do?", otherLabel:"Other:",
+  secGuar:"Safeguards applied", secDetails:"Details (optional)",
+  lblTitle:"Work title", lblName:"Name or author(s)", lblTool:"AI tool used",
+  btnTxt:"COPY TEXT", btnUrl:"LINK", btnPrint:"PRINT",
+  badgeEmpty:"Pick an IRIS level and your badge will appear here.",
+  badgeDate:"Created on", declPh:"Your statement will be written here automatically.",
+  reset:"Clear all", viewerNew:"Create a new statement",
+  copied:"Copied to clipboard", pngOk:"PNG badge downloaded",
+  urlOk:"Link copied: opening it shows the full statement",
+  cantPng:"Could not generate the badge in this browser",
+  tooLong:"Text too long for the QR code: shorten it a little",
+  viewerNote:"Statement opened from a link or QR code.",
+  foot1:"FECC Framework for integrity and responsibility in introducing AI into school tasks",
+  foot2:"AI academic integrity scale inspired by the AIAS · MIAE · SEIA frameworks, linked to the PIO model and the FECC dimensions",
+  footPriv:"Everything happens in your browser: nothing is stored or sent.",
+  badgeScan:"Scan to read the full statement",
+  levels:{
+    0:{nom:"No AI", d:"The task is done entirely without AI.",
+       r:"The whole cognitive and production process is human."},
+    1:{nom:"AI as proofreader", d:"AI only polishes form: it adds no ideas.",
+       r:"AI acts only as a formal revision tool, without generating or transforming content."},
+    2:{nom:"AI as inspiration", d:"AI suggests ideas; you choose and develop.",
+       r:"AI suggests ideas from a specific prompt; you select and develop with your own judgement."},
+    3:{nom:"AI as draft generator", d:"AI drafts; you verify and transform.",
+       r:"AI generates a first draft that you review, check and transform, taking responsibility for the result."},
+    4:{nom:"AI as co-creator", d:"You iterate in dialogue to the final product.",
+       r:"Human and AI iterate in continuous dialogue to build the final product together."},
+    5:{nom:"AI as producer", d:"You configure AI to produce; you validate.",
+       r:"You configure an AI system that produces autonomously; you supervise and validate the result."}
+  },
+  tasks:[
+    {id:"t1",min:1,l:"Language and style revision",p:"language and style revision"},
+    {id:"t2",min:1,l:"Translation",p:"translation of content"},
+    {id:"t3",min:2,l:"Initial ideas and approaches",p:"obtaining initial ideas and approaches"},
+    {id:"t4",min:2,l:"Exploring alternatives",p:"exploring alternatives"},
+    {id:"t5",min:2,l:"Organising and summarising information",p:"organising and summarising information"},
+    {id:"t6",min:3,l:"Initial outline or structure",p:"generating an initial outline or structure"},
+    {id:"t7",min:3,l:"First text drafts",p:"generating first text drafts"},
+    {id:"t8",min:3,l:"Data analysis or visualisation",p:"data analysis and visualisation"},
+    {id:"t9",min:3,l:"Images or multimedia materials",p:"creating images or multimedia materials"},
+    {id:"t10",min:4,l:"Iterative improvement in dialogue",p:"iterative improvement of the content in dialogue with the AI"},
+    {id:"t11",min:5,l:"Production with a configured agent",p:"generating the product through a previously configured agent"}
+  ],
+  guars:[
+    {id:"g1",l:"Information verified with reliable sources",p:"the information was verified with reliable sources"},
+    {id:"g2",l:"Content rewritten in my own voice",p:"generated content was rewritten in the author's own voice"},
+    {id:"g3",l:"Process evidence preserved",p:"evidence of the process was preserved"},
+    {id:"g4",l:"No personal data given to the AI",p:"no personal data was entered into the AI tools"}
+  ],
+  profiles:[
+    {id:"eso",l:"Secondary student",decl:"secondary student"},
+    {id:"batx",l:"Baccalaureate student",decl:"baccalaureate student"},
+    {id:"docent",l:"Teacher",decl:"teacher"},
+    {id:"familia",l:"Family",decl:"family"},
+    {id:"directiu",l:"Leadership team",decl:"school leadership team"},
+    {id:"ptgas",l:"Admin staff",decl:"administrative staff"}
+  ],
+  heading:"Note on the use of artificial intelligence (IRIS scale)",
+  n0a:t=>`This work${t} was produced entirely without the help of generative artificial intelligence tools.`,
+  n0b:"According to the IRIS scale of the FECC Framework, it sits at level IRIS-0 (No AI): the whole cognitive and production process was human.",
+  p1:(t,tool)=>`In producing this work${t}, generative artificial intelligence was used as a support tool${tool?` (${tool})`:""}, following the IRIS scale of the FECC Framework.`,
+  p2:(n,nom,usos)=>`The use of AI sits at level IRIS-${n} (${nom})`+(usos?` and was limited to ${usos}.`:"."),
+  proc:{
+    1:"The AI acted exclusively as a formal revision tool, without intervening in the generation or transformation of the content.",
+    2:"The AI suggested ideas from specific prompts; the selection and development of the content were entirely human.",
+    3:"The AI generated a first draft that was reviewed, checked and transformed with the author's own judgement.",
+    4:"The final product was built through an iterative dialogue with the AI, with progressive adjustments and continuous discernment.",
+    5:"The AI generated the product autonomously from a prior configuration, under human supervision and validation."
+  },
+  guarIntro:g=>`As safeguards of the process, ${g}.`,
+  resp:{
+    low:"Artificial intelligence did not replace the authors' judgement: the decisions on approach, the original contributions and the conclusions belong exclusively to the authors, who take final responsibility.",
+    4:"The final product is the result of continuous human decisions throughout the dialogue with the AI: responsibility for the process and the result rests entirely with the authors.",
+    5:"Despite the AI's autonomous production, supervision, validation and final responsibility rest entirely with the authors."
+  },
+  join:a=>a.length<2?(a[0]||""):a.slice(0,-1).join("; ")+(a.length>2?"; and ":" and ")+a[a.length-1],
+  wizard:{
+    q1:"Did you use any generative AI tool in the task?",
+    q1a:["No, none at all","Yes"],
+    q2:"Did the AI contribute ideas or content, or only revise the form?",
+    q2a:["Only the form (spelling, translation, formatting)","It contributed ideas or content"],
+    q3:"What was the interaction like?",
+    q3a:["A specific request for ideas; I developed them","A draft that I transformed","A continuous back-and-forth dialogue","I configured a tool and the AI produced"],
+    apply:"Apply this level", again:"Start again",
+    verdict:n=>`The interaction described corresponds to level ${n}.`
+  },
+  alerts:{
+    above:t=>`These actions go beyond the chosen level: ${t}. Perhaps the level is higher, or untick them.`,
+    n0:"You chose level 0, but ticked actions done with AI.",
+    asp:"FECC Framework note: for students, level 5 is aspirational and implies supervised use, not designing autonomous systems.",
+    fam:"FECC Framework recommendation: families should not go beyond level 2 without school guidance.",
+    verif:"Key risk at level 3: accepting wrong data as true. If you verified the information, tick it."
+  }
+}
+};
+
+/* ================================================================
+   ESTAT I UTILITATS
+   ================================================================ */
+let LANG = "ca";
+let viewerMode = false;
+let currentText = "";
+const $ = id => document.getElementById(id);
+const T = () => I18N[LANG];
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+qrcode.stringToBytes = s => Array.from(new TextEncoder().encode(s));
+function makeQR(text){
+  for (const e of ["M","L"]){
+    try { const q = qrcode(0,e); q.addData(text,"Byte"); q.make(); return q; } catch(_){}
+  }
+  return null;
+}
+function b64uEncode(s){
+  let b=""; new TextEncoder().encode(s).forEach(v=>b+=String.fromCharCode(v));
+  return btoa(b).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function b64uDecode(s){
+  s = s.replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="=";
+  return new TextDecoder().decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)));
+}
+function todayStr(){
+  return new Date().toLocaleDateString(LANG==="en"?"en-GB":LANG==="es"?"es-ES":"ca-ES");
+}
+function monthYear(){
+  return new Intl.DateTimeFormat(LANG==="en"?"en-GB":LANG==="es"?"es-ES":"ca-ES",
+    {month:"long",year:"numeric"}).format(new Date());
+}
+function flash(msg){ $("status").textContent = msg; clearTimeout(flash.t); flash.t=setTimeout(()=>$("status").textContent="",4000); }
+
+/* ================================================================
+   CONSTRUCCIÓ I RENDERITZACIÓ (re-renderitzable per idioma)
+   ================================================================ */
+function buildStatic(){
+  $("levels").innerHTML = [0,1,2,3,4,5].map(n=>`
+    <label class="lvl" style="--lv:${LEVEL_HEX[n]};--lv-bg:${LEVEL_HEX[n]}22">
+      <input type="radio" name="level" value="${n}">
+      <span class="c"><span class="n">${n}</span>
+        <span><b data-lvl-nom="${n}"></b><small data-lvl-d="${n}"></small></span>
+      </span>
+    </label>`).join("");
+  $("tasks").innerHTML = T().tasks.map(t=>`
+    <label class="chk"><input type="checkbox" id="${t.id}" data-min="${t.min}"><span data-task="${t.id}"></span></label>`).join("");
+  $("guars").innerHTML = T().guars.map(g=>`
+    <label class="chk"><input type="checkbox" id="${g.id}"><span data-guar="${g.id}"></span></label>`).join("");
+  $("profiles").innerHTML = T().profiles.map(p=>`
+    <label class="pill"><input type="radio" name="profile" value="${p.id}"><span data-prof="${p.id}"></span></label>`).join("");
+}
+
+function applyLang(lang){
+  LANG = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
+  const t = T();
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = t[el.dataset.i18n] || ""; });
+  $("h1").innerHTML = t.h1;
+  [0,1,2,3,4,5].forEach(n=>{
+    const nom = document.querySelector(`[data-lvl-nom="${n}"]`);
+    const d = document.querySelector(`[data-lvl-d="${n}"]`);
+    if (nom) nom.textContent = t.levels[n].nom;
+    if (d) d.textContent = t.levels[n].d;
+  });
+  t.tasks.forEach(x=>{ const el=document.querySelector(`[data-task="${x.id}"]`); if(el) el.textContent=x.l; });
+  t.guars.forEach(x=>{ const el=document.querySelector(`[data-guar="${x.id}"]`); if(el) el.textContent=x.l; });
+  t.profiles.forEach(x=>{ const el=document.querySelector(`[data-prof="${x.id}"]`); if(el) el.textContent=x.l; });
+  $("wizard").hidden = true;
+  update();
+}
+
+/* ================================================================
+   LECTURA DE L'ESTAT
+   ================================================================ */
+function readState(){
+  const lv = document.querySelector('input[name="level"]:checked');
+  const t = T();
+  return {
+    level: lv ? +lv.value : null,
+    profile: (document.querySelector('input[name="profile"]:checked')||{}).value || "",
+    title: $("wTitle").value.trim(),
+    name: $("wName").value.trim(),
+    tool: $("wTool").value.trim(),
+    tasks: t.tasks.filter(x=>$(x.id) && $(x.id).checked),
+    other: $("otherUse").value.trim(),
+    guars: t.guars.filter(x=>$(x.id) && $(x.id).checked)
+  };
+}
+
+/* ================================================================
+   DECLARACIÓ
+   ================================================================ */
+function buildText(st){
+  const t = T();
+  const title = st.title ? ` «${st.title}»` : "";
+  const P = [];
+  if (st.level === 0){
+    P.push(t.n0a(title));
+    P.push(t.n0b);
+  } else {
+    P.push(t.p1(title, st.tool));
+    const usos = [...st.tasks.map(x=>x.p), ...(st.other?[st.other]:[])];
+    P.push(t.p2(st.level, t.levels[st.level].nom, usos.length ? t.join(usos) : "") + " " + t.proc[st.level]);
+    if (st.guars.length) P.push(t.guarIntro(t.join(st.guars.map(x=>x.p))));
+    P.push(st.level>=4 ? t.resp[st.level] : t.resp.low);
+  }
+  const prof = t.profiles.find(p=>p.id===st.profile);
+  const sig = [st.name, prof?prof.decl:"", monthYear()].filter(Boolean).join(" · ");
+  return { heading: t.heading, paragraphs: P, signature: sig };
+}
+function asText(d){
+  return `${d.heading.toUpperCase()}\n\n${d.paragraphs.join("\n\n")}${d.signature?`\n\n— ${d.signature}`:""}`;
+}
+
+/* ================================================================
+   ALERTES
+   ================================================================ */
+function computeAlerts(st){
+  const t = T(), A = [];
+  if (st.level === null) return A;
+  if (st.level === 0 && (st.tasks.length || st.other || st.tool))
+    A.push({k:"warn", m:t.alerts.n0});
+  if (st.level > 0){
+    const above = st.tasks.filter(x=>x.min > st.level);
+    if (above.length) A.push({k:"warn", m:t.alerts.above(above.map(x=>x.l.toLowerCase()).join(", "))});
+    if (st.level === 3 && !$("g1").checked) A.push({k:"info", m:t.alerts.verif});
+  }
+  if ((st.profile==="eso"||st.profile==="batx") && st.level===5) A.push({k:"info", m:t.alerts.asp});
+  if (st.profile==="familia" && st.level>=3) A.push({k:"info", m:t.alerts.fam});
+  return A;
+}
+
+/* ================================================================
+   ACTUALITZACIÓ GLOBAL
+   ================================================================ */
+function update(){
+  if (viewerMode){ renderViewer(); return; }
+  const st = readState();
+  const t = T();
+  const has = st.level !== null;
+  const hex = has ? LEVEL_HEX[st.level] : null;
+
+  $("aiBlocks").style.display = st.level === 0 ? "none" : "";
+
+  /* Insígnia */
+  const badge = $("badge");
+  $("badgeEmpty").hidden = has;
+  $("badgeFull").hidden = !has;
+  if (has){
+    badge.style.setProperty("--lv", hex);
+    $("bLvl").textContent = "IRIS-" + st.level;
+    $("bNom").textContent = t.levels[st.level].nom;
+    $("bAlg").textContent = ALG[st.level];
+    $("bTitle").hidden = !st.title; $("bTitle").innerHTML = st.title ? `<b>${esc(st.title)}</b>` : "";
+    $("bAuthor").hidden = !st.name; $("bAuthor").textContent = st.name;
+    $("bDate").textContent = todayStr();
+  } else badge.style.removeProperty("--lv");
+
+  /* Resum del nivell */
+  const resum = $("resum");
+  if (has){
+    resum.classList.add("show");
+    resum.style.setProperty("--lv", hex);
+    resum.style.setProperty("--lv-bg", hex + "22");
+    resum.textContent = t.levels[st.level].r;
+  } else resum.classList.remove("show");
+
+  /* Alertes */
+  $("alerts").innerHTML = computeAlerts(st).map(a=>`<div class="alert ${a.k}">${a.m}</div>`).join("");
+
+  /* Declaració */
+  const declBox = $("decl");
+  if (has){
+    const d = buildText(st);
+    currentText = asText(d);
+    declBox.style.setProperty("--lv", hex);
+    declBox.innerHTML = `<h4>${esc(d.heading)}</h4>` +
+      d.paragraphs.map(p=>`<p>${esc(p)}</p>`).join("") +
+      (d.signature?`<p class="sig">— ${esc(d.signature)}</p>`:"");
+  } else {
+    currentText = "";
+    declBox.style.removeProperty("--lv");
+    declBox.innerHTML = `<div class="ph">${esc(t.declPh)}</div>`;
+  }
+  ["btnPng","btnTxt","btnUrl","btnPrint"].forEach(id=>$(id).disabled = !has);
+}
+
+/* ================================================================
+   ASSISTENT DE NIVELL
+   ================================================================ */
+function wizardStep(step){
+  const w = $("wizard"), z = T().wizard;
+  w.hidden = false;
+  const opts = (arr, handler) => `<div class="opts">${arr.map((o,i)=>`<button type="button" data-i="${i}">${o}</button>`).join("")}</div>`;
+  if (step === 1){
+    w.innerHTML = `<p>${z.q1}</p>` + opts(z.q1a);
+    w.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+      +b.dataset.i === 0 ? wizardVerdict(0) : wizardStep(2);
+    }));
+  } else if (step === 2){
+    w.innerHTML = `<p>${z.q2}</p>` + opts(z.q2a);
+    w.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+      +b.dataset.i === 0 ? wizardVerdict(1) : wizardStep(3);
+    }));
+  } else {
+    w.innerHTML = `<p>${z.q3}</p>` + opts(z.q3a);
+    w.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+      wizardVerdict([2,3,4,5][+b.dataset.i]);
+    }));
+  }
+}
+function wizardVerdict(level){
+  const w = $("wizard"), z = T().wizard, t = T();
+  w.innerHTML = `<p style="color:${LEVEL_HEX[level]}">${z.verdict(level)} — <b>${t.levels[level].nom}</b></p>
+    <div class="opts">
+      <button type="button" id="wzApply">${z.apply}</button>
+      <button type="button" id="wzAgain">${z.again}</button>
+    </div>`;
+  $("wzApply").addEventListener("click",()=>{
+    document.querySelector(`input[name="level"][value="${level}"]`).checked = true;
+    w.hidden = true; update();
+  });
+  $("wzAgain").addEventListener("click",()=>wizardStep(1));
+}
+
+/* ================================================================
+   SEGELL PNG (insígnia vertical amb QR)
+   ================================================================ */
+function drawBadgePNG(st, level, heading){
+  const t = T(), hex = LEVEL_HEX[level];
+  const FONT = '"Segoe UI",Arial,sans-serif';
+  const url = (URL_PUBLICA_DEL_GENERADOR||"").trim();
+  const payload = url ? url.split("#")[0] + "#d=" + b64uEncode(currentText) : currentText;
+  const qr = makeQR(payload);
+  if (!qr){ flash(t.tooLong); return null; }
+
+  const W = 560;
+  const meas = document.createElement("canvas").getContext("2d");
+  meas.font = "600 26px " + FONT;
+  const titleLines = st.title ? wrapT(meas, "«"+st.title+"»", W-90).slice(0,2) : [];
+  const n = qr.getModuleCount();
+  const mod = Math.max(3, Math.floor(380/n)), qsz = mod*n;
+  let H = 196 + 62 + (titleLines.length?titleLines.length*34+8:0) + (st.name?34:0) + 40 + qsz + 26 + 44 + 56;
+  const cv = document.createElement("canvas");
+  cv.width = W*2; cv.height = H*2;
+  const x = cv.getContext("2d"); x.scale(2,2);
+
+  rr(x,3,3,W-6,H-6,24); x.fillStyle="#fff"; x.fill();
+  x.lineWidth=6; x.strokeStyle=hex; x.stroke();
+  x.save(); rr(x,3,3,W-6,H-6,24); x.clip();
+  x.fillStyle = hex; x.fillRect(3,3,W-6,196); x.restore();
+
+  x.textAlign="center"; x.fillStyle="#fff";
+  x.font="800 92px "+FONT; x.fillText("IRIS-"+level, W/2, 112);
+  x.font="700 30px "+FONT;
+  wrapT(x, t.levels[level].nom, W-70).slice(0,2).forEach((ln,i)=>x.fillText(ln, W/2, 152+i*34));
+
+  let yy = 196 + 44;
+  x.font="700 26px Consolas,Menlo,monospace";
+  const wAlg = x.measureText(ALG[level]).width + 40;
+  rr(x, W/2-wAlg/2, yy-28, wAlg, 42, 10);
+  x.fillStyle = hex+"22"; x.fill();
+  x.fillStyle = hex; x.fillText(ALG[level], W/2, yy);
+  yy += 40;
+  x.fillStyle="#12313b";
+  if (titleLines.length){
+    x.font="600 26px "+FONT;
+    titleLines.forEach(ln=>{ x.fillText(ln, W/2, yy); yy += 34; });
+    yy += 8;
+  }
+  if (st.name){ x.font="400 24px "+FONT; x.fillStyle="#5b7078"; x.fillText(st.name, W/2, yy); yy += 34; }
+  x.font="400 22px "+FONT; x.fillStyle="#5b7078";
+  x.fillText(t.badgeDate + ": " + todayStr(), W/2, yy); yy += 26;
+
+  const qx = Math.floor((W-qsz)/2), qy = yy + 8;
+  x.fillStyle="#12313b";
+  for (let r=0;r<n;r++) for (let c=0;c<n;c++)
+    if (qr.isDark(r,c)) x.fillRect(qx+c*mod, qy+r*mod, mod, mod);
+  yy = qy + qsz + 30;
+  x.font="600 20px "+FONT; x.fillStyle="#5b7078";
+  wrapT(x, t.badgeScan, W-80).slice(0,2).forEach((ln,i)=>x.fillText(ln, W/2, yy+i*26));
+
+  x.font="800 20px "+FONT; x.fillStyle="#8ea6ab";
+  x.fillText("ESCALA IRIS · MARC FECC", W/2, H-22);
+  return cv;
+}
+function rr(x,cx,cy,w,h,r){
+  x.beginPath(); x.moveTo(cx+r,cy); x.arcTo(cx+w,cy,cx+w,cy+h,r); x.arcTo(cx+w,cy+h,cx,cy+h,r);
+  x.arcTo(cx,cy+h,cx,cy,r); x.arcTo(cx,cy,cx+w,cy,r); x.closePath();
+}
+function wrapT(x,text,maxW){
+  const words = String(text).split(" "), lines = []; let cur = "";
+  for (const w of words){
+    const s = cur ? cur+" "+w : w;
+    if (x.measureText(s).width > maxW && cur){ lines.push(cur); cur = w; } else cur = s;
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+/* ================================================================
+   BOTONS DE SORTIDA
+   ================================================================ */
+$("btnTxt").addEventListener("click", async ()=>{
+  if (!currentText) return;
+  try { await navigator.clipboard.writeText(currentText); flash(T().copied); }
+  catch(_){ flash("Ctrl+C"); }
+});
+$("btnUrl").addEventListener("click", async ()=>{
+  if (!currentText) return;
+  const url = (URL_PUBLICA_DEL_GENERADOR||"").trim();
+  const link = (url || location.href.split("#")[0]) + "#d=" + b64uEncode(currentText);
+  try { await navigator.clipboard.writeText(link); flash(T().urlOk); }
+  catch(_){ flash("Ctrl+C"); }
+});
+$("btnPrint").addEventListener("click", ()=>window.print());
+$("btnPng").addEventListener("click", ()=>{
+  if (!currentText) return;
+  const st = viewerMode ? viewerState : readState();
+  const level = viewerMode ? viewerState.level : st.level;
+  if (level === null) return;
+  try {
+    const cv = drawBadgePNG(st, level);
+    if (!cv) return;
+    cv.toBlob(b=>{
+      const u = URL.createObjectURL(b);
+      const a = document.createElement("a");
+      a.href = u; a.download = `iris-${level}.png`; a.click();
+      URL.revokeObjectURL(u);
+    });
+    flash(T().pngOk);
+  } catch(_){ flash(T().cantPng); }
+});
+$("resetBtn").addEventListener("click", ()=>{
+  document.querySelectorAll("input").forEach(i=>{
+    if (i.type==="checkbox"||i.type==="radio") i.checked = false; else i.value = "";
+  });
+  $("wizard").hidden = true;
+  update();
+});
+$("helpBtn").addEventListener("click", ()=>{
+  const w = $("wizard");
+  if (w.hidden) wizardStep(1); else w.hidden = true;
+});
+document.querySelectorAll(".langs button").forEach(b=>
+  b.addEventListener("click", ()=>{ buildLangSafe(b.dataset.lang); }));
+
+/* Canvi d'idioma preservant l'estat del formulari */
+function buildLangSafe(lang){
+  const keep = {
+    level: (document.querySelector('input[name="level"]:checked')||{}).value,
+    profile: (document.querySelector('input[name="profile"]:checked')||{}).value,
+    checks: Array.from(document.querySelectorAll('.checks input:checked')).map(i=>i.id),
+    title: $("wTitle").value, name: $("wName").value, tool: $("wTool").value, other: $("otherUse").value
+  };
+  LANG = lang;
+  buildStatic();
+  if (keep.level !== undefined && keep.level !== null && keep.level !== "")
+    { const el = document.querySelector(`input[name="level"][value="${keep.level}"]`); if (el) el.checked = true; }
+  if (keep.profile){ const el = document.querySelector(`input[name="profile"][value="${keep.profile}"]`); if (el) el.checked = true; }
+  keep.checks.forEach(id=>{ const el = $(id); if (el) el.checked = true; });
+  $("wTitle").value = keep.title; $("wName").value = keep.name;
+  $("wTool").value = keep.tool; $("otherUse").value = keep.other;
+  applyLang(lang);
+}
+
+document.addEventListener("input", e=>{ if (e.target.closest(".form-col")) update(); });
+document.addEventListener("change", e=>{ if (e.target.closest(".form-col")) update(); });
+
+/* ================================================================
+   MODE VISOR (#d=...)
+   ================================================================ */
+let viewerState = { level:null, title:"", name:"" };
+function renderViewer(){
+  const t = T();
+  const m = currentText.match(/IRIS-([0-5])/);
+  const level = m ? +m[1] : null;
+  viewerState.level = level;
+  const hex = level!==null ? LEVEL_HEX[level] : null;
+  const blocks = currentText.split("\n\n").map(s=>s.trim()).filter(Boolean);
+  let heading = t.heading;
+  if (blocks.length && blocks[0].length < 130 && /IRIS/.test(blocks[0])) heading = blocks.shift();
+  let sig = "";
+  if (blocks.length && blocks[blocks.length-1].startsWith("— ")) sig = blocks.pop().slice(2);
+
+  $("badgeEmpty").hidden = level!==null;
+  $("badgeFull").hidden = level===null;
+  if (level!==null){
+    $("badge").style.setProperty("--lv", hex);
+    $("bLvl").textContent = "IRIS-"+level;
+    $("bNom").textContent = t.levels[level].nom;
+    $("bAlg").textContent = ALG[level];
+    $("bTitle").hidden = true; $("bAuthor").hidden = !sig;
+    $("bAuthor").textContent = sig;
+    $("bDate").textContent = todayStr();
+    $("decl").style.setProperty("--lv", hex);
+  }
+  $("decl").innerHTML = `<h4>${esc(heading)}</h4>` +
+    blocks.map(p=>`<p>${esc(p)}</p>`).join("") +
+    (sig?`<p class="sig">— ${esc(sig)}</p>`:"");
+  ["btnTxt","btnPrint","btnPng"].forEach(id=>$(id).disabled=false);
+  $("btnUrl").disabled = false;
+  flash(t.viewerNote);
+}
+$("viewerNew").addEventListener("click", ()=>{ location.hash = ""; location.reload(); });
+
+/* ================================================================
+   ARRENCADA
+   ================================================================ */
+buildStatic();
+applyLang("ca");
+if (location.hash.startsWith("#d=")){
+  try {
+    currentText = b64uDecode(location.hash.slice(3));
+    viewerMode = true;
+    document.body.classList.add("viewer");
+    renderViewer();
+  } catch(_){ viewerMode = false; document.body.classList.remove("viewer"); }
+}
+</script>
+</body>
+</html>
