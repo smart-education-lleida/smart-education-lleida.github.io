@@ -874,9 +874,9 @@ function renderEvoDash(){
   box.innerHTML=`
   <div class="kpis sec">
     <div class="kpi ${dcls(dIdx)}"><div class="t">Índex d'equip</div><div class="v">${SB.index} <span class="delta ${dcls(dIdx)}" style="font-size:1rem">${dsym(dIdx)} ${sgn(dIdx,0)}</span></div><div class="s">abans ${SA.index} · etapa ${lvName(mean(SB.overall))}</div></div>
-    <div class="kpi ${dcls(stA[0]-stB[0])}"><div class="t">En etapa inicial</div><div class="v">${stB[0]}% <span class="delta ${dcls(stA[0]-stB[0])}" style="font-size:1rem">${dsym(stA[0]-stB[0])} ${sgn(stB[0]-stA[0],0)} pp</span></div><div class="s">abans ${stA[0]}%</div></div>
+    <div class="kpi ${dcls(stA[0]-stB[0])}"><div class="t">En etapa inicial</div><div class="v">${stB[0]}% <span class="delta ${dcls(stA[0]-stB[0])}" style="font-size:1rem">${dsym(stB[0]-stA[0])} ${sgn(stB[0]-stA[0],0)} pp</span></div><div class="s">abans ${stA[0]}%</div></div>
     <div class="kpi ${dcls(stB[3]-stA[3])}"><div class="t">En etapa avançada</div><div class="v">${stB[3]}% <span class="delta ${dcls(stB[3]-stA[3])}" style="font-size:1rem">${dsym(stB[3]-stA[3])} ${sgn(stB[3]-stA[3],0)} pp</span></div><div class="s">abans ${stA[3]}%</div></div>
-    <div class="kpi ${dcls(riskA-riskB)}"><div class="t">Seguretat i dades</div><div class="v">${riskB}% <span class="delta ${dcls(riskA-riskB)}" style="font-size:1rem">${dsym(riskA-riskB)} ${sgn(riskB-riskA,0)} pp</span></div><div class="s">abans ${riskA}% en nivell inicial</div></div>
+    <div class="kpi ${dcls(riskA-riskB)}"><div class="t">Seguretat i dades</div><div class="v">${riskB}% <span class="delta ${dcls(riskA-riskB)}" style="font-size:1rem">${dsym(riskB-riskA)} ${sgn(riskB-riskA,0)} pp</span></div><div class="s">abans ${riskA}% en nivell inicial</div></div>
     <div class="kpi ${dcls(SA.coh-SB.coh)}"><div class="t">Cohesió</div><div class="v" style="font-size:1.15rem">${SB.coh<0.5?"Homogeni":SB.coh<0.85?"Divers":"Polaritzat"}</div><div class="s">dispersió ${fmt(SA.coh)} → ${fmt(SB.coh)}</div></div>
     <div class="kpi ${dcls(talB-talA)}"><div class="t">Talent intern</div><div class="v">${talB} <span class="delta ${dcls(talB-talA)}" style="font-size:1rem">${dsym(talB-talA)} ${sgn(talB-talA,0)}</span></div><div class="s">docents amb alguna pràctica avançada</div></div>
   </div>
