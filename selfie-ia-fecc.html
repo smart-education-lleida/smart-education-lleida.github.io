@@ -334,7 +334,7 @@ function radar20(series, opts={}){
   for (let lv=1; lv<=3; lv++){
     const r = R*lv/3;
     s += `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#c8d6d9" stroke-width="${lv===3?1.6:1}" ${lv<3?'stroke-dasharray="3 4"':''}/>`;
-    s += `<text x="${c+3}" y="${c-r-3}" font-size="9" fill="#7d9298">${LEVELS[lv]}</text>`;
+    s += `<text x="${c+3}" y="${c-r-3}" font-size="9" fill="#7d9298" paint-order="stroke" stroke="#fff" stroke-width="3">${LEVELS[lv]}</text>`;
   }
   /* radis + números */
   for (let i=0;i<n;i++){
@@ -607,14 +607,16 @@ function dafo(S){
     if (S.dim[k].m >= 1.75) F.push({t:`L'equip se situa en etapa ${lvName(S.dim[k].m).toLowerCase()} en «${d.nom}» (mitjana ${fmt(S.dim[k].m)}).`, r:"mitjana de dimensió ≥ 1,75"});
     if (S.dim[k].m < 1) D.push({t:`«${d.nom}» queda entre l'etapa inicial i la bàsica (mitjana ${fmt(S.dim[k].m)}): és la prioritat formativa de fons.`, r:"mitjana de dimensió < 1"});
     if (S.dim[k].sd >= 0.85) D.push({t:`Pràctiques molt desiguals en «${d.curt}» (dispersió ${fmt(S.dim[k].sd)}): l'alumnat rep experiències diferents segons el docent.`, r:"dispersió ≥ 0,85"});
-    if (S.dim[k].nD >= 2) F.push({t:`${S.dim[k].nD} docents en nivell avançat en «${d.curt}»: hi ha referents interns per acompanyar l'equip.`, r:"≥ 2 persones amb alguna resposta D"});
     if (S.dim[k].nD === 1) A.push({t:`Un sol referent avançat en «${d.curt}»: el coneixement depèn d'una persona.`, r:"exactament 1 persona amb resposta D"});
   });
+  const refs = DIMS.map((d,k)=>S.dim[k].nD>=2?`${S.dim[k].nD} en ${d.curt}`:null).filter(Boolean);
+  if (refs.length) F.push({t:`Referents interns disponibles (docents amb alguna pràctica avançada): ${refs.join(", ")}.`, r:"≥ 2 persones amb alguna resposta D per dimensió"});
   const top = S.item.map((x,i)=>({i,m:x.m})).sort((a,b)=>b.m-a.m);
   top.slice(0,2).filter(x=>x.m>=2).forEach(x=>F.push({t:`Fortalesa concreta: ${nm(x.i)} (mitjana ${fmt(x.m)}).`, r:"situació amb mitjana ≥ 2"}));
   top.slice(-2).filter(x=>x.m<1).forEach(x=>D.push({t:`Punt feble concret: ${nm(x.i)} (mitjana ${fmt(x.m)}).`, r:"situació amb mitjana < 1"}));
   S.item.forEach((x,i)=>{ if (x.pA>=40) D.push({t:`El ${x.pA}% de l'equip encara no ha començat en ${nm(i)}.`, r:"≥ 40% en nivell inicial"}); });
-  S.item.forEach((x,i)=>{ const pB=pct(x.dist[1],S.n), pCD=pct(x.dist[2]+x.dist[3],S.n); if (pB>=40 && pCD>=20) O.push({t:`Zona de progrés en ${nm(i)}: una majoria en nivell bàsic i un ${pCD}% més avançat que pot fer d'aprenentatge entre iguals.`, r:"≥ 40% en bàsica i ≥ 20% en intermèdia/avançada"}); });
+  S.item.map((x,i)=>({i, pB:pct(x.dist[1],S.n), pCD:pct(x.dist[2]+x.dist[3],S.n)})).filter(z=>z.pB>=40 && z.pCD>=25).sort((a,b)=>b.pCD-a.pCD).slice(0,3)
+    .forEach(z=>O.push({t:`Zona de progrés en ${nm(z.i)}: majoria en nivell bàsic i un ${z.pCD}% ja en intermèdia o avançada que pot fer d'aprenentatge entre iguals.`, r:"≥ 40% en bàsica i ≥ 25% en intermèdia/avançada (3 millors)"}));
   const riskPct = pct(S.risk,S.n);
   if (riskPct >= 25) A.push({t:`El ${riskPct}% de l'equip es declara en nivell inicial en dades, seguretat, verificació o drets d'autor: exposició a incidències de privacitat i a desinformació.`, r:"≥ 25% amb alguna A a les situacions 3, 4, 5 o 10"});
   if (S.item[6].m < 1.5) A.push({t:`Transparència i autoria (situació 7) per sota de l'etapa intermèdia: l'ús d'IA per part de l'alumnat pot avançar més de pressa que els criteris d'avaluació. Recurs: Generador IRIS.`, r:"situació 7 amb mitjana < 1,5"});
@@ -626,7 +628,8 @@ function dafo(S){
   O.push({t:"El marc del Departament (2025) i l'instrument FECC comparteixen dimensions: la formació es pot alinear directament amb els descriptors oficials.", r:"context"});
   if (!F.length) F.push({t:"Encara no hi ha fortaleses clares a nivell d'equip: el punt de partida és compartit i això facilita una formació comuna.", r:"cap dimensió ≥ 1,75"});
   if (!D.length) D.push({t:"Cap dimensió per sota de l'etapa bàsica: la millora és d'aprofundiment, no de base.", r:"cap dimensió < 1"});
-  return {F,D,O,A};
+  const cap = a => a.slice(0,5);
+  return {F:cap(F),D:cap(D),O:cap(O),A:cap(A)};
 }
 
 function pla(S){
