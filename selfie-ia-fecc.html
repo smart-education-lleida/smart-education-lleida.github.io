@@ -134,6 +134,25 @@
   .pla b{color:var(--c)}
   [contenteditable]:focus{outline:2px solid var(--d1);border-radius:4px}
 
+  /* ---------- evolució ---------- */
+  .slot{border:1.5px solid var(--line);border-radius:14px;padding:14px;background:#fbfdfd}
+  .slot h3{margin:0 0 6px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .slot .cnt{font-weight:800;color:var(--d1)}
+  .delta{font-weight:800}
+  .up{color:var(--ok)} .down{color:var(--bad)} .flat{color:var(--muted)}
+  .dbars{display:grid;gap:8px}
+  .dbar{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;font-size:.84rem}
+  .dbar .lab{font-weight:700;color:var(--c)}
+  .dbar .ax{position:relative;height:14px;background:#e4ebed;border-radius:7px}
+  .dbar .ax i{position:absolute;top:0;bottom:0;border-radius:7px;background:var(--c)}
+  .dbar .ax s{position:absolute;top:-2px;bottom:-2px;left:50%;width:2px;background:#5b7078}
+  .twostack{display:grid;grid-template-columns:70px 1fr;gap:8px 10px;align-items:center;font-size:.8rem}
+  .read{display:grid;gap:6px}
+  .read div{border-left:4px solid var(--d1);background:#eef6f7;border-radius:10px;padding:8px 12px;font-size:.86rem}
+  .read div.bad{border-color:var(--bad);background:#fdf1ef}
+  .read div.ok{border-color:var(--ok);background:#effaf4}
+  .chipst{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;color:#fff}
+  .chipst.a{background:var(--ok)} .chipst.p{background:var(--warn)} .chipst.n{background:#8ea6ab}
   footer{padding:14px 0 30px;color:var(--muted);font-size:.72rem;text-align:center;line-height:1.6;border-top:1px solid var(--line)}
   @media (max-width:860px){.hero,.res,.grid2,.dafo{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}.gauge .lab{width:110px}}
   @media print{
@@ -150,6 +169,7 @@
     <nav>
       <button type="button" id="navSelf">El meu SELFIE</button>
       <button type="button" id="navTeam">Equip</button>
+      <button type="button" id="navEvo">Evolució</button>
     </nav>
   </header>
   <main id="app"></main>
@@ -359,10 +379,12 @@ let route = "self";
 function go(r){ route = r; render(); window.scrollTo(0,0); }
 $("navSelf").addEventListener("click", ()=>go("self"));
 $("navTeam").addEventListener("click", ()=>go("team"));
+$("navEvo").addEventListener("click", ()=>go("evo"));
 function render(){
-  $("navSelf").classList.toggle("on", route!=="team");
+  $("navSelf").classList.toggle("on", route==="self");
   $("navTeam").classList.toggle("on", route==="team");
-  if (route==="team") renderTeam(); else renderSelf();
+  $("navEvo").classList.toggle("on", route==="evo");
+  if (route==="team") renderTeam(); else if (route==="evo") renderEvo(); else renderSelf();
 }
 
 /* ---------------------------- INDIVIDUAL ---------------------------- */
@@ -522,7 +544,13 @@ function svgToPng(svg, name){
 }
 
 /* ------------------------------ EQUIP ------------------------------ */
-const team = { people:[], plantilla:0, minN:5, showInd:false, bySeg:false, pasted:"" };
+const team = { people:[], plantilla:0, minN:5, showInd:false, bySeg:false, pasted:"", roundName:"" };
+function snapshotOf(people, name, plantilla){
+  return { format:"selfie-equip-1", name: name||"", date:new Date().toISOString().slice(0,10), plantilla: plantilla||0, n: people.length, codes: people.map(p=>p.code) };
+}
+function peopleFromSnapshot(d){
+  const out=[]; (d.codes||[]).forEach(c=>{ const p=parseCode(c); if(p && !out.some(q=>q.code===p.code)) out.push({...p, alias:null}); }); return out;
+}
 
 function renderTeam(){
   app.innerHTML = `
@@ -540,7 +568,11 @@ function renderTeam(){
           <label class="fld">Plantilla docent (per calcular la participació)<input type="number" id="plantilla" min="0" value="${team.plantilla||''}" placeholder="Ex.: 42"></label>
           <label class="fld">Mida mínima d'un grup per mostrar-lo<input type="number" id="minN" min="2" value="${team.minN}"></label>
         </div>
-        <p class="note" style="margin-top:8px">Privacitat per disseny: cap nom ni correu; els perfils individuals només es mostren de manera anònima i els grups només si arriben a la mida mínima.</p>
+        <div class="row" style="margin-top:10px">
+          <label class="fld" style="flex:1">Nom de la ronda<input type="text" id="roundName" value="${esc(team.roundName)}" placeholder="Ex.: Octubre 2026"></label>
+          <button class="btn light" id="saveSnap" style="align-self:end">Desa la instantània</button>
+        </div>
+        <p class="note" style="margin-top:8px">Privacitat per disseny: cap nom ni correu; els perfils individuals només es mostren de manera anònima i els grups només si arriben a la mida mínima. La instantània és un fitxer anònim (codis i plantilla) que el mòdul <b>Evolució</b> pot tornar a obrir d'aquí a uns mesos.</p>
       </div>
     </div>
   </div>
@@ -549,6 +581,15 @@ function renderTeam(){
   $("demo").addEventListener("click", loadDemo);
   $("clear").addEventListener("click", ()=>{ team.people=[]; team.pasted=""; renderTeam(); });
   $("plantilla").addEventListener("input", e=>{ team.plantilla=+e.target.value||0; renderDash(); });
+  $("roundName").addEventListener("input", e=>{ team.roundName=e.target.value; });
+  $("saveSnap").addEventListener("click", ()=>{
+    if (!team.people.length){ flash("st","Encara no hi ha cap SELFIE per desar."); return; }
+    const data = snapshotOf(team.people, team.roundName, team.plantilla);
+    const b = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(b);
+    a.download = `${(team.roundName||"ronda").replace(/[^\p{L}\p{N}]+/gu,"-").toLowerCase()}-${data.date}.selfie-equip.json`; a.click(); URL.revokeObjectURL(a.href);
+    flash("st","Instantània desada. Guarda-la: és la ronda que compararàs més endavant.");
+  });
   $("minN").addEventListener("input", e=>{ team.minN=Math.max(2,+e.target.value||5); renderDash(); });
   const drop = $("drop");
   ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
@@ -572,8 +613,11 @@ function addFromText(txt){
 async function loadFiles(files){
   let added=0, bad=0;
   for (const f of files){
-    try{ const d = JSON.parse(await f.text()); const p = parseCode(d.code||""); if(!p){bad++;continue;} if(addPerson({...p, alias:d.alias||null})) added++; }
-    catch(_){ bad++; }
+    try{
+      const d = JSON.parse(await f.text());
+      if (d.format==="selfie-equip-1"){ peopleFromSnapshot(d).forEach(p=>{ if(addPerson(p)) added++; }); if(d.plantilla && !team.plantilla) team.plantilla=d.plantilla; if(d.name && !team.roundName) team.roundName=d.name; continue; }
+      const p = parseCode(d.code||""); if(!p){bad++;continue;} if(addPerson({...p, alias:d.alias||null})) added++;
+    } catch(_){ bad++; }
   }
   renderTeam(); flash("st", `${added} fitxer(s) afegit(s)${bad?` · ${bad} no vàlid(s)`:""}.`);
 }
@@ -726,11 +770,169 @@ function renderDash(){
   $("printDash").addEventListener("click", ()=>window.print());
 }
 
+/* ------------------------------ EVOLUCIÓ ------------------------------ */
+const evo = { A:{label:"", people:[], plantilla:0}, B:{label:"", people:[], plantilla:0} };
+const SLOT_TXT = { A:"Ronda anterior", B:"Ronda actual" };
+
+function renderEvo(){
+  app.innerHTML = `
+  <div class="card noprint">
+    <h1 style="font-size:1.3rem">Evolució de l'equip</h1>
+    <p class="muted small" style="margin:0 0 12px">Compara dues rondes del SELFIE: la d'inici de curs i la d'ara, per exemple. Cada ronda pot venir d'una instantània desada al quadre d'equip o d'un text amb codis. La comparació és d'equip (distribucions i mitjanes), mai de persones.</p>
+    <div class="grid2">${["A","B"].map(k=>`
+      <div class="slot" id="slot${k}">
+        <h3>${SLOT_TXT[k]} · <span class="cnt">${evo[k].people.length} SELFIES</span>${evo[k].label?` · ${esc(evo[k].label)}`:""}</h3>
+        <label class="fld">Etiqueta<input type="text" id="lab${k}" value="${esc(evo[k].label)}" placeholder="${k==="A"?"Ex.: Octubre 2026":"Ex.: Juny 2027"}"></label>
+        <textarea class="paste" id="paste${k}" style="min-height:70px;margin-top:8px" placeholder="Enganxa aquí codis SELFIE o deixa anar una instantània .selfie-equip.json"></textarea>
+        <div class="row" style="margin-top:6px">
+          <button class="btn light" data-add="${k}">Afegeix</button>
+          <button class="btn ghost" data-file="${k}">Obre una instantània</button>
+          ${k==="B" && team.people.length?`<button class="btn ghost" id="takeTeam">Pren l'equip del quadre (${team.people.length})</button>`:""}
+          <button class="btn ghost" data-clear="${k}">Buida</button>
+          <input type="file" id="file${k}" hidden accept=".json,application/json" multiple>
+        </div>
+      </div>`).join("")}</div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost" id="evoDemo">Carrega dues rondes de mostra</button><span class="status" id="st"></span></div>
+  </div>
+  <div id="evoDash"></div>`;
+  ["A","B"].forEach(k=>{
+    $("lab"+k).addEventListener("input", e=>{ evo[k].label=e.target.value; });
+    app.querySelector(`[data-add="${k}"]`).addEventListener("click", ()=>{ addEvoText(k, $("paste"+k).value); });
+    app.querySelector(`[data-file="${k}"]`).addEventListener("click", ()=>$("file"+k).click());
+    $("file"+k).addEventListener("change", e=>{ loadEvoFiles(k,[...e.target.files]); e.target.value=""; });
+    app.querySelector(`[data-clear="${k}"]`).addEventListener("click", ()=>{ evo[k]={label:"",people:[],plantilla:0}; renderEvo(); });
+    const sl=$("slot"+k);
+    ["dragenter","dragover"].forEach(ev=>sl.addEventListener(ev,e=>{e.preventDefault();sl.style.background="#e3f0f2";}));
+    ["dragleave","drop"].forEach(ev=>sl.addEventListener(ev,e=>{e.preventDefault();sl.style.background="";}));
+    sl.addEventListener("drop", e=>loadEvoFiles(k,[...e.dataTransfer.files]));
+  });
+  const tk=$("takeTeam"); if(tk) tk.addEventListener("click", ()=>{ evo.B.people=[...team.people]; evo.B.plantilla=team.plantilla; evo.B.label=evo.B.label||team.roundName; renderEvo(); });
+  $("evoDemo").addEventListener("click", loadEvoDemo);
+  renderEvoDash();
+}
+function addEvoText(k, txt){
+  let added=0;
+  for (const m of String(txt).toUpperCase().matchAll(CODE_RE)){ const p=parseCode(m[0]); if(p && !evo[k].people.some(q=>q.code===p.code)){ evo[k].people.push({...p,alias:null}); added++; } }
+  renderEvo(); flash("st", added?`${added} SELFIE(s) afegit(s) a «${SLOT_TXT[k]}».`:"No s'ha trobat cap codi SELFIE al text.");
+}
+async function loadEvoFiles(k, files){
+  let added=0;
+  for (const f of files){ try{ const d=JSON.parse(await f.text());
+    if (d.format==="selfie-equip-1"){ peopleFromSnapshot(d).forEach(p=>{ if(!evo[k].people.some(q=>q.code===p.code)){evo[k].people.push(p);added++;} }); if(d.plantilla) evo[k].plantilla=d.plantilla; if(d.name && !evo[k].label) evo[k].label=d.name; }
+    else { const p=parseCode(d.code||""); if(p && !evo[k].people.some(q=>q.code===p.code)){ evo[k].people.push({...p,alias:null}); added++; } }
+  }catch(_){} }
+  renderEvo(); flash("st", `${added} SELFIE(s) afegit(s) a «${SLOT_TXT[k]}».`);
+}
+function loadEvoDemo(){
+  /* ronda A = equip de mostra; ronda B = el mateix equip uns mesos després, amb millores desiguals (determinista) */
+  const seeds = ["BCBBC-CBBAB-CBBCBA-BCBB-PRI","ABAAB-BBABA-BBABAA-ABAB-PRI","CDCCD-CCBCB-CCCDCC-CCDC-ESO","BBBAB-BAABB-BBBBBB-BBBB-INF","CCCBC-CCBBC-DCCCCD-CBCC-ESO","ABAAA-BAAAA-AAABAA-AABA-INF","BCBAC-BBABB-CBBCBB-BCBB-ESO","DDCDD-DCCCC-DDCDDD-DDDD-BAT","BBCAB-CBBAB-BBBCBB-BBCB-PRI","AAAAB-AAAAA-BAAAAA-AAAA-PRI","CBCBC-CBBBB-CBCCBC-CBBC-BAT","BBBBB-BBBBB-CBBBBB-BBBB-ESO","CCDCC-CCCBC-CCCCCC-DCCD-ESO","BABAB-ABAAB-BABABA-BABA-INF","CBBAB-BBABB-BBBBBB-BBBB-PRI","BCCBC-CBBBB-CCBCCB-CCBC-BAT","AABAA-BAAAA-ABAAAA-ABAA-ESO","BBBBC-BBABB-CBBBBB-BCBB-PRI","CCCBB-CBBBB-CCBCBC-CCBB-ESO","BBBAB-BBAAB-BBBBBB-BBBB-INF","DCCCD-CCBBC-CCDCCC-DCCC-ESO","BCBBB-BBABB-BBBCBB-BCBB-PRI","ABBAA-BAAAB-BBAAAA-ABAB-CF","CBBBC-CBBBB-CBBCBB-BCBB-CF"];
+  const A=[], B=[];
+  seeds.forEach((s,i)=>{
+    const pa = parseCode(`SF1-${s}-${(i+10).toString(36).toUpperCase().padStart(2,"0")}`); if(!pa) return; A.push({...pa,alias:null});
+    /* millora: les situacions 2,3,4,5,7,20 pugen un nivell en 2 de cada 3 docents; la 9 i la 13 baixen en algun cas (per veure retrocessos) */
+    const ans = pa.ans.slice();
+    [1,2,3,4,6,19].forEach(j=>{ if ((i+j)%3!==0 && ans[j]<3) ans[j]++; });
+    if (i%7===0 && ans[8]>0) ans[8]--;
+    if (i%2===0 && ans[12]<3) ans[12]++;
+    const pb = parseCode(makeCode(ans, pa.etapa, (i+40).toString(36).toUpperCase().padStart(2,"0"))); if(pb) B.push({...pb,alias:null});
+  });
+  evo.A={label:"Octubre 2026",people:A,plantilla:30}; evo.B={label:"Juny 2027",people:B,plantilla:30};
+  renderEvo(); flash("st","Dues rondes de mostra carregades (24 docents fictícies).");
+}
+const dsym = v => v>0.04?"▲":v<-0.04?"▼":"=";
+const dcls = v => v>0.04?"up":v<-0.04?"down":"flat";
+const sgn = (v,dec=2) => (v>0?"+":"")+ (Math.round(v*10**dec)/10**dec).toFixed(dec);
+
+function renderEvoDash(){
+  const box=$("evoDash"); if(!box) return;
+  const A=evo.A.people, B=evo.B.people;
+  if (!A.length || !B.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">Carrega les dues rondes per veure l'evolució.</div>`; return; }
+  const SA=stats(A), SB=stats(B);
+  const la=evo.A.label||"Ronda anterior", lb=evo.B.label||"Ronda actual";
+  const dIdx=SB.index-SA.index;
+  const riskA=pct(SA.risk,SA.n), riskB=pct(SB.risk,SB.n);
+  const talA=A.filter(p=>p.ans.some(v=>v===3)).length, talB=B.filter(p=>p.ans.some(v=>v===3)).length;
+  const stA=SA.stage.map(c=>pct(c,SA.n)), stB=SB.stage.map(c=>pct(c,SB.n));
+  const dDim=DIMS.map((d,k)=>SB.dim[k].m-SA.dim[k].m);
+  const dItem=ITEMS.map((_,i)=>SB.item[i].m-SA.item[i].m);
+  const maxAbs=Math.max(0.5,...dDim.map(Math.abs));
+  const moves=dItem.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
+  const ups=moves.filter(m=>m.v>0.04).slice(0,3), downs=moves.filter(m=>m.v<-0.04).sort((a,b)=>a.v-b.v).slice(0,3);
+  /* pla de la ronda anterior contrastat amb l'actual */
+  const PLA=pla(SA).map(p=>{ const target=LEVELS.indexOf(p.to); const now=SB.item[p.i].m; const st= now>=target?"a": now>p.m+0.04?"p":"n"; return {...p, now, st}; });
+  /* lectura automàtica */
+  const R=[];
+  R.push({c:dcls(dIdx/10), t:`L'índex SELFIE d'equip ha passat de ${SA.index} a ${SB.index} (${sgn(dIdx,0)} punts) entre «${la}» i «${lb}»${SA.n!==SB.n?`, amb ${SA.n} i ${SB.n} SELFIES respectivament`:""}.`});
+  const kBest=dDim.indexOf(Math.max(...dDim)), kWorst=dDim.indexOf(Math.min(...dDim));
+  R.push({c:"ok", t:`La dimensió que més ha crescut és «${DIMS[kBest].nom}» (${sgn(dDim[kBest])}); la que menys, «${DIMS[kWorst].nom}» (${sgn(dDim[kWorst])}).`});
+  if (stA[0]!==stB[0]) R.push({c:dcls(stA[0]-stB[0]), t:`La proporció de docents en etapa inicial ha passat del ${stA[0]}% al ${stB[0]}%; en avançada, del ${stA[3]}% al ${stB[3]}%.`});
+  R.push({c:dcls(riskA-riskB), t:`Seguretat i dades: del ${riskA}% al ${riskB}% de docents en nivell inicial en alguna de les situacions 3, 4, 5 o 10.`});
+  R.push({c:dcls(SA.coh-SB.coh), t:`Cohesió: dispersió mitjana de ${fmt(SA.coh)} a ${fmt(SB.coh)} — l'equip ${SB.coh<SA.coh-0.04?"s'ha fet més homogeni":SB.coh>SA.coh+0.04?"s'ha polaritzat":"manté la mateixa cohesió"}.`});
+  if (downs.length) R.push({c:"bad", t:`Retrocessos a vigilar: ${downs.map(m=>`${m.i+1}. ${ITEMS[m.i].k} (${sgn(m.v)})`).join(", ")}.`});
+  const ass=PLA.filter(p=>p.st==="a").length; R.push({c:ass===PLA.length?"ok":ass?"":"bad", t:`Pla de millora de «${la}»: ${ass} de ${PLA.length} prioritats assolides, ${PLA.filter(p=>p.st==="p").length} en progrés, ${PLA.filter(p=>p.st==="n").length} pendents.`});
+
+  box.innerHTML=`
+  <div class="kpis sec">
+    <div class="kpi ${dcls(dIdx)}"><div class="t">Índex d'equip</div><div class="v">${SB.index} <span class="delta ${dcls(dIdx)}" style="font-size:1rem">${dsym(dIdx)} ${sgn(dIdx,0)}</span></div><div class="s">abans ${SA.index} · etapa ${lvName(mean(SB.overall))}</div></div>
+    <div class="kpi ${dcls(stA[0]-stB[0])}"><div class="t">En etapa inicial</div><div class="v">${stB[0]}% <span class="delta ${dcls(stA[0]-stB[0])}" style="font-size:1rem">${dsym(stA[0]-stB[0])} ${sgn(stB[0]-stA[0],0)} pp</span></div><div class="s">abans ${stA[0]}%</div></div>
+    <div class="kpi ${dcls(stB[3]-stA[3])}"><div class="t">En etapa avançada</div><div class="v">${stB[3]}% <span class="delta ${dcls(stB[3]-stA[3])}" style="font-size:1rem">${dsym(stB[3]-stA[3])} ${sgn(stB[3]-stA[3],0)} pp</span></div><div class="s">abans ${stA[3]}%</div></div>
+    <div class="kpi ${dcls(riskA-riskB)}"><div class="t">Seguretat i dades</div><div class="v">${riskB}% <span class="delta ${dcls(riskA-riskB)}" style="font-size:1rem">${dsym(riskA-riskB)} ${sgn(riskB-riskA,0)} pp</span></div><div class="s">abans ${riskA}% en nivell inicial</div></div>
+    <div class="kpi ${dcls(SA.coh-SB.coh)}"><div class="t">Cohesió</div><div class="v" style="font-size:1.15rem">${SB.coh<0.5?"Homogeni":SB.coh<0.85?"Divers":"Polaritzat"}</div><div class="s">dispersió ${fmt(SA.coh)} → ${fmt(SB.coh)}</div></div>
+    <div class="kpi ${dcls(talB-talA)}"><div class="t">Talent intern</div><div class="v">${talB} <span class="delta ${dcls(talB-talA)}" style="font-size:1rem">${dsym(talB-talA)} ${sgn(talB-talA,0)}</span></div><div class="s">docents amb alguna pràctica avançada</div></div>
+  </div>
+
+  <div class="card sec">
+    <h2>Lectura automàtica</h2>
+    <div class="read">${R.map(r=>`<div class="${r.c==="up"?"ok":r.c==="down"?"bad":r.c}">${esc(r.t)}</div>`).join("")}</div>
+  </div>
+
+  <div class="card sec">
+    <div class="grid2">
+      <div>
+        <h2>Radar · ${esc(la)} vs ${esc(lb)}</h2>
+        <div class="radar-wrap">${radar20([{values:SA.item.map(x=>x.m),color:"#8ea6ab",dashed:true},{values:SB.item.map(x=>x.m),color:"#0e7c8a",bold:true}])}</div>
+        <div class="legend"><span><i style="background:#8ea6ab"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span></div>
+      </div>
+      <div>
+        <h2>Variació per dimensió</h2>
+        <div class="dbars">${DIMS.map((d,k)=>{const v=dDim[k]; const w=Math.abs(v)/maxAbs*50; const left=v>=0?50:50-w; return `<div class="dbar" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="ax"><s></s><i style="left:${left}%;width:${w}%"></i></span><span class="delta ${dcls(v)}">${dsym(v)} ${sgn(v)}</span></div>`;}).join("")}</div>
+        <h2 style="margin-top:16px">Distribució per etapes</h2>
+        <div class="twostack">
+          <span class="muted">${esc(la)}</span><div class="stack">${stA.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]}">${p}%</div>`:"").join("")}</div>
+          <span class="muted">${esc(lb)}</span><div class="stack">${stB.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]}">${p}%</div>`:"").join("")}</div>
+        </div>
+        <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l}</span>`).join("")}</div>
+        <div class="grid2" style="margin-top:14px">
+          <div><h2>Més han pujat</h2><div class="plist">${ups.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m up">${sgn(m.v)}</span></div>`).join("")||'<span class="note">Cap pujada rellevant.</span>'}</div></div>
+          <div><h2>Han baixat</h2><div class="plist">${downs.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m down">${sgn(m.v)}</span></div>`).join("")||'<span class="note">Cap retrocés.</span>'}</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card sec">
+    <h2>Mapa de variació · 20 situacions</h2>
+    <table class="heat">
+      <thead><tr><th></th><th>Situació</th><th style="text-align:center">${esc(la)}</th><th style="text-align:center">${esc(lb)}</th><th style="text-align:center">Variació</th><th style="text-align:center">% inicial</th><th style="text-align:center">% avançada</th></tr></thead>
+      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="7">D${k+1} · ${esc(d.nom)} — ${fmt(SA.dim[k].m)} → ${fmt(SB.dim[k].m)} <span class="delta ${dcls(dDim[k])}">${dsym(dDim[k])} ${sgn(dDim[k])}</span></td></tr>`+d.items.map(i=>{const v=dItem[i]; return `<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td><td class="c">${fmt(SA.item[i].m)}</td><td class="c" style="font-weight:800">${fmt(SB.item[i].m)}</td><td class="c delta ${dcls(v)}" style="background:${v>0.04?`rgba(23,122,82,${Math.min(0.45,Math.abs(v)/2)})`:v<-0.04?`rgba(180,35,24,${Math.min(0.45,Math.abs(v)/2)})`:"transparent"}">${dsym(v)} ${sgn(v)}</td><td class="c">${SA.item[i].pA}% → ${SB.item[i].pA}%</td><td class="c">${SA.item[i].pD}% → ${SB.item[i].pD}%</td></tr>`;}).join("")).join("")}</tbody>
+    </table>
+  </div>
+
+  <div class="card sec">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Pla de millora de «${esc(la)}» · què se n'ha fet</h2><button class="btn ghost noprint" id="printEvo">Imprimeix l'evolució</button></div>
+    <div class="pla" style="margin-top:10px">${PLA.map((p,k)=>`<div style="--c:${p.d.c}"><span class="chipst ${p.st}">${p.st==="a"?"Assolit":p.st==="p"?"En progrés":"Pendent"}</span> <b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">objectiu: etapa ${p.to.toLowerCase()} · mitjana ${fmt(p.m)} → ${fmt(p.now)}</span></div>`).join("")}</div>
+    <p class="note" style="margin-top:8px">Les prioritats són les que el quadre d'equip hauria proposat amb les dades de la ronda anterior. «Assolit» vol dir que la mitjana de l'equip ha arribat a l'etapa objectiu; «en progrés», que ha pujat sense arribar-hi.</p>
+  </div>`;
+  $("printEvo").addEventListener("click", ()=>window.print());
+}
+
 /* arrencada */
 if (location.hash === "#equip" || location.hash === "#demo") route = "team";
+if (location.hash === "#evolucio" || location.hash === "#evolucio-demo") route = "evo";
 render();
 if (location.hash === "#demo") loadDemo();
-window.__selfie = { team, self, stats, dafo, pla, parseCode, makeCode, radar20 };   /* accés per a proves */
+if (location.hash === "#evolucio-demo") loadEvoDemo();
+window.__selfie = { team, self, evo, stats, dafo, pla, parseCode, makeCode, radar20, snapshotOf, peopleFromSnapshot, loadEvoDemo };   /* accés per a proves */
 </script>
 </body>
 </html>
