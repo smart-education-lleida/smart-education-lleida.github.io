@@ -9,12 +9,16 @@
 <style>
   :root{
     --ink:#12313b; --muted:#5b7078; --wash:#f4f7f8; --line:#dbe4e6; --white:#fff;
-    --d1:#0e7c8a; --d2:#7c5ca8; --d3:#4e9a54; --d4:#cf8f1f;
+    --d1:#0e7c8a; --d2:#7c5ca8; --d3:#2f7f3a; --d4:#b45309;
     --d1b:#e3f0f2; --d2b:#efe9f6; --d3b:#e8f3e9; --d4b:#fbf1dc;
-    --l0:#c9d4d7; --l1:#8fc3c9; --l2:#2f9aa8; --l3:#0a5b66;
-    --ok:#177a52; --warn:#b98005; --bad:#b42318;
+    --l0:#c9d4d7; --l1:#8fc3c9; --l2:#1f7f8c; --l3:#0a5b66;
+    --ok:#177a52; --warn:#9c6b00; --bad:#b42318;
   }
   *{box-sizing:border-box}
+  :focus-visible{outline:3px solid #12313b;outline-offset:2px;border-radius:6px}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  [tabindex="-1"]:focus{outline:none}
+  [tabindex="-1"]:focus-visible{outline:3px solid #12313b;outline-offset:4px}
   body{margin:0;background:var(--wash);color:var(--ink);line-height:1.45;
     font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
   button,input,textarea,select{font:inherit;color:inherit}
@@ -120,7 +124,7 @@
   .dq h3{margin:0 0 6px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
   .dq ul{margin:0;padding-left:18px;font-size:.84rem}
   .dq li{margin-bottom:5px}
-  .dq li small{display:block;color:#8ea6ab;font-size:.68rem}
+  .dq li small{display:block;color:#5b7078;font-size:.68rem}
   .dq.f{border-top:5px solid var(--ok)} .dq.d{border-top:5px solid var(--bad)} .dq.o{border-top:5px solid var(--d1)} .dq.a{border-top:5px solid var(--warn)}
   .dq.f h3{color:var(--ok)} .dq.d h3{color:var(--bad)} .dq.o h3{color:var(--d1)} .dq.a h3{color:var(--warn)}
   .toggles{display:flex;flex-wrap:wrap;gap:12px;font-size:.82rem}
@@ -154,7 +158,7 @@
   .read div.bad{border-color:var(--bad);background:#fdf1ef}
   .read div.ok{border-color:var(--ok);background:#effaf4}
   .chipst{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;color:#fff}
-  .chipst.a{background:var(--ok)} .chipst.p{background:var(--warn)} .chipst.n{background:#8ea6ab}
+  .chipst.a{background:var(--ok)} .chipst.p{background:var(--warn)} .chipst.n{background:#5b7078}
   .sp{cursor:help}
   .tip{position:fixed;z-index:50;pointer-events:none;background:#12313b;color:#fff;font-size:.78rem;font-weight:700;
     padding:6px 10px;border-radius:9px;border-left:4px solid var(--c,#0e7c8a);box-shadow:0 8px 20px rgba(14,60,70,.25);
@@ -183,10 +187,10 @@
       <button type="button" id="navEvo">Evolució</button>
       <button type="button" id="navNet">Xarxa</button>
     </nav>
-    <div class="langs noprint" role="group" aria-label="Idioma · Idioma · Language">
-      <button type="button" data-lang="ca" class="on" lang="ca" title="Català">CA</button>
-      <button type="button" data-lang="es" lang="es" title="Castellano">ES</button>
-      <button type="button" data-lang="en" lang="en" title="English">EN</button>
+    <div class="langs noprint" role="group" aria-label="Idioma">
+      <button type="button" data-lang="ca" class="on" lang="ca" title="Català" aria-label="Català">CA</button>
+      <button type="button" data-lang="es" lang="es" title="Castellano" aria-label="Castellano">ES</button>
+      <button type="button" data-lang="en" lang="en" title="English" aria-label="English">EN</button>
     </div>
   </header>
   <main id="app"></main>
@@ -206,11 +210,12 @@
 const DIMS = [
   {id:"d1", nom:"Comprensió i ús segur de la IA", curt:"Ús segur", c:"var(--d1)", bg:"var(--d1b)", hex:"#0e7c8a", items:[0,1,2,3,4]},
   {id:"d2", nom:"Ètica i visió humanista de la IA", curt:"Ètica", c:"var(--d2)", bg:"var(--d2b)", hex:"#7c5ca8", items:[5,6,7,8,9]},
-  {id:"d3", nom:"Pedagogia amb IA", curt:"Pedagogia", c:"var(--d3)", bg:"var(--d3b)", hex:"#4e9a54", items:[10,11,12,13,14,15]},
-  {id:"d4", nom:"Desenvolupament professional i contribució al centre", curt:"Desenv. prof.", c:"var(--d4)", bg:"var(--d4b)", hex:"#cf8f1f", items:[16,17,18,19]}
+  {id:"d3", nom:"Pedagogia amb IA", curt:"Pedagogia", c:"var(--d3)", bg:"var(--d3b)", hex:"#2f7f3a", items:[10,11,12,13,14,15]},
+  {id:"d4", nom:"Desenvolupament professional i contribució al centre", curt:"Desenv. prof.", c:"var(--d4)", bg:"var(--d4b)", hex:"#b45309", items:[16,17,18,19]}
 ];
 const LEVELS = ["Inicial","Bàsica","Intermèdia","Avançada"];
-const LHEX = ["#c9d4d7","#8fc3c9","#2f9aa8","#0a5b66"];
+const LHEX = ["#c9d4d7","#8fc3c9","#1f7f8c","#0a5b66"];
+const LTXT = ["#12313b","#12313b","#fff","#fff"];   /* color de text llegible sobre cada nivell (contrast ≥ 4,5:1) */
 const ITEMS = [
  {t:"Comprensió de capacitats i limitacions", k:"Capacitats i límits", s:"En una conversa de treball has de decidir si una eina d'IA pot ajudar a resoldre una necessitat docent concreta.", o:[
   "Encara no utilitzo eines d'IA ni conec els conceptes tècnics bàsics sobre el seu funcionament.",
@@ -550,7 +555,7 @@ ca:{
  brandSub:"Autoavaluació individual i quadre de comandament d'equip · Marc FECC",
  nav:{self:"El meu SELFIE", team:"Equip", evo:"Evolució", net:"Xarxa"},
  footer:`Instrument: <b>Autoavaluació de la Competència Digital Docent en IA</b> (Grup d'Experts en l'Àmbit Digital de la FECC), alineat amb <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, desembre 2025).<br>Tot es calcula al teu navegador: no es desa ni s'envia cap dada. Les respostes només viatgen en el codi SELFIE que tu decideixes compartir.`,
- radarAria:"Radar de 20 situacions en 4 dimensions",
+ radarAria:"Radar de 20 situacions en 4 dimensions", radarDesc:"Valors per situació", progressAria:"Progrés del qüestionari", navAria:"Seccions", langAria:"Idioma",
  h1:`Com et situes avui amb la IA <em>a la teva docència</em>?`,
  intro:"Vint situacions reals, quatre maneres de respondre-hi. Tries la que més s'assembla al que fas. Uns sis minuts, cap dada personal, i al final el teu radar i els teus propers passos.",
  start:"Comença el SELFIE", meta:"20 situacions · ~6 min",
@@ -682,7 +687,7 @@ es:{
  brandSub:"Autoevaluación individual y cuadro de mando de equipo · Marco FECC",
  nav:{self:"Mi SELFIE", team:"Equipo", evo:"Evolución", net:"Red"},
  footer:`Instrumento: <b>Autoevaluación de la Competencia Digital Docente en IA</b> (Grupo de Expertos en el Ámbito Digital de la FECC), alineado con <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, diciembre de 2025). Traducción de trabajo; el original es el catalán.<br>Todo se calcula en tu navegador: no se guarda ni se envía ningún dato. Las respuestas solo viajan en el código SELFIE que tú decides compartir.`,
- radarAria:"Radar de 20 situaciones en 4 dimensiones",
+ radarAria:"Radar de 20 situaciones en 4 dimensiones", radarDesc:"Valores por situación", progressAria:"Progreso del cuestionario", navAria:"Secciones", langAria:"Idioma",
  h1:`¿Cómo te sitúas hoy con la IA <em>en tu docencia</em>?`,
  intro:"Veinte situaciones reales, cuatro maneras de responder. Eliges la que más se parece a lo que haces. Unos seis minutos, ningún dato personal, y al final tu radar y tus próximos pasos.",
  start:"Empieza el SELFIE", meta:"20 situaciones · ~6 min",
@@ -814,7 +819,7 @@ en:{
  brandSub:"Individual self-assessment and team dashboard · FECC Framework",
  nav:{self:"My SELFIE", team:"Team", evo:"Progress", net:"Network"},
  footer:`Instrument: <b>Self-assessment of Teachers' Digital Competence in AI</b> (FECC Digital Expert Group), aligned with <i>Competència digital docent en intel·ligència artificial</i> (Catalan Department of Education and VET, December 2025). Working translation; the Catalan text is the original.<br>Everything is computed in your browser: no data is stored or sent. Your answers only travel in the SELFIE code you decide to share.`,
- radarAria:"Radar of 20 situations in 4 dimensions",
+ radarAria:"Radar of 20 situations in 4 dimensions", radarDesc:"Values per situation", progressAria:"Questionnaire progress", navAria:"Sections", langAria:"Language",
  h1:`Where do you stand today with AI <em>in your teaching</em>?`,
  intro:"Twenty real situations, four ways to respond. You pick the one closest to what you do. About six minutes, no personal data, and at the end your radar and your next steps.",
  start:"Start the SELFIE", meta:"20 situations · ~6 min",
@@ -964,6 +969,8 @@ function setLang(lang){
   document.getElementById("navEvo").textContent = t.nav.evo;
   document.getElementById("navNet").textContent = t.nav.net;
   document.getElementById("foot").innerHTML = t.footer;
+  document.querySelector("header nav").setAttribute("aria-label", t.navAria);
+  document.querySelector(".langs").setAttribute("aria-label", t.langAria);
   document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
 }
 /* =====================================================================
@@ -1022,10 +1029,14 @@ function codeLooksTypo(s){ const m = /SF2-([0-9A-HJKMNP-TV-Z]{5})-([0-9A-HJKMNP-
 const RG = { S:520, c:260, R:190, n:20,
   ang: i => -Math.PI/2 + (2*Math.PI*(i+0.5))/20,                /* radi i centrat al seu sector */
   pt: (i,v,r=190) => [260 + r*(v/3)*Math.cos(RG.ang(i)), 260 + r*(v/3)*Math.sin(RG.ang(i))] };
+let RID = 0;
 function radar20(series, opts={}){
   const S = RG.S, c = RG.c, R = RG.R, n = RG.n, lab = opts.labels !== false;
   const ang = RG.ang, pt = RG.pt;
-  let s = `<svg viewBox="0 0 ${S} ${S}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(T().radarAria)}">`;
+  const main = series[series.length-1];
+  const descVals = main ? main.values.map((v,i)=>`${i+1} ${ITEMS[i].k}: ${Number.isInteger(v)?LEVELS[Math.min(3,Math.max(0,v))]:fmt(v)}`).join("; ") : "";
+  let s = `<svg viewBox="0 0 ${S} ${S}" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rt${RID}" aria-describedby="rd${RID}"><title id="rt${RID}">${esc(T().radarAria)}</title><desc id="rd${RID}">${esc(T().radarDesc)}: ${esc(descVals)}.</desc>`;
+  RID++;
   /* sectors de dimensió */
   DIMS.forEach(d=>{
     const a0 = -Math.PI/2 + (2*Math.PI*d.items[0])/n, a1 = -Math.PI/2 + (2*Math.PI*(d.items[d.items.length-1]+1))/n;
@@ -1042,7 +1053,7 @@ function radar20(series, opts={}){
   for (let lv=1; lv<=3; lv++){
     const r = R*lv/3;
     s += `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#c8d6d9" stroke-width="${lv===3?1.6:1}" ${lv<3?'stroke-dasharray="3 4"':''}/>`;
-    s += `<text x="${c+3}" y="${c-r-3}" font-size="9" fill="#7d9298" paint-order="stroke" stroke="#fff" stroke-width="3">${LEVELS[lv]}</text>`;
+    s += `<text x="${c+3}" y="${c-r-3}" font-size="9" fill="#5b7078" paint-order="stroke" stroke="#fff" stroke-width="3">${LEVELS[lv]}</text>`;
   }
   /* radis + números */
   for (let i=0;i<n;i++){
@@ -1065,7 +1076,7 @@ function radar20(series, opts={}){
    ===================================================================== */
 const app = $("app");
 let route = "self";
-function go(r){ route = r; render(); window.scrollTo(0,0); }
+function go(r){ route = r; render(); window.scrollTo(0,0); const h = app.querySelector("h1"); if (h){ h.setAttribute("tabindex","-1"); focusEl(h.id || (h.id = "secH")); } }
 $("navSelf").addEventListener("click", ()=>go("self"));
 $("navTeam").addEventListener("click", ()=>go("team"));
 $("navEvo").addEventListener("click", ()=>go("evo"));
@@ -1098,7 +1109,7 @@ function renderLanding(){
       <div class="row" style="margin-bottom:14px"><button class="btn" id="start">${t.start}</button><span class="small muted">${t.meta}</span></div>
       <div class="priv">${t.priv}</div>
       <div class="code-in noprint"><input type="text" id="codeIn" placeholder="${esc(t.codePh)}"><button class="btn light" id="codeGo">${t.open}</button></div>
-      <div class="status" id="st"></div>
+      <div class="status" id="st" role="status" aria-live="polite"></div>
     </div>
     <div>
       <h2>${t.fourDims}</h2>
@@ -1119,12 +1130,12 @@ function renderQuiz(){
   const i = self.step, it = ITEMS[i], d = dimOf(i);
   app.innerHTML = `
   <div class="card quiz" style="--c:${d.c};--bg:${d.bg}">
-    <div class="prog"><span class="chip">D${DIMS.indexOf(d)+1} · ${esc(d.curt)}</span><div class="bar"><i style="width:${(i/20)*100}%"></i></div><span>${i+1} / 20</span></div>
-    <div class="qt">${i+1}. ${esc(it.t)}</div>
+    <div class="prog"><span class="chip">D${DIMS.indexOf(d)+1} · ${esc(d.curt)}</span><div class="bar" role="progressbar" aria-label="${esc(t.progressAria)}" aria-valuemin="0" aria-valuemax="20" aria-valuenow="${i}"><i style="width:${(i/20)*100}%"></i></div><span aria-hidden="true">${i+1} / 20</span></div>
+    <div class="qt" id="qt" tabindex="-1">${i+1}. ${esc(it.t)}</div>
     <p class="sit">${esc(it.s)}</p>
     <div class="opts">${it.o.map((o,k)=>`
-      <button type="button" class="opt ${self.ans[i]===k?'sel':''}" data-k="${k}" style="--lv:${LHEX[k]}">
-        <span class="k">${L[k]}</span><span><small>${LEVELS[k]}</small>${esc(o)}</span>
+      <button type="button" class="opt ${self.ans[i]===k?'sel':''}" data-k="${k}" style="--lv:${LHEX[k]}" aria-pressed="${self.ans[i]===k}">
+        <span class="k" style="color:${LTXT[k]}" aria-hidden="true">${L[k]}</span><span><small>${LEVELS[k]}</small>${esc(o)}</span>
       </button>`).join("")}</div>
     <div class="navq noprint">
       <button class="btn ghost" id="prev" ${i===0?'disabled':''}>${t.prev}</button>
@@ -1135,10 +1146,13 @@ function renderQuiz(){
   app.querySelectorAll(".opt").forEach(b=>b.addEventListener("click", ()=>{ choose(+b.dataset.k); }));
   $("prev").addEventListener("click", ()=>{ self.step--; renderQuiz(); });
   $("next").addEventListener("click", ()=>advance());
+  focusEl("qt");
 }
+/* Accessibilitat: en canviar de pantalla, el focus del teclat va al títol nou (lectors de pantalla i navegació sense ratolí) */
+function focusEl(id){ const el=$(id); if (el){ try{ el.focus({preventScroll:true}); }catch(_){ el.focus(); } } }
 function choose(k){
   self.ans[self.step] = k;
-  app.querySelectorAll(".opt").forEach(b=>b.classList.toggle("sel", +b.dataset.k===k));
+  app.querySelectorAll(".opt").forEach(b=>{ b.classList.toggle("sel", +b.dataset.k===k); b.setAttribute("aria-pressed", String(+b.dataset.k===k)); });
   $("next").disabled = false;
   setTimeout(advance, 260);
 }
@@ -1170,7 +1184,7 @@ function renderResult(){
   app.innerHTML = `
   <div class="card">
     <div class="row" style="justify-content:space-between;margin-bottom:10px">
-      <h1 style="margin:0">${t.yourSelfie} <em>${esc(lvName(overall))}</em> <span class="muted" style="font-size:.9rem;font-weight:600">(${t.of3(fmt(overall))})</span></h1>
+      <h1 style="margin:0" id="resH" tabindex="-1">${t.yourSelfie} <em>${esc(lvName(overall))}</em> <span class="muted" style="font-size:.9rem;font-weight:600">(${t.of3(fmt(overall))})</span></h1>
       <span class="small muted">${today()}</span>
     </div>
     <div class="res">
@@ -1210,7 +1224,7 @@ function renderResult(){
           <button class="btn ghost" id="print">${t.print}</button>
           <button class="btn ghost" id="redo">${t.redo}</button>
         </div>
-        <div class="status" id="st"></div>
+        <div class="status" id="st" role="status" aria-live="polite"></div>
         <p class="note">${t.fileNote}</p>
       </div>
     </div>
@@ -1228,6 +1242,7 @@ function renderResult(){
   $("dlBadge").addEventListener("click", ()=>drawBadge(ans, ds, overall, makeCode(ans, self.etapa, self.id)));
   $("print").addEventListener("click", ()=>window.print());
   $("redo").addEventListener("click", ()=>{ self.phase="landing"; self.id=null; renderSelf(); });
+  focusEl("resH");
 }
 /* Insígnia d'autoavaluació: declaració pròpia, no acreditació. Reutilitza el radar en SVG. */
 function drawBadge(ans, ds, overall, code){
@@ -1252,7 +1267,7 @@ function drawBadge(ans, ds, overall, code){
         x.fillStyle="#12313b"; x.font="700 16px "+FONT; x.fillText(lvName(ds[k]), 545, yy); yy+=34; });
       x.textAlign="center"; x.fillStyle="#12313b"; x.font="700 20px Consolas,Menlo,monospace"; x.fillText(code, W/2, yy+22);
       x.fillStyle="#5b7078"; x.font="500 14px "+FONT; x.fillText(t.badgeHint, W/2, yy+46);
-      x.fillStyle="#8ea6ab"; x.font="800 13px "+FONT; x.fillText(t.badgeFoot, W/2, H-26);
+      x.fillStyle="#5b7078"; x.font="800 13px "+FONT; x.fillText(t.badgeFoot, W/2, H-26);
       cv.toBlob(b=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`selfie-insignia-${self.id}.png`; a.click(); URL.revokeObjectURL(a.href); URL.revokeObjectURL(url); flash("st",T().badgeDl); });
     };
     img.src=url;
@@ -1287,7 +1302,7 @@ function renderTeam(){
         <h1 style="font-size:1.3rem">${t.teamH1}</h1>
         <p class="muted small" style="margin:0 0 8px">${t.teamIntro}</p>
         <textarea class="paste" id="paste" placeholder="SF2-K7QM3-9D2X-ESO-7KQ4&#10;SF2-…">${esc(team.pasted)}</textarea>
-        <div class="row" style="margin-top:8px"><button class="btn" id="addCodes">${t.addCodes}</button><button class="btn ghost" id="demo">${t.loadDemo}</button><button class="btn ghost" id="clear">${t.clear}</button><span class="status" id="st"></span></div>
+        <div class="row" style="margin-top:8px"><button class="btn" id="addCodes">${t.addCodes}</button><button class="btn ghost" id="demo">${t.loadDemo}</button><button class="btn ghost" id="clear">${t.clear}</button><span class="status" id="st" role="status" aria-live="polite"></span></div>
       </div>
       <div>
         <div class="drop" id="drop">${t.dropTeam}<input type="file" id="file" multiple accept=".json,application/json"></div>
@@ -1419,7 +1434,7 @@ function heatTable(S){
   const t = T();
   return `<table class="heat">
       <thead><tr><th></th><th>${t.thSituation}</th>${LEVELS.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:center">${t.thMean}</th><th style="text-align:center">${t.thAdv}</th></tr></thead>
-      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="8">D${k+1} · ${esc(d.nom)} — ${fmt(S.dim[k].m)}</td></tr>`+d.items.map(i=>`<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td>${S.item[i].dist.map((c,l)=>{const p=pct(c,S.n);return `<td class="c" style="background:rgba(14,124,138,${(p/100*0.55).toFixed(2)});color:${p>45?'#fff':'inherit'}">${p?p+"%":"·"}</td>`;}).join("")}<td class="m" style="color:${d.hex}">${fmt(S.item[i].m)}</td><td class="c">${S.item[i].dist[3]||"·"}</td></tr>`).join("")).join("")}</tbody>
+      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="8">D${k+1} · ${esc(d.nom)} — ${fmt(S.dim[k].m)}</td></tr>`+d.items.map(i=>`<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td>${S.item[i].dist.map((c,l)=>{const p=pct(c,S.n);return `<td class="c" style="background:rgba(14,124,138,${(p/100*0.55).toFixed(2)})">${p?p+"%":"·"}</td>`;}).join("")}<td class="m" style="color:${d.hex}">${fmt(S.item[i].m)}</td><td class="c">${S.item[i].dist[3]||"·"}</td></tr>`).join("")).join("")}</tbody>
     </table>`;
 }
 function renderDash(){
@@ -1435,7 +1450,7 @@ function renderDash(){
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN).sort();
   const hidden = Object.keys(S.segs).length - segKeys.length;
   const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:t.teamSeries(S.n)}];
-  if (team.bySeg) segKeys.forEach((k,i)=>series.push({values:ITEMS.map((_,j)=>mean(S.segs[k].map(p=>p.ans[j]))), color:["#7c5ca8","#4e9a54","#cf8f1f","#b42318","#2563eb","#db2777"][i%6], label:`${ETAPES[k]} (${S.segs[k].length})`}));
+  if (team.bySeg) segKeys.forEach((k,i)=>series.push({values:ITEMS.map((_,j)=>mean(S.segs[k].map(p=>p.ans[j]))), color:["#7c5ca8","#2f7f3a","#b45309","#b42318","#2563eb","#db2777"][i%6], label:`${ETAPES[k]} (${S.segs[k].length})`}));
   if (team.showInd) P.forEach(p=>series.unshift({values:p.ans, color:"#5b7078", bold:false}));
   const DF = dafo(S), PL = pla(S);
   const stageTotal = S.stage.reduce((a,b)=>a+b,0);
@@ -1465,7 +1480,7 @@ function renderDash(){
       </div>
       <div>
         <h2>${t.whereTeam}</h2>
-        <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
+        <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]};color:${LTXT[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l} (${S.stage[i]})</span>`).join("")}</div>
         <h2 style="margin-top:14px">${t.byDim}</h2>
         <div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="track"><i style="width:${S.dim[k].m/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span><span class="val">${fmt(S.dim[k].m)} <span class="muted small">±${fmt(S.dim[k].sd)}</span></span></div>`).join("")}</div>
@@ -1528,7 +1543,7 @@ function renderEvo(){
           <input type="file" id="file${k}" hidden accept=".json,application/json" multiple>
         </div>
       </div>`).join("")}</div>
-    <div class="row" style="margin-top:10px"><button class="btn ghost" id="evoDemo">${t.evoDemo}</button><span class="status" id="st"></span></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost" id="evoDemo">${t.evoDemo}</button><span class="status" id="st" role="status" aria-live="polite"></span></div>
   </div>
   <div id="evoDash"></div>`;
   ["A","B"].forEach(k=>{
@@ -1643,16 +1658,16 @@ function renderEvoDash(){
     <div class="grid2">
       <div>
         <h2>${t.radarVs(esc(la), esc(lb))}</h2>
-        <div class="radar-wrap" id="evoRadar">${radar20([{values:SA.item.map(x=>x.m),color:"#8ea6ab",dashed:true},{values:SB.item.map(x=>x.m),color:"#0e7c8a",bold:true}])}</div>
-        <div class="legend"><span><i style="background:#8ea6ab"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span><button type="button" class="helpLink noprint" id="replayEvo" style="margin:0 0 0 auto">${t.replay}</button></div>
+        <div class="radar-wrap" id="evoRadar">${radar20([{values:SA.item.map(x=>x.m),color:"#6f8a90",dashed:true},{values:SB.item.map(x=>x.m),color:"#0e7c8a",bold:true}])}</div>
+        <div class="legend"><span><i style="background:#6f8a90"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span><button type="button" class="helpLink noprint" id="replayEvo" style="margin:0 0 0 auto">${t.replay}</button></div>
       </div>
       <div>
         <h2>${t.varByDim}</h2>
         <div class="dbars">${DIMS.map((d,k)=>{const v=dDim[k]; const w=Math.abs(v)/maxAbs*50; const left=v>=0?50:50-w; return `<div class="dbar" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="ax"><s></s><i style="left:${left}%;width:${w}%"></i></span><span class="delta ${dcls(v)}">${dsym(v)} ${sgn(v)}</span></div>`;}).join("")}</div>
         <h2 style="margin-top:16px">${t.distStages}</h2>
         <div class="twostack">
-          <span class="muted">${esc(la)}</span><div class="stack">${stA.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]}">${p}%</div>`:"").join("")}</div>
-          <span class="muted">${esc(lb)}</span><div class="stack">${stB.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]}">${p}%</div>`:"").join("")}</div>
+          <span class="muted">${esc(la)}</span><div class="stack">${stA.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]};color:${LTXT[l]}">${p}%</div>`:"").join("")}</div>
+          <span class="muted">${esc(lb)}</span><div class="stack">${stB.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]};color:${LTXT[l]}">${p}%</div>`:"").join("")}</div>
         </div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l}</span>`).join("")}</div>
         <div class="grid2" style="margin-top:14px">
@@ -1697,7 +1712,7 @@ function renderNet(){
     <div class="grid2">
       <div class="drop" id="netDrop">${t.dropNet}<input type="file" id="netFile" multiple accept=".json,application/json"></div>
       <div>
-        <div class="row"><button class="btn ghost" id="netDemo">${t.netDemo}</button><button class="btn ghost" id="netClear">${t.clear}</button><span class="status" id="st"></span></div>
+        <div class="row"><button class="btn ghost" id="netDemo">${t.netDemo}</button><button class="btn ghost" id="netClear">${t.clear}</button><span class="status" id="st" role="status" aria-live="polite"></span></div>
         <div class="row" style="margin-top:10px">
           <label class="fld" style="flex:1">${t.netRoundLbl}<input type="text" id="netRound" value="${esc(net.roundName)}" placeholder="${esc(t.roundPh)}"></label>
           <label class="fld" style="width:150px">${t.netMinLbl}<input type="number" id="netMinN" min="2" value="${team.minN}"></label>
@@ -1778,7 +1793,7 @@ function renderNetDash(){
   const riskPct = pct(S.risk,S.n);
   const small = rows.filter(r=>r.s.people.length<team.minN).length;
   const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:t.netSeries(docents)}];
-  if (net.showCenters) rows.filter(r=>r.s.people.length>=team.minN).forEach(r=>series.unshift({values:r.st.item.map(x=>x.m), color:"#8ea6ab", bold:false}));
+  if (net.showCenters) rows.filter(r=>r.s.people.length>=team.minN).forEach(r=>series.unshift({values:r.st.item.map(x=>x.m), color:"#6f8a90", bold:false}));
   const stageTotal = S.stage.reduce((a,b)=>a+b,0);
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN).sort();
   box.innerHTML = `
@@ -1798,11 +1813,11 @@ function renderNetDash(){
         <h2>${t.netRadar}</h2>
         <div class="toggles noprint" style="margin-bottom:6px"><label><input type="checkbox" id="tCenters" ${net.showCenters?'checked':''}> ${t.overlay(team.minN)}</label></div>
         <div class="radar-wrap">${radar20(series)}</div>
-        <div class="legend"><span><i style="background:#0e7c8a"></i>${t.netSeries(docents)}</span>${net.showCenters?`<span><i style="background:#8ea6ab"></i>${t.eachCenter}</span>`:""}</div>
+        <div class="legend"><span><i style="background:#0e7c8a"></i>${t.netSeries(docents)}</span>${net.showCenters?`<span><i style="background:#6f8a90"></i>${t.eachCenter}</span>`:""}</div>
       </div>
       <div>
         <h2>${t.whereNet}</h2>
-        <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
+        <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]};color:${LTXT[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l} (${S.stage[i]})</span>`).join("")}</div>
         <h2 style="margin-top:14px">${t.byDim}</h2>
         <div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="track"><i style="width:${S.dim[k].m/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span><span class="val">${fmt(S.dim[k].m)} <span class="muted small">±${fmt(S.dim[k].sd)}</span></span></div>`).join("")}</div>
@@ -1817,7 +1832,7 @@ function renderNetDash(){
     <div class="row" style="justify-content:space-between"><h2 style="margin:0">${t.perCenter}</h2><button class="btn ghost noprint" id="printNet">${t.printNet}</button></div>
     <table class="heat" style="margin-top:8px">
       <thead><tr><th>${t.thCenter}</th><th>${t.thRound}</th><th style="text-align:center">n</th><th style="text-align:center">${t.thPart}</th><th style="text-align:center">${t.thIdx}</th><th style="text-align:center">${t.thStage}</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thRisk}</th></tr></thead>
-      <tbody>${rows.filter(r=>r.s.people.length>=team.minN).map((r,i)=>`<tr><td><b>${esc(r.s.center||t.centerN(i+1))}</b></td><td class="muted">${esc(r.s.name)}${r.s.date?` · ${r.s.date}`:""}</td><td class="c">${r.s.people.length}</td><td class="c">${r.part!==null?r.part+"%":"·"}</td><td class="m">${r.idx}</td><td class="c">${lvName(mean(r.st.overall))}</td>${DIMS.map((d,k)=>`<td class="c" style="background:rgba(14,124,138,${(r.st.dim[k].m/3*0.45).toFixed(2)});color:${r.st.dim[k].m>1.9?'#fff':'inherit'}">${fmt(r.st.dim[k].m)}</td>`).join("")}<td class="c ${r.risk>=40?'down':r.risk>=25?'':'up'}">${r.risk}%</td></tr>`).join("")}</tbody>
+      <tbody>${rows.filter(r=>r.s.people.length>=team.minN).map((r,i)=>`<tr><td><b>${esc(r.s.center||t.centerN(i+1))}</b></td><td class="muted">${esc(r.s.name)}${r.s.date?` · ${r.s.date}`:""}</td><td class="c">${r.s.people.length}</td><td class="c">${r.part!==null?r.part+"%":"·"}</td><td class="m">${r.idx}</td><td class="c">${lvName(mean(r.st.overall))}</td>${DIMS.map((d,k)=>`<td class="c" style="background:rgba(14,124,138,${(r.st.dim[k].m/3*0.45).toFixed(2)})">${fmt(r.st.dim[k].m)}</td>`).join("")}<td class="c ${r.risk>=40?'down':r.risk>=25?'':'up'}">${r.risk}%</td></tr>`).join("")}</tbody>
     </table>
     <p class="note">${small?t.smallNote(small, team.minN):""}${t.netReading}</p>
   </div>
