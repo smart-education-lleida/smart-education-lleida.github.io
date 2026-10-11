@@ -175,6 +175,7 @@
       <button type="button" id="navSelf">El meu SELFIE</button>
       <button type="button" id="navTeam">Equip</button>
       <button type="button" id="navEvo">Evolució</button>
+      <button type="button" id="navNet">Xarxa</button>
     </nav>
   </header>
   <main id="app"></main>
@@ -388,11 +389,13 @@ function go(r){ route = r; render(); window.scrollTo(0,0); }
 $("navSelf").addEventListener("click", ()=>go("self"));
 $("navTeam").addEventListener("click", ()=>go("team"));
 $("navEvo").addEventListener("click", ()=>go("evo"));
+$("navNet").addEventListener("click", ()=>go("net"));
 function render(){
   $("navSelf").classList.toggle("on", route==="self");
   $("navTeam").classList.toggle("on", route==="team");
   $("navEvo").classList.toggle("on", route==="evo");
-  if (route==="team") renderTeam(); else if (route==="evo") renderEvo(); else renderSelf();
+  $("navNet").classList.toggle("on", route==="net");
+  if (route==="team") renderTeam(); else if (route==="evo") renderEvo(); else if (route==="net") renderNet(); else renderSelf();
 }
 
 /* ---------------------------- INDIVIDUAL ---------------------------- */
@@ -552,9 +555,9 @@ function svgToPng(svg, name){
 }
 
 /* ------------------------------ EQUIP ------------------------------ */
-const team = { people:[], plantilla:0, minN:5, showInd:false, bySeg:false, pasted:"", roundName:"" };
-function snapshotOf(people, name, plantilla){
-  return { format:"selfie-equip-1", id: randId(8), name: name||"", date:new Date().toISOString().slice(0,10), plantilla: plantilla||0, n: people.length, codes: people.map(p=>p.code) };
+const team = { people:[], plantilla:0, minN:5, showInd:false, bySeg:false, pasted:"", roundName:"", center:"" };
+function snapshotOf(people, name, plantilla, center){
+  return { format:"selfie-equip-1", id: randId(8), name: name||"", center: center||"", date:new Date().toISOString().slice(0,10), plantilla: plantilla||0, n: people.length, codes: people.map(p=>p.code) };
 }
 function peopleFromSnapshot(d){
   const out=[]; (d.codes||[]).forEach(c=>{ const p=parseCode(c); if(p && !out.some(q=>q.code===p.code)) out.push({...p, alias:null}); }); return out;
@@ -578,6 +581,7 @@ function renderTeam(){
         </div>
         <div class="row" style="margin-top:10px">
           <label class="fld" style="flex:1">Nom de la ronda<input type="text" id="roundName" value="${esc(team.roundName)}" placeholder="Ex.: Octubre 2026"></label>
+          <label class="fld" style="flex:1">Centre (opcional, només per a la instantània)<input type="text" id="centerName" value="${esc(team.center)}" placeholder="Ex.: Escola Sant Jordi"></label>
           <button class="btn light" id="saveSnap" style="align-self:end">Desa la instantània</button>
         </div>
         <p class="note" style="margin-top:8px">Privacitat per disseny: cap nom ni correu; els perfils individuals només es mostren de manera anònima i els grups només si arriben a la mida mínima. La instantània és un fitxer anònim (codis i plantilla) que el mòdul <b>Evolució</b> pot tornar a obrir d'aquí a uns mesos.</p>
@@ -590,9 +594,10 @@ function renderTeam(){
   $("clear").addEventListener("click", ()=>{ team.people=[]; team.pasted=""; renderTeam(); });
   $("plantilla").addEventListener("input", e=>{ team.plantilla=+e.target.value||0; renderDash(); });
   $("roundName").addEventListener("input", e=>{ team.roundName=e.target.value; });
+  $("centerName").addEventListener("input", e=>{ team.center=e.target.value; });
   $("saveSnap").addEventListener("click", ()=>{
     if (!team.people.length){ flash("st","Encara no hi ha cap SELFIE per desar."); return; }
-    const data = snapshotOf(team.people, team.roundName, team.plantilla);
+    const data = snapshotOf(team.people, team.roundName, team.plantilla, team.center);
     const b = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(b);
     a.download = `${(team.roundName||"ronda").replace(/[^\p{L}\p{N}]+/gu,"-").toLowerCase()}-${data.date}.selfie-equip.json`; a.click(); URL.revokeObjectURL(a.href);
@@ -692,6 +697,12 @@ function pla(S){
   return out.map(c=>{ const lv=Math.min(2,Math.max(0,Math.floor(c.m))); return {i:c.i, d:c.d, m:c.m, from:LEVELS[lv], to:LEVELS[lv+1], action:ITEMS[c.i].o[lv+1], rec:RECURSOS[c.i]}; });
 }
 
+function heatTable(S){
+  return `<table class="heat">
+      <thead><tr><th></th><th>Situació</th>${LEVELS.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:center">Mitjana</th><th style="text-align:center">Avançats</th></tr></thead>
+      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="8">D${k+1} · ${esc(d.nom)} — ${fmt(S.dim[k].m)}</td></tr>`+d.items.map(i=>`<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td>${S.item[i].dist.map((c,l)=>{const p=pct(c,S.n);return `<td class="c" style="background:rgba(14,124,138,${(p/100*0.55).toFixed(2)});color:${p>45?'#fff':'inherit'}">${p?p+"%":"·"}</td>`;}).join("")}<td class="m" style="color:${d.hex}">${fmt(S.item[i].m)}</td><td class="c">${S.item[i].dist[3]||"·"}</td></tr>`).join("")).join("")}</tbody>
+    </table>`;
+}
 function renderDash(){
   const box = $("dash"); if(!box) return;
   const P = team.people;
@@ -748,10 +759,7 @@ function renderDash(){
 
   <div class="card sec">
     <h2>Mapa de calor · % de l'equip a cada nivell</h2>
-    <table class="heat">
-      <thead><tr><th></th><th>Situació</th>${LEVELS.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:center">Mitjana</th><th style="text-align:center">Avançats</th></tr></thead>
-      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="8">D${k+1} · ${esc(d.nom)} — ${fmt(S.dim[k].m)}</td></tr>`+d.items.map(i=>`<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td>${S.item[i].dist.map((c,l)=>{const p=pct(c,S.n);return `<td class="c" style="background:rgba(14,124,138,${(p/100*0.55).toFixed(2)});color:${p>45?'#fff':'inherit'}">${p?p+"%":"·"}</td>`;}).join("")}<td class="m" style="color:${d.hex}">${fmt(S.item[i].m)}</td><td class="c">${S.item[i].dist[3]||"·"}</td></tr>`).join("")).join("")}</tbody>
-    </table>
+    ${heatTable(S)}
     <p class="note">Lectura ràpida: les columnes de l'esquerra fosques assenyalen on cal formació de base; la columna «Avançats» diu quants docents poden fer de referents en cada situació.</p>
   </div>
 
@@ -951,6 +959,133 @@ function renderEvoDash(){
   $("replayEvo").addEventListener("click", ()=>animateRadar($("evoRadar").querySelector("svg"), fromV, toV));
 }
 
+/* ------------------------------ XARXA ------------------------------ */
+const net = { snaps:[], showCenters:false };
+function renderNet(){
+  app.innerHTML = `
+  <div class="card noprint">
+    <h1 style="font-size:1.3rem">Vista de xarxa</h1>
+    <p class="muted small" style="margin:0 0 10px">Per a qui agrega diversos centres —una fundació, una titularitat, una delegació o tota una xarxa—: deixa aquí les instantànies que els centres t'han fet arribar, totes de cop, i obtindràs el resum global. Es descarten les instantànies repetides (mateix identificador), mai les persones. Tot es calcula en aquest navegador.</p>
+    <div class="grid2">
+      <div class="drop" id="netDrop">Arrossega aquí les instantànies <b>.selfie-equip.json</b> dels centres (o fes-hi clic per triar-les)<input type="file" id="netFile" multiple accept=".json,application/json"></div>
+      <div>
+        <div class="row"><button class="btn ghost" id="netDemo">Carrega una xarxa de mostra</button><button class="btn ghost" id="netClear">Buida</button><span class="status" id="st"></span></div>
+        <label class="fld" style="margin-top:10px;max-width:260px">Mida mínima d'un centre per mostrar-lo per separat<input type="number" id="netMinN" min="2" value="${team.minN}"></label>
+        <p class="note" style="margin-top:8px">Per a l'evolució de tota la xarxa no cal res més: a la pestanya Evolució, deixa les instantànies d'una ronda a «Ronda anterior» i les de l'altra a «Ronda actual».</p>
+      </div>
+    </div>
+  </div>
+  <div id="netDash"></div>`;
+  const drop=$("netDrop");
+  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
+  drop.addEventListener("drop", e=>loadNetFiles([...e.dataTransfer.files]));
+  drop.addEventListener("click", ()=>$("netFile").click());
+  $("netFile").addEventListener("change", e=>{ loadNetFiles([...e.target.files]); e.target.value=""; });
+  $("netDemo").addEventListener("click", loadNetDemo);
+  $("netClear").addEventListener("click", ()=>{ net.snaps=[]; renderNet(); });
+  $("netMinN").addEventListener("input", e=>{ team.minN=Math.max(2,+e.target.value||5); renderNetDash(); });
+  renderNetDash();
+}
+function addSnap(d){
+  if (!d || d.format!=="selfie-equip-1") return false;
+  const id = d.id || ("S"+(d.name||"")+(d.date||"")+(d.codes||[]).length);
+  if (net.snaps.some(s=>s.id===id)) return false;
+  const people = peopleFromSnapshot(d); if (!people.length) return false;
+  net.snaps.push({ id, name:d.name||"", center:d.center||"", date:d.date||"", plantilla:+d.plantilla||0, people });
+  return true;
+}
+async function loadNetFiles(files){
+  let added=0, dup=0, bad=0;
+  for (const f of files){ try{ const d=JSON.parse(await f.text()); if (d.format!=="selfie-equip-1"){bad++;continue;} addSnap(d)?added++:dup++; }catch(_){ bad++; } }
+  renderNet(); flash("st", `${added} instantània/es afegida/es${dup?` · ${dup} repetida/es`:""}${bad?` · ${bad} no vàlida/es`:""}.`);
+}
+function loadNetDemo(){
+  /* 12 centres ficticis: mides i perfils diferents, generats de manera determinista */
+  const names=["Escola Montserrat","Col·legi Sant Jordi","Escola Pia Vilanova","Vedruna Ponent","FEDAC Horta","Sagrat Cor Lleida","Escola Natzaret","Dominiques Girona","La Salle Figueres","Jesuïtes Casp","Escola Mare de Déu","Maristes Rubí"];
+  let seed=7; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
+  const etapes=["INF","PRI","ESO","BAT","CF"];
+  net.snaps=[];
+  names.forEach((nm,ci)=>{
+    const n = 8 + Math.floor(rnd()*34), plant = n + Math.floor(rnd()*8);
+    const bias = rnd()*1.6 - 0.2;                       /* centre més o menys avançat */
+    const people=[];
+    for (let k=0;k<n;k++){
+      const base = bias + rnd()*1.2 - 0.6;
+      const ans = ITEMS.map((_,i)=>{ let v = base + (rnd()-0.5)*1.4 + (i===3||i===8?-0.4:0) + (i===10?0.3:0); return Math.max(0,Math.min(3,Math.round(v))); });
+      const et = etapes[Math.floor(rnd()*etapes.length)];
+      const p = parseCode(makeCode(ans, et, randId(4))); if (p) people.push({...p,alias:null});
+    }
+    net.snaps.push({ id:"DEMO"+ci, name:"Octubre 2026", center:nm, date:"2026-10-15", plantilla:plant, people });
+  });
+  renderNet(); flash("st","Xarxa de mostra carregada: 12 centres ficticis.");
+}
+function renderNetDash(){
+  const box=$("netDash"); if(!box) return;
+  if (!net.snaps.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">Encara no hi ha cap instantània. Deixa-hi els fitxers dels centres o prova la xarxa de mostra.</div>`; return; }
+  const all = net.snaps.flatMap(s=>s.people);
+  const S = stats(all);
+  const centres = net.snaps.length, docents = all.length;
+  const withPl = net.snaps.filter(s=>s.plantilla>0);
+  const part = withPl.length ? pct(withPl.reduce((a,s)=>a+s.people.length,0), withPl.reduce((a,s)=>a+s.plantilla,0)) : null;
+  const rows = net.snaps.map(s=>{ const st=stats(s.people); return { s, st, idx:st.index, risk:pct(st.risk,st.n), part: s.plantilla?pct(s.people.length,s.plantilla):null }; }).sort((a,b)=>b.idx-a.idx);
+  const idxs = rows.map(r=>r.idx), spread = sd(idxs);
+  const best = S.dim.reduce((a,b,k)=>b.m>S.dim[a].m?k:a,0), worst = S.dim.reduce((a,b,k)=>b.m<S.dim[a].m?k:a,0);
+  const riskPct = pct(S.risk,S.n);
+  const small = rows.filter(r=>r.s.people.length<team.minN).length;
+  const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:`Xarxa (${docents})`}];
+  if (net.showCenters) rows.filter(r=>r.s.people.length>=team.minN).forEach(r=>series.unshift({values:r.st.item.map(x=>x.m), color:"#8ea6ab", bold:false}));
+  const stageTotal = S.stage.reduce((a,b)=>a+b,0);
+  const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN).sort();
+  box.innerHTML = `
+  <div class="kpis sec">
+    <div class="kpi"><div class="t">Centres</div><div class="v">${centres}</div><div class="s">${small?`${small} amb menys de ${team.minN} docents (només al global)`:"instantànies carregades"}</div></div>
+    <div class="kpi"><div class="t">Docents</div><div class="v">${docents}</div><div class="s">${part!==null?`participació ${part}% on hi ha plantilla`:"SELFIES agregats"}</div></div>
+    <div class="kpi"><div class="t">Índex de xarxa</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">Etapa predominant: <b>${lvName(mean(S.overall))}</b></div></div>
+    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">Dimensió més forta</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${fmt(S.dim[best].m)}</div></div>
+    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">Prioritat de xarxa</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${fmt(S.dim[worst].m)}</div></div>
+    <div class="kpi ${riskPct>=40?'bad':riskPct>=25?'warn':'ok'}"><div class="t">Seguretat i dades</div><div class="v">${riskPct}%</div><div class="s">en nivell inicial en dades, seguretat, verificació o drets d'autor</div></div>
+    <div class="kpi ${spread<8?'ok':spread<15?'warn':'bad'}"><div class="t">Diferències entre centres</div><div class="v" style="font-size:1.15rem">${spread<8?"Xarxa homogènia":spread<15?"Xarxa diversa":"Xarxa desigual"}</div><div class="s">índex de ${Math.min(...idxs)} a ${Math.max(...idxs)} · dispersió ${fmt(spread)}</div></div>
+  </div>
+
+  <div class="card sec">
+    <div class="grid2">
+      <div>
+        <h2>Radar de la xarxa · 20 situacions</h2>
+        <div class="toggles noprint" style="margin-bottom:6px"><label><input type="checkbox" id="tCenters" ${net.showCenters?'checked':''}> Superposa cada centre (n ≥ ${team.minN})</label></div>
+        <div class="radar-wrap">${radar20(series)}</div>
+        <div class="legend"><span><i style="background:#0e7c8a"></i>Xarxa (${docents})</span>${net.showCenters?`<span><i style="background:#8ea6ab"></i>cada centre</span>`:""}</div>
+      </div>
+      <div>
+        <h2>On és la xarxa</h2>
+        <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
+        <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l} (${S.stage[i]})</span>`).join("")}</div>
+        <h2 style="margin-top:14px">Per dimensió</h2>
+        <div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="track"><i style="width:${S.dim[k].m/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span><span class="val">${fmt(S.dim[k].m)} <span class="muted small">±${fmt(S.dim[k].sd)}</span></span></div>`).join("")}</div>
+        ${segKeys.length?`<h2 style="margin-top:14px">Per etapa educativa</h2>
+        <table class="heat"><thead><tr><th>Etapa</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">Global</th></tr></thead>
+        <tbody>${segKeys.map(k=>{const g=S.segs[k]; return `<tr><td><b>${ETAPES[k]}</b></td><td class="c">${g.length}</td>${DIMS.map(d=>`<td class="c">${fmt(mean(g.map(p=>mean(d.items.map(i=>p.ans[i])))))}</td>`).join("")}<td class="m">${fmt(mean(g.map(p=>mean(p.ans))))}</td></tr>`;}).join("")}</tbody></table>`:""}
+      </div>
+    </div>
+  </div>
+
+  <div class="card sec">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Per centre</h2><button class="btn ghost noprint" id="printNet">Imprimeix la vista de xarxa</button></div>
+    <table class="heat" style="margin-top:8px">
+      <thead><tr><th>Centre</th><th>Ronda</th><th style="text-align:center">n</th><th style="text-align:center">Particip.</th><th style="text-align:center">Índex</th><th style="text-align:center">Etapa</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">Seg. i dades</th></tr></thead>
+      <tbody>${rows.filter(r=>r.s.people.length>=team.minN).map((r,i)=>`<tr><td><b>${esc(r.s.center||("Centre "+(i+1)))}</b></td><td class="muted">${esc(r.s.name)}${r.s.date?` · ${r.s.date}`:""}</td><td class="c">${r.s.people.length}</td><td class="c">${r.part!==null?r.part+"%":"·"}</td><td class="m">${r.idx}</td><td class="c">${lvName(mean(r.st.overall))}</td>${DIMS.map((d,k)=>`<td class="c" style="background:rgba(14,124,138,${(r.st.dim[k].m/3*0.45).toFixed(2)});color:${r.st.dim[k].m>1.9?'#fff':'inherit'}">${fmt(r.st.dim[k].m)}</td>`).join("")}<td class="c ${r.risk>=40?'down':r.risk>=25?'':'up'}">${r.risk}%</td></tr>`).join("")}</tbody>
+    </table>
+    <p class="note">${small?`${small} centre/s amb menys de ${team.minN} docents compten al global però no es mostren per separat (privacitat). `:""}Lectura recomanada: els centres no són una classificació sinó un mapa de necessitats; el que importa és on cal acompanyament i on hi ha referents que poden ajudar altres centres.</p>
+  </div>
+
+  <div class="card sec">
+    <h2>Mapa de calor de la xarxa · % de docents a cada nivell</h2>
+    ${heatTable(S)}
+  </div>`;
+  $("tCenters").addEventListener("change", e=>{ net.showCenters=e.target.checked; renderNetDash(); });
+  $("printNet").addEventListener("click", ()=>window.print());
+}
+
 /* ---- etiqueta flotant sobre els números del radar ---- */
 const tip = document.createElement("div"); tip.className = "tip"; tip.setAttribute("role","tooltip"); document.body.appendChild(tip);
 function showTip(el, x, y){
@@ -969,10 +1104,12 @@ document.addEventListener("scroll", hideTip, true);
 /* arrencada */
 if (location.hash === "#equip" || location.hash === "#demo") route = "team";
 if (location.hash === "#evolucio" || location.hash === "#evolucio-demo") route = "evo";
+if (location.hash === "#xarxa" || location.hash === "#xarxa-demo") route = "net";
 render();
 if (location.hash === "#demo") loadDemo();
 if (location.hash === "#evolucio-demo") loadEvoDemo();
-window.__selfie = { team, self, evo, stats, dafo, pla, parseCode, makeCode, radar20, snapshotOf, peopleFromSnapshot, loadEvoDemo, animateRadar, RG };   /* accés per a proves */
+if (location.hash === "#xarxa-demo") loadNetDemo();
+window.__selfie = { team, self, evo, net, stats, dafo, pla, parseCode, makeCode, radar20, snapshotOf, peopleFromSnapshot, loadEvoDemo, loadNetDemo, addSnap, animateRadar, RG };   /* accés per a proves */
 </script>
 </body>
 </html>
