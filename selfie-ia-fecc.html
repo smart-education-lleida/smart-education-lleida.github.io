@@ -153,6 +153,11 @@
   .read div.ok{border-color:var(--ok);background:#effaf4}
   .chipst{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;color:#fff}
   .chipst.a{background:var(--ok)} .chipst.p{background:var(--warn)} .chipst.n{background:#8ea6ab}
+  .sp{cursor:help}
+  .tip{position:fixed;z-index:50;pointer-events:none;background:#12313b;color:#fff;font-size:.78rem;font-weight:700;
+    padding:6px 10px;border-radius:9px;border-left:4px solid var(--c,#0e7c8a);box-shadow:0 8px 20px rgba(14,60,70,.25);
+    transform:translate(-50%,-130%);white-space:nowrap;opacity:0;transition:opacity .12s}
+  .tip.on{opacity:1}
   footer{padding:14px 0 30px;color:var(--muted);font-size:.72rem;text-align:center;line-height:1.6;border-top:1px solid var(--line)}
   @media (max-width:860px){.hero,.res,.grid2,.dafo{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}.gauge .lab{width:110px}}
   @media print{
@@ -360,7 +365,7 @@ function radar20(series, opts={}){
   for (let i=0;i<n;i++){
     const [x,y] = pt(i,3); const [tx,ty] = pt(i,3,R+16);
     s += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#d8e2e5" stroke-width="1"/>`;
-    if (lab) s += `<text x="${tx}" y="${ty}" font-size="10" font-weight="700" fill="${dimOf(i).hex}" text-anchor="middle" dominant-baseline="middle">${i+1}</text>`;
+    if (lab) s += `<g class="sp" data-sp="${i}"><title>${i+1} · ${esc(ITEMS[i].k)}</title><circle cx="${tx}" cy="${ty}" r="11" fill="#fff" fill-opacity="0.01"/><text x="${tx}" y="${ty}" font-size="10" font-weight="700" fill="${dimOf(i).hex}" text-anchor="middle" dominant-baseline="middle" pointer-events="none">${i+1}</text></g>`;
   }
   /* sèries */
   series.forEach(se=>{
@@ -925,6 +930,21 @@ function renderEvoDash(){
   </div>`;
   $("printEvo").addEventListener("click", ()=>window.print());
 }
+
+/* ---- etiqueta flotant sobre els números del radar ---- */
+const tip = document.createElement("div"); tip.className = "tip"; tip.setAttribute("role","tooltip"); document.body.appendChild(tip);
+function showTip(el, x, y){
+  const i = +el.dataset.sp;
+  tip.textContent = `${i+1} · ${ITEMS[i].k}`;
+  tip.style.setProperty("--c", dimOf(i).hex);
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+  tip.classList.add("on");
+}
+function hideTip(){ tip.classList.remove("on"); }
+document.addEventListener("mouseover", e=>{ const el = e.target.closest && e.target.closest(".sp"); if (el){ const r = el.getBoundingClientRect(); showTip(el, r.left + r.width/2, r.top); } });
+document.addEventListener("mouseout", e=>{ if (e.target.closest && e.target.closest(".sp")) hideTip(); });
+document.addEventListener("click", e=>{ const el = e.target.closest && e.target.closest(".sp"); if (el){ const r = el.getBoundingClientRect(); showTip(el, r.left + r.width/2, r.top); setTimeout(hideTip, 1800); } else hideTip(); });
+document.addEventListener("scroll", hideTip, true);
 
 /* arrencada */
 if (location.hash === "#equip" || location.hash === "#demo") route = "team";
