@@ -338,10 +338,12 @@ function parseCode(s){
    RADAR DE 20 RADIS (SVG, sense dependències)
    series: [{values:[20], color, bold, dashed, label}]
    ===================================================================== */
+const RG = { S:520, c:260, R:190, n:20,
+  ang: i => -Math.PI/2 + (2*Math.PI*(i+0.5))/20,                /* radi i centrat al seu sector */
+  pt: (i,v,r=190) => [260 + r*(v/3)*Math.cos(RG.ang(i)), 260 + r*(v/3)*Math.sin(RG.ang(i))] };
 function radar20(series, opts={}){
-  const S = 520, c = S/2, R = 190, n = 20, lab = opts.labels !== false;
-  const ang = i => -Math.PI/2 + (2*Math.PI*(i+0.5))/n;         /* radi i centrat al seu sector */
-  const pt = (i,v,r=R) => [c + r*(v/3)*Math.cos(ang(i)), c + r*(v/3)*Math.sin(ang(i))];
+  const S = RG.S, c = RG.c, R = RG.R, n = RG.n, lab = opts.labels !== false;
+  const ang = RG.ang, pt = RG.pt;
   let s = `<svg viewBox="0 0 ${S} ${S}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radar de 20 situacions en 4 dimensions">`;
   /* sectors de dimensió */
   DIMS.forEach(d=>{
@@ -844,6 +846,20 @@ function loadEvoDemo(){
   evo.A={label:"Octubre 2026",people:A,plantilla:30}; evo.B={label:"Juny 2027",people:B,plantilla:30};
   renderEvo(); flash("st","Dues rondes de mostra carregades (24 docents fictícies).");
 }
+function animateRadar(svg, from, to, ms=1500){
+  if (!svg || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+  const polys = svg.querySelectorAll("polygon"); const poly = polys[polys.length-1];      /* la sèrie actual es dibuixa l'última */
+  const dots = [...svg.querySelectorAll('circle[r="3.2"]')];
+  const t0 = performance.now(), ease = t => 1 - Math.pow(1-t, 3);
+  function frame(now){
+    const k = Math.min(1, (now-t0)/ms), e = ease(k);
+    const vals = to.map((v,i)=>from[i] + (v-from[i])*e);
+    poly.setAttribute("points", vals.map((v,i)=>RG.pt(i,Math.max(0,v)).join(",")).join(" "));
+    dots.forEach((d,i)=>{ const [x,y]=RG.pt(i,Math.max(0,vals[i])); d.setAttribute("cx",x); d.setAttribute("cy",y); });
+    if (k < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 const dsym = v => v>0.04?"▲":v<-0.04?"▼":"=";
 const dcls = v => v>0.04?"up":v<-0.04?"down":"flat";
 const sgn = (v,dec=2) => (v>0?"+":"")+ (Math.round(v*10**dec)/10**dec).toFixed(dec);
@@ -895,8 +911,8 @@ function renderEvoDash(){
     <div class="grid2">
       <div>
         <h2>Radar · ${esc(la)} vs ${esc(lb)}</h2>
-        <div class="radar-wrap">${radar20([{values:SA.item.map(x=>x.m),color:"#8ea6ab",dashed:true},{values:SB.item.map(x=>x.m),color:"#0e7c8a",bold:true}])}</div>
-        <div class="legend"><span><i style="background:#8ea6ab"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span></div>
+        <div class="radar-wrap" id="evoRadar">${radar20([{values:SA.item.map(x=>x.m),color:"#8ea6ab",dashed:true},{values:SB.item.map(x=>x.m),color:"#0e7c8a",bold:true}])}</div>
+        <div class="legend"><span><i style="background:#8ea6ab"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span><button type="button" class="helpLink noprint" id="replayEvo" style="margin:0 0 0 auto">▶ Torna a veure l'evolució</button></div>
       </div>
       <div>
         <h2>Variació per dimensió</h2>
@@ -929,6 +945,9 @@ function renderEvoDash(){
     <p class="note" style="margin-top:8px">Les prioritats són les que el quadre d'equip hauria proposat amb les dades de la ronda anterior. «Assolit» vol dir que la mitjana de l'equip ha arribat a l'etapa objectiu; «en progrés», que ha pujat sense arribar-hi.</p>
   </div>`;
   $("printEvo").addEventListener("click", ()=>window.print());
+  const fromV = SA.item.map(x=>x.m), toV = SB.item.map(x=>x.m);
+  animateRadar($("evoRadar").querySelector("svg"), fromV, toV);
+  $("replayEvo").addEventListener("click", ()=>animateRadar($("evoRadar").querySelector("svg"), fromV, toV));
 }
 
 /* ---- etiqueta flotant sobre els números del radar ---- */
@@ -952,7 +971,7 @@ if (location.hash === "#evolucio" || location.hash === "#evolucio-demo") route =
 render();
 if (location.hash === "#demo") loadDemo();
 if (location.hash === "#evolucio-demo") loadEvoDemo();
-window.__selfie = { team, self, evo, stats, dafo, pla, parseCode, makeCode, radar20, snapshotOf, peopleFromSnapshot, loadEvoDemo };   /* accés per a proves */
+window.__selfie = { team, self, evo, stats, dafo, pla, parseCode, makeCode, radar20, snapshotOf, peopleFromSnapshot, loadEvoDemo, animateRadar, RG };   /* accés per a proves */
 </script>
 </body>
 </html>
