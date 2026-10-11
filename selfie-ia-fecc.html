@@ -799,7 +799,7 @@ function renderEvo(){
       <div class="slot" id="slot${k}">
         <h3>${SLOT_TXT[k]} · <span class="cnt">${evo[k].people.length} SELFIES</span>${evo[k].label?` · ${esc(evo[k].label)}`:""}</h3>
         <label class="fld">Etiqueta<input type="text" id="lab${k}" value="${esc(evo[k].label)}" placeholder="${k==="A"?"Ex.: Octubre 2026":"Ex.: Juny 2027"}"></label>
-        <textarea class="paste" id="paste${k}" style="min-height:70px;margin-top:8px" placeholder="Enganxa aquí codis SELFIE o deixa anar una instantània .selfie-equip.json"></textarea>
+        <textarea class="paste" id="paste${k}" style="min-height:70px;margin-top:8px" placeholder="Enganxa aquí codis SELFIE o deixa anar instantànies de centre (.selfie-equip.json) o de xarxa (.selfie-xarxa.json)"></textarea>
         <div class="row" style="margin-top:6px">
           <button class="btn light" data-add="${k}">Afegeix</button>
           <button class="btn ghost" data-file="${k}">Obre una instantània</button>
@@ -834,7 +834,8 @@ function addEvoText(k, txt){
 async function loadEvoFiles(k, files){
   let added=0;
   for (const f of files){ try{ const d=JSON.parse(await f.text());
-    if (d.format==="selfie-equip-1"){ peopleFromSnapshot(d).forEach(p=>{ if(!evo[k].people.some(q=>q.code===p.code)){evo[k].people.push(p);added++;} }); if(d.plantilla) evo[k].plantilla=d.plantilla; if(d.name && !evo[k].label) evo[k].label=d.name; }
+    if (d.format==="selfie-xarxa-1"){ (d.snapshots||[]).forEach(s=>peopleFromSnapshot(s).forEach(p=>{ if(!evo[k].people.some(q=>q.code===p.code)){evo[k].people.push(p);added++;} })); evo[k].plantilla=(d.snapshots||[]).reduce((a,s)=>a+(+s.plantilla||0),0); if(d.name && !evo[k].label) evo[k].label=d.name; }
+    else if (d.format==="selfie-equip-1"){ peopleFromSnapshot(d).forEach(p=>{ if(!evo[k].people.some(q=>q.code===p.code)){evo[k].people.push(p);added++;} }); if(d.plantilla) evo[k].plantilla=d.plantilla; if(d.name && !evo[k].label) evo[k].label=d.name; }
     else { const p=parseCode(d.code||""); if(p && !evo[k].people.some(q=>q.code===p.code)){ evo[k].people.push({...p,alias:null}); added++; } }
   }catch(_){} }
   renderEvo(); flash("st", `${added} SELFIE(s) afegit(s) a «${SLOT_TXT[k]}».`);
@@ -960,7 +961,11 @@ function renderEvoDash(){
 }
 
 /* ------------------------------ XARXA ------------------------------ */
-const net = { snaps:[], showCenters:false };
+const net = { snaps:[], showCenters:false, roundName:"" };
+function networkSnapshotOf(){
+  return { format:"selfie-xarxa-1", id:randId(8), name: net.roundName||"", date:new Date().toISOString().slice(0,10), n: net.snaps.length,
+    snapshots: net.snaps.map(s=>({ id:s.id, name:s.name, center:s.center, date:s.date, plantilla:s.plantilla, codes:s.people.map(p=>p.code) })) };
+}
 function renderNet(){
   app.innerHTML = `
   <div class="card noprint">
@@ -970,8 +975,12 @@ function renderNet(){
       <div class="drop" id="netDrop">Arrossega aquí les instantànies <b>.selfie-equip.json</b> dels centres (o fes-hi clic per triar-les)<input type="file" id="netFile" multiple accept=".json,application/json"></div>
       <div>
         <div class="row"><button class="btn ghost" id="netDemo">Carrega una xarxa de mostra</button><button class="btn ghost" id="netClear">Buida</button><span class="status" id="st"></span></div>
-        <label class="fld" style="margin-top:10px;max-width:260px">Mida mínima d'un centre per mostrar-lo per separat<input type="number" id="netMinN" min="2" value="${team.minN}"></label>
-        <p class="note" style="margin-top:8px">Per a l'evolució de tota la xarxa no cal res més: a la pestanya Evolució, deixa les instantànies d'una ronda a «Ronda anterior» i les de l'altra a «Ronda actual».</p>
+        <div class="row" style="margin-top:10px">
+          <label class="fld" style="flex:1">Nom de la ronda de xarxa<input type="text" id="netRound" value="${esc(net.roundName)}" placeholder="Ex.: Octubre 2026"></label>
+          <label class="fld" style="width:150px">Mida mínima de centre<input type="number" id="netMinN" min="2" value="${team.minN}"></label>
+          <button class="btn light" id="saveNet" style="align-self:end" ${net.snaps.length?'':'disabled'}>Desa la instantània de xarxa</button>
+        </div>
+        <p class="note" style="margin-top:8px">La instantània de xarxa és un sol fitxer amb totes les instantànies de centre d'aquesta ronda. Serveix per tornar-la a obrir aquí i, sobretot, per deixar-la a «Ronda anterior» o «Ronda actual» de la pestanya Evolució i veure com avança tota la xarxa.</p>
       </div>
     </div>
   </div>
@@ -985,6 +994,15 @@ function renderNet(){
   $("netDemo").addEventListener("click", loadNetDemo);
   $("netClear").addEventListener("click", ()=>{ net.snaps=[]; renderNet(); });
   $("netMinN").addEventListener("input", e=>{ team.minN=Math.max(2,+e.target.value||5); renderNetDash(); });
+  $("netRound").addEventListener("input", e=>{ net.roundName=e.target.value; });
+  $("saveNet").addEventListener("click", ()=>{
+    if (!net.snaps.length) return;
+    const data = networkSnapshotOf();
+    const b = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(b);
+    a.download = `xarxa-${(net.roundName||"ronda").replace(/[^\p{L}\p{N}]+/gu,"-").toLowerCase()}-${data.date}.selfie-xarxa.json`; a.click(); URL.revokeObjectURL(a.href);
+    flash("st",`Instantània de xarxa desada: ${net.snaps.length} centres en un sol fitxer.`);
+  });
   renderNetDash();
 }
 function addSnap(d){
@@ -997,12 +1015,14 @@ function addSnap(d){
 }
 async function loadNetFiles(files){
   let added=0, dup=0, bad=0;
-  for (const f of files){ try{ const d=JSON.parse(await f.text()); if (d.format!=="selfie-equip-1"){bad++;continue;} addSnap(d)?added++:dup++; }catch(_){ bad++; } }
-  renderNet(); flash("st", `${added} instantània/es afegida/es${dup?` · ${dup} repetida/es`:""}${bad?` · ${bad} no vàlida/es`:""}.`);
+  for (const f of files){ try{ const d=JSON.parse(await f.text());
+    if (d.format==="selfie-xarxa-1"){ (d.snapshots||[]).forEach(s=>{ addSnap({...s, format:"selfie-equip-1"})?added++:dup++; }); if(d.name && !net.roundName) net.roundName=d.name; continue; }
+    if (d.format!=="selfie-equip-1"){bad++;continue;} addSnap(d)?added++:dup++; }catch(_){ bad++; } }
+  renderNet(); flash("st", `${added} instantània/es de centre afegida/es${dup?` · ${dup} repetida/es`:""}${bad?` · ${bad} fitxer/s no vàlid/s`:""}.`);
 }
 function loadNetDemo(){
   /* 12 centres ficticis: mides i perfils diferents, generats de manera determinista */
-  const names=["Escola Montserrat","Col·legi Sant Jordi","Escola Pia Vilanova","Vedruna Ponent","FEDAC Horta","Sagrat Cor Lleida","Escola Natzaret","Dominiques Girona","La Salle Figueres","Jesuïtes Casp","Escola Mare de Déu","Maristes Rubí"];
+  const names=["Escola Ametller","Col·legi Mirallet","Escola Camí dels Oms","Escola Font Clara","Col·legi Puig Rodó","Escola Tramuntana","Escola Serra Blanca","Col·legi Lluna Vella","Escola Riera Fosca","Escola Pedra Groga","Col·legi Vinya Nova","Escola Estel Fugaç"];
   let seed=7; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
   const etapes=["INF","PRI","ESO","BAT","CF"];
   net.snaps=[];
@@ -1109,7 +1129,7 @@ render();
 if (location.hash === "#demo") loadDemo();
 if (location.hash === "#evolucio-demo") loadEvoDemo();
 if (location.hash === "#xarxa-demo") loadNetDemo();
-window.__selfie = { team, self, evo, net, stats, dafo, pla, parseCode, makeCode, radar20, snapshotOf, peopleFromSnapshot, loadEvoDemo, loadNetDemo, addSnap, animateRadar, RG };   /* accés per a proves */
+window.__selfie = { team, self, evo, net, stats, dafo, pla, parseCode, makeCode, radar20, snapshotOf, networkSnapshotOf, peopleFromSnapshot, loadEvoDemo, loadNetDemo, addSnap, animateRadar, RG };   /* accés per a proves */
 </script>
 </body>
 </html>
