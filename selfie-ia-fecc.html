@@ -166,22 +166,31 @@
     body{background:#fff} header nav,.noprint{display:none !important}
     .card{border:0;padding:0} .shell{width:100%} .kpi{break-inside:avoid} .dq{break-inside:avoid}
   }
+  .langs{display:flex;gap:4px;margin-left:6px}
+  .langs button{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-weight:800;font-size:.74rem;color:var(--muted);letter-spacing:.02em}
+  .langs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  @media (max-width:860px){.langs{margin-left:auto}}
 </style>
 </head>
 <body>
 <div class="shell">
   <header>
     <div class="mark">S</div>
-    <div class="brand"><b>SELFIE · Competència digital docent en IA</b><span>Autoavaluació individual i quadre de comandament d'equip · Marc FECC</span></div>
+    <div class="brand"><b id="brandB">SELFIE · Competència digital docent en IA</b><span id="brandS">Autoavaluació individual i quadre de comandament d'equip · Marc FECC</span></div>
     <nav>
       <button type="button" id="navSelf">El meu SELFIE</button>
       <button type="button" id="navTeam">Equip</button>
       <button type="button" id="navEvo">Evolució</button>
       <button type="button" id="navNet">Xarxa</button>
     </nav>
+    <div class="langs noprint" role="group" aria-label="Idioma · Idioma · Language">
+      <button type="button" data-lang="ca" class="on" lang="ca" title="Català">CA</button>
+      <button type="button" data-lang="es" lang="es" title="Castellano">ES</button>
+      <button type="button" data-lang="en" lang="en" title="English">EN</button>
+    </div>
   </header>
   <main id="app"></main>
-  <footer>
+  <footer id="foot">
     Instrument: <b>Autoavaluació de la Competència Digital Docent en IA</b> (Grup d'Experts en l'Àmbit Digital de la FECC), alineat amb
     <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, desembre 2025).<br>
     Tot es calcula al teu navegador: no es desa ni s'envia cap dada. Les respostes només viatgen en el codi SELFIE que tu decideixes compartir.
@@ -309,6 +318,655 @@ const RISC_ITEMS = [2,3,4,9];           /* dades, seguretat, verificació, drets
 const RECURSOS = {6:"Generador IRIS (declaracions d'ús de la IA)", 2:"Protocol FECC d'ús responsable de la IA", 3:"Protocol FECC d'ús responsable de la IA", 19:"Protocol FECC i Marc FECC d'integració de la IA"};
 
 /* =====================================================================
+   MULTIIDIOMA · dades de l'instrument en castellà i anglès
+   El català és l'original (text íntegre FECC); castellà i anglès són traduccions de treball.
+   ===================================================================== */
+const TX = {};
+TX.ca = { dims: DIMS.map(d=>[d.nom,d.curt]), levels: LEVELS.slice(), etapes: {...ETAPES}, recursos: {...RECURSOS}, items: ITEMS.map(it=>({t:it.t,k:it.k,s:it.s,o:it.o.slice()})) };
+TX.es = {
+ dims: [["Comprensión y uso seguro de la IA","Uso seguro"],["Ética y visión humanista de la IA","Ética"],["Pedagogía con IA","Pedagogía"],["Desarrollo profesional y contribución al centro","Desarr. prof."]],
+ levels: ["Inicial","Básica","Intermedia","Avanzada"],
+ etapes: {INF:"Infantil", PRI:"Primaria", ESO:"ESO", BAT:"Bachillerato", CF:"Ciclos formativos", ALT:"Otros"},
+ recursos: {6:"Generador IRIS (declaraciones de uso de la IA)", 2:"Protocolo FECC de uso responsable de la IA", 3:"Protocolo FECC de uso responsable de la IA", 19:"Protocolo FECC y Marco FECC de integración de la IA"},
+ items: [
+ {t:"Comprensión de capacidades y limitaciones", k:"Capacidades y límites", s:"En una conversación de trabajo tienes que decidir si una herramienta de IA puede ayudar a resolver una necesidad docente concreta.", o:[
+  "Todavía no utilizo herramientas de IA ni conozco los conceptos técnicos básicos sobre su funcionamiento.",
+  "Reconozco usos y limitaciones básicas de una herramienta habitual y la uso en una tarea sencilla, con prudencia.",
+  "Comparo opciones, anticipo errores o límites y justifico si la herramienta es adecuada para el contexto, el objetivo y el alumnado.",
+  "Diseño y reviso criterios transferibles para valorar las capacidades, limitaciones y riesgos de herramientas de IA en situaciones docentes diversas."]},
+ {t:"Formulación de peticiones y revisión iterativa", k:"Peticiones (prompts)", s:"Quieres obtener una propuesta inicial de contenido o de actividad para una sesión con tu grupo.", o:[
+  "Todavía no sé formular una petición que ayude a la herramienta a entender el objetivo, el contexto o el resultado esperado.",
+  "Hago una petición clara y simple, indico la finalidad y reviso si la respuesta contiene errores evidentes.",
+  "Aporto contexto, destinatarios, restricciones y formato; refino la petición y contrasto el resultado con los objetivos docentes.",
+  "Diseño estrategias de consulta iterativa con criterios de calidad explícitos y con revisión humana antes de incorporar los resultados."]},
+ {t:"Protección de datos y confidencialidad", k:"Protección de datos", s:"Necesitas trabajar con información relacionada con el alumnado en un entorno que incorpora IA.", o:[
+  "Todavía no sé determinar qué información se puede compartir, qué datos deben protegerse ni qué entornos están autorizados.",
+  "Evito datos personales innecesarios y utilizo herramientas o entornos que el centro ha autorizado para usos habituales.",
+  "Anonimizo activamente los datos, desactivo el historial de aprendizaje del modelo y reviso las políticas de privacidad antes de trabajar.",
+  "Diseño y reviso prácticas de trabajo con datos minimizados, entornos autorizados y vías claras para escalar dudas o incidencias."]},
+ {t:"Seguridad y uso responsable de las herramientas", k:"Seguridad", s:"Una herramienta de IA pide permisos, ofrece un enlace externo o recibe instrucciones que parecen intentar alterar su comportamiento.", o:[
+  "Todavía no identifico riesgos básicos de seguridad ni sé qué medidas aplicar ante una situación dudosa.",
+  "Reconozco indicios básicos de riesgo, no comparto credenciales ni información sensible y uso solo opciones autorizadas.",
+  "Compruebo permisos, enlaces y configuraciones, aplico medidas preventivas y explico al alumnado cómo actuar de forma segura.",
+  "Establezco y reviso pautas de uso seguro para actividades docentes, documentando incidencias y derivándolas a los responsables correspondientes."]},
+ {t:"Verificación de información generada", k:"Verificación", s:"La IA te da una respuesta que parece muy bien argumentada, pero dudas de que los datos o las citas sean reales.", o:[
+  "Todavía no aplico un procedimiento claro para comprobar afirmaciones, datos, fuentes o citas producidas por una herramienta de IA.",
+  "Compruebo datos relevantes en fuentes fiables antes de reutilizar una respuesta generada.",
+  "Contrasto sistemáticamente afirmaciones, citas y ejemplos con fuentes independientes y explico el criterio de fiabilidad utilizado.",
+  "Diseño actividades y criterios de verificación transferibles para que alumnado y profesorado identifiquen errores, omisiones y sesgos informativos."]},
+ {t:"Agencia humana y vínculo pedagógico", k:"Agencia humana", s:"La IA te permite automatizar parte de la planificación, la comunicación o la preparación de materiales.", o:[
+  "Todavía no hago explícito qué decisiones requieren criterio docente e interacción humana directa.",
+  "Utilizo la IA solo en tareas delimitadas y conservo la decisión final sobre contenido, tono y actuación docente.",
+  "Decido conscientemente qué delegar y qué no, y reviso que el uso de la IA no reduzca el acompañamiento ni la autonomía del alumnado.",
+  "Diseño prácticas que integran IA con límites pedagógicos claros, preservando la responsabilidad docente, la agencia del alumnado y el vínculo educativo."]},
+ {t:"Transparencia, autoría e integridad académica", k:"Transparencia y autoría", s:"Detectas o sospechas que un miembro del alumnado ha utilizado herramientas de IA para elaborar una tarea entregable.", o:[
+  "Todavía no he definido cómo debe explicar el alumnado un uso de IA ni cómo ese uso afecta a la evaluación.",
+  "Explico qué uso está permitido y pido que el alumnado declare de forma sencilla si ha empleado una herramienta de IA.",
+  "Diseño consignas que piden una declaración proporcionada de la herramienta, la finalidad, las partes afectadas y las decisiones propias del alumnado.",
+  "Diseño evaluaciones que valoran proceso, justificación, autoría y capacidad de defensa, con criterios transparentes sobre el uso de IA."]},
+ {t:"Sesgos, inclusión y equidad", k:"Sesgos y equidad", s:"Una respuesta generada reproduce un estereotipo de género, cultural, social o funcional.", o:[
+  "Todavía no reconozco cómo un resultado de IA puede reproducir o amplificar estereotipos y exclusiones.",
+  "Detecto resultados potencialmente discriminatorios y evito incorporarlos a materiales o actividades.",
+  "Analizo con el alumnado o con el equipo docente el posible origen del sesgo y adapto materiales, ejemplos y consignas para reducir su efecto.",
+  "Diseño criterios de revisión inclusiva para materiales generados con IA y los mejoro a partir de casos, evidencias y retornos de las personas usuarias."]},
+ {t:"Sostenibilidad y proporcionalidad de uso", k:"Sostenibilidad", s:"Se debate en la escuela sobre el coste energético y el consumo de recursos derivado del uso masivo de modelos de IA.", o:[
+  "Desconozco el impacto medioambiental o la huella ecológica asociada al funcionamiento de la IA.",
+  "Soy consciente de que la IA consume mucha energía y agua, y procuro hacer un uso responsable y no superfluo.",
+  "Conciencio al alumnado sobre la huella ecológica de la tecnología digital para que aprenda a utilizarla con mesura y criterio.",
+  "Promuevo en el centro el uso de modelos más eficientes y sostenibles, alineando la digitalización con los objetivos de sostenibilidad (ODS)."]},
+ {t:"Derechos de autor, licencias y fuentes", k:"Derechos de autor", s:"Quieres aportar materiales de terceros a una herramienta de IA o reutilizar un resultado generado en una actividad.", o:[
+  "Todavía no sé identificar qué derechos, licencias o condiciones de uso hay que comprobar antes de reutilizar materiales.",
+  "Compruebo si un material se puede reutilizar y cito las fuentes originales cuando corresponde.",
+  "Distingo entre autoría humana, fuentes originales y uso de IA; adapto materiales respetando licencias, atribución y condiciones de uso.",
+  "Diseño pautas reutilizables para seleccionar, atribuir y documentar materiales y resultados generados con IA de forma responsable."]},
+ {t:"Planificación de actividades y secuencias didácticas", k:"Planificación", s:"Diseñas una unidad o actividad nueva para tu grupo.", o:[
+  "Todavía no sé valorar si la IA puede aportar alguna mejora concreta a la planificación sin desalinearla de los objetivos de aprendizaje.",
+  "Utilizo la IA para generar ideas iniciales y selecciono algunas de acuerdo con los objetivos, el nivel y el contexto del grupo.",
+  "Creo o adapto borradores de secuencias con IA, verifico su calidad y los ajusto a la evaluación, la inclusión y las necesidades del aula.",
+  "Diseño, pruebo y reviso secuencias con IA a partir de evidencias de aprendizaje, haciendo explícitas las decisiones pedagógicas adoptadas."]},
+ {t:"Evaluación del proceso y metacognición", k:"Evaluación del proceso", s:"El alumnado ha utilizado IA en una actividad de aprendizaje.", o:[
+  "Todavía no incluyo evidencias del proceso ni de las decisiones tomadas cuando el alumnado utiliza IA.",
+  "Pido una breve reflexión sobre cómo se ha utilizado la IA y qué ha aportado o no a la tarea.",
+  "Evalúo evidencias proporcionadas de proceso, como fragmentos seleccionados, justificaciones, versiones o explicaciones orales, respetando la privacidad.",
+  "Diseño instrumentos que valoran autonomía, criterio, revisión crítica y capacidad de defensa del proceso, más allá del producto final."]},
+ {t:"Atención a la diversidad y personalización", k:"Diversidad", s:"Quieres adaptar recursos y actividades a ritmos, lenguas, necesidades y barreras de aprendizaje diversas.", o:[
+  "Adapto los materiales y las actividades de forma manual, sin utilizar herramientas de IA.",
+  "Utilizo la IA para elaborar una adaptación puntual, como aclarar el lenguaje u ofrecer formatos alternativos, y la reviso antes de usarla.",
+  "Diseño recursos e itinerarios adaptados a necesidades diversas, compruebo su accesibilidad y evito etiquetados o expectativas reducidas.",
+  "Pruebo y mejoro estrategias inclusivas con IA a partir de evidencias de uso, retornos del alumnado y criterios de equidad."]},
+ {t:"Diseño de instrumentos de evaluación", k:"Instrumentos de evaluación", s:"Necesitas crear una rúbrica, una lista de verificación o una parrilla de observación para una actividad.", o:[
+  "Redacto todos los criterios e indicadores de la rúbrica manualmente en un procesador de textos.",
+  "Utilizo la IA para revisar la claridad de la redacción de un instrumento que he elaborado.",
+  "Parto de un borrador generado con IA o de un instrumento propio, y reviso criterios, niveles de logro, lenguaje y evidencias.",
+  "Diseño, valido y reviso instrumentos con ejemplos de evidencias reales, asegurando la alineación con los objetivos y la equidad en la evaluación."]},
+ {t:"Retroalimentación formativa", k:"Retroalimentación", s:"Tienes que ofrecer retroalimentación personalizada al alumnado después de una actividad.", o:[
+  "Todavía no sé valorar si un borrador de retroalimentación generado con IA es exacto, adecuado y útil para cada alumno o alumna.",
+  "Utilizo la IA para mejorar la claridad o la estructura de un comentario redactado por mí, sin compartir datos innecesarios.",
+  "Genero borradores en un entorno autorizado con información minimizada, y reviso exactitud, tono, equidad y personalización antes de compartirlos.",
+  "Diseño y reviso flujos de retroalimentación con control docente obligatorio, criterios de calidad y comprobación del impacto en el aprendizaje."]},
+ {t:"Asistentes educativos y tutoría socrática", k:"Asistentes educativos", s:"Quieres ofrecer un recurso interactivo para que el alumnado pueda explorar dudas durante su trabajo.", o:[
+  "Atiendo todas las dudas de forma directa y presencial, sin utilizar ningún tutor digital.",
+  "Propongo un recurso autorizado y explico al alumnado sus usos, límites, criterios de verificación y pautas de privacidad.",
+  "Diseño actividades en las que el alumnado formula preguntas, contrasta respuestas y utiliza el asistente para razonar, no solo para obtener soluciones.",
+  "Configuro o adapto un asistente con objetivos, fuentes y límites explícitos; lo pruebo con casos diversos y reviso su impacto y sus incidencias."]},
+ {t:"Aprendizaje profesional propio", k:"Aprendizaje propio", s:"Quieres mejorar tu competencia docente en IA durante el curso.", o:[
+  "Todavía no he identificado qué necesidades formativas tengo ni qué conocimientos o prácticas quiero mejorar.",
+  "Participo en actividades formativas básicas y pruebo de forma guiada alguna práctica nueva en mi contexto docente.",
+  "Defino objetivos de aprendizaje propios, recojo evidencias de práctica y ajusto mi itinerario a partir de resultados y retornos.",
+  "Diseño, documento y comparto un itinerario de mejora basado en evidencias, transfiriendo aprendizajes que otros docentes puedan adaptar."]},
+ {t:"Organización y gestión docente", k:"Gestión docente", s:"Tienes que preparar documentos, resúmenes, comunicaciones o materiales organizativos habituales.", o:[
+  "Redacto todas las actas, memorias y comunicaciones de forma cien por cien manual, desde un documento en blanco.",
+  "Utilizo la IA para revisar la claridad, la lengua o la estructura de un documento propio, sin incluir información sensible innecesaria.",
+  "Genero borradores a partir de información autorizada y minimizada, y verifico completamente contenido, tono, datos y destinatarios.",
+  "Configuro o adapto plantillas y flujos autorizados con controles humanos, criterios de calidad y revisión periódica de su funcionamiento."]},
+ {t:"Colaboración y compartición de recursos", k:"Colaboración", s:"Has creado o adaptado una actividad, un recurso o una pauta de uso de IA que podría ser útil a otros docentes.", o:[
+  "Todavía no documento ni comparto de forma estructurada prácticas o recursos de IA que puedan ser útiles a otras personas.",
+  "Comparto una idea, un recurso o una advertencia práctica con compañeros de mi equipo.",
+  "Comparto recursos contextualizados con objetivo, instrucciones, límites, licencia o atribución, y devuelvo las mejoras sugeridas por otros docentes.",
+  "Codiseño, reviso y mantengo recursos reutilizables con la comunidad profesional, documentando condiciones de uso, evidencias y limitaciones."]},
+ {t:"Participación en criterios y protocolos de centro", k:"Protocolos de centro", s:"El centro revisa criterios comunes sobre el uso educativo de la IA.", o:[
+  "Todavía no conozco los criterios, protocolos o canales de participación del centro relacionados con la IA.",
+  "Conozco los criterios básicos del centro y planteo dudas o necesidades surgidas de mi práctica.",
+  "Aplico los criterios acordados, aporto evidencias de práctica y colaboro en la revisión de orientaciones o protocolos concretos.",
+  "Contribuyo a diseñar, probar y revisar criterios de centro sobre finalidad educativa, equidad, privacidad, transparencia y respuesta a incidencias."]}
+ ]
+};
+TX.en = {
+ dims: [["Understanding and safe use of AI","Safe use"],["Ethics and a humanist view of AI","Ethics"],["Pedagogy with AI","Pedagogy"],["Professional development and contribution to the school","Prof. devel."]],
+ levels: ["Initial","Basic","Intermediate","Advanced"],
+ etapes: {INF:"Early years", PRI:"Primary", ESO:"Lower secondary", BAT:"Baccalaureate", CF:"Vocational training", ALT:"Other"},
+ recursos: {6:"IRIS Generator (AI-use statements)", 2:"FECC protocol for responsible AI use", 3:"FECC protocol for responsible AI use", 19:"FECC protocol and FECC framework for AI integration"},
+ items: [
+ {t:"Understanding capabilities and limitations", k:"Capabilities and limits", s:"In a work conversation you have to decide whether an AI tool can help solve a specific teaching need.", o:[
+  "I do not yet use AI tools or know the basic technical concepts of how they work.",
+  "I recognise the basic uses and limitations of a common tool and use it for a simple task, with caution.",
+  "I compare options, anticipate errors or limits and justify whether the tool suits the context, the goal and the students.",
+  "I design and review transferable criteria to assess the capabilities, limitations and risks of AI tools in diverse teaching situations."]},
+ {t:"Formulating prompts and iterative review", k:"Prompts", s:"You want an initial proposal for content or an activity for a session with your group.", o:[
+  "I do not yet know how to formulate a request that helps the tool understand the goal, the context or the expected result.",
+  "I make a clear, simple request, state the purpose and check whether the answer contains obvious errors.",
+  "I provide context, audience, constraints and format; I refine the prompt and check the result against the teaching goals.",
+  "I design iterative querying strategies with explicit quality criteria and human review before incorporating the results."]},
+ {t:"Data protection and confidentiality", k:"Data protection", s:"You need to work with information about students in an environment that includes AI.", o:[
+  "I do not yet know how to determine what information can be shared, which data must be protected or which environments are authorised.",
+  "I avoid unnecessary personal data and use tools or environments the school has authorised for everyday uses.",
+  "I actively anonymise data, turn off the model's training history and review privacy policies before working with it.",
+  "I design and review working practices with minimised data, authorised environments and clear routes to escalate doubts or incidents."]},
+ {t:"Security and responsible use of tools", k:"Security", s:"An AI tool asks for permissions, offers an external link or receives instructions that seem to try to alter its behaviour.", o:[
+  "I do not yet identify basic security risks or know what measures to apply in a doubtful situation.",
+  "I recognise basic signs of risk, never share credentials or sensitive information and only use authorised options.",
+  "I check permissions, links and settings, apply preventive measures and explain to students how to act safely.",
+  "I set and review safe-use guidelines for teaching activities, documenting incidents and referring them to the people responsible."]},
+ {t:"Verifying generated information", k:"Verification", s:"The AI gives you an answer that seems very well argued, but you doubt that the data or quotations are real.", o:[
+  "I do not yet apply a clear procedure to check claims, data, sources or quotations produced by an AI tool.",
+  "I check relevant data against reliable sources before reusing a generated answer.",
+  "I systematically cross-check claims, quotations and examples with independent sources and explain the reliability criterion I used.",
+  "I design transferable verification activities and criteria so that students and teachers identify errors, omissions and information bias."]},
+ {t:"Human agency and the pedagogical bond", k:"Human agency", s:"AI lets you automate part of your planning, communication or preparation of materials.", o:[
+  "I do not yet make explicit which decisions require teacher judgement and direct human interaction.",
+  "I use AI only for well-defined tasks and keep the final decision on content, tone and teaching action.",
+  "I consciously decide what to delegate and what not to, and check that AI use does not reduce support for students or their autonomy.",
+  "I design practices that integrate AI with clear pedagogical limits, preserving teacher responsibility, student agency and the educational bond."]},
+ {t:"Transparency, authorship and academic integrity", k:"Transparency and authorship", s:"You detect or suspect that a student has used AI tools to produce a piece of work for submission.", o:[
+  "I have not yet defined how students should explain their use of AI or how that use affects assessment.",
+  "I explain which uses are allowed and ask students to state simply whether they have used an AI tool.",
+  "I design tasks that require a proportionate statement of the tool, the purpose, the parts affected and the student's own decisions.",
+  "I design assessments that value process, justification, authorship and the ability to defend the work, with transparent criteria on AI use."]},
+ {t:"Bias, inclusion and equity", k:"Bias and equity", s:"A generated answer reproduces a gender, cultural, social or disability stereotype.", o:[
+  "I do not yet recognise how an AI output can reproduce or amplify stereotypes and exclusion.",
+  "I detect potentially discriminatory outputs and avoid including them in materials or activities.",
+  "I analyse with students or the teaching team the likely origin of the bias and adapt materials, examples and tasks to reduce its effect.",
+  "I design inclusive review criteria for AI-generated materials and improve them from cases, evidence and user feedback."]},
+ {t:"Sustainability and proportionate use", k:"Sustainability", s:"The school is debating the energy cost and resource consumption caused by the massive use of AI models.", o:[
+  "I am unaware of the environmental impact or ecological footprint of running AI.",
+  "I am aware that AI consumes a lot of energy and water, and I try to use it responsibly and not superfluously.",
+  "I raise students' awareness of the ecological footprint of digital technology so they learn to use it with moderation and judgement.",
+  "I promote the use of more efficient and sustainable models in the school, aligning digitalisation with the sustainable development goals (SDGs)."]},
+ {t:"Copyright, licences and sources", k:"Copyright", s:"You want to feed third-party materials into an AI tool or reuse a generated output in an activity.", o:[
+  "I do not yet know how to identify which rights, licences or terms of use must be checked before reusing materials.",
+  "I check whether a material may be reused and cite the original sources where appropriate.",
+  "I distinguish between human authorship, original sources and AI use; I adapt materials respecting licences, attribution and terms of use.",
+  "I design reusable guidelines to select, attribute and document materials and AI-generated outputs responsibly."]},
+ {t:"Planning activities and teaching sequences", k:"Planning", s:"You are designing a new unit or activity for your group.", o:[
+  "I do not yet know how to judge whether AI can bring a specific improvement to planning without drifting from the learning goals.",
+  "I use AI to generate initial ideas and select some according to the goals, level and context of the group.",
+  "I create or adapt draft sequences with AI, verify their quality and adjust them to assessment, inclusion and classroom needs.",
+  "I design, test and review sequences with AI based on learning evidence, making the pedagogical decisions explicit."]},
+ {t:"Assessing process and metacognition", k:"Process assessment", s:"Students have used AI in a learning activity.", o:[
+  "I do not yet include evidence of the process or of the decisions taken when students use AI.",
+  "I ask for a brief reflection on how AI was used and what it did or did not contribute to the task.",
+  "I assess proportionate process evidence, such as selected excerpts, justifications, versions or oral explanations, respecting privacy.",
+  "I design instruments that value autonomy, judgement, critical review and the ability to defend the process, beyond the final product."]},
+ {t:"Attention to diversity and personalisation", k:"Diversity", s:"You want to adapt resources and activities to diverse paces, languages, needs and learning barriers.", o:[
+  "I adapt materials and activities manually, without using AI tools.",
+  "I use AI for a one-off adaptation, such as simplifying language or offering alternative formats, and review it before use.",
+  "I design resources and pathways adapted to diverse needs, check their accessibility and avoid labelling or lowered expectations.",
+  "I test and improve inclusive strategies with AI based on usage evidence, student feedback and equity criteria."]},
+ {t:"Designing assessment instruments", k:"Assessment instruments", s:"You need to create a rubric, a checklist or an observation grid for an activity.", o:[
+  "I write all the criteria and indicators of the rubric by hand in a word processor.",
+  "I use AI to review the clarity of the wording of an instrument I have created.",
+  "I start from an AI-generated draft or my own instrument and review criteria, achievement levels, language and evidence.",
+  "I design, validate and review instruments with examples of real evidence, ensuring alignment with the goals and fairness in assessment."]},
+ {t:"Formative feedback", k:"Feedback", s:"You have to give students personalised feedback after an activity.", o:[
+  "I do not yet know how to judge whether an AI-generated feedback draft is accurate, appropriate and useful for each student.",
+  "I use AI to improve the clarity or structure of a comment I wrote myself, without sharing unnecessary data.",
+  "I generate drafts in an authorised environment with minimised information, and review accuracy, tone, fairness and personalisation before sharing them.",
+  "I design and review feedback workflows with mandatory teacher control, quality criteria and checks on their impact on learning."]},
+ {t:"Educational assistants and Socratic tutoring", k:"Educational assistants", s:"You want to offer an interactive resource so students can explore questions while they work.", o:[
+  "I deal with all questions directly and in person, without using any digital tutor.",
+  "I propose an authorised resource and explain to students its uses, limits, verification criteria and privacy guidelines.",
+  "I design activities in which students ask questions, compare answers and use the assistant to reason, not just to get solutions.",
+  "I configure or adapt an assistant with explicit goals, sources and limits; I test it with diverse cases and review its impact and incidents."]},
+ {t:"Own professional learning", k:"Own learning", s:"You want to improve your teaching competence in AI during the school year.", o:[
+  "I have not yet identified my training needs or which knowledge or practices I want to improve.",
+  "I take part in basic training activities and try out some new practice in my teaching context, with guidance.",
+  "I set my own learning goals, collect evidence of practice and adjust my pathway based on results and feedback.",
+  "I design, document and share an evidence-based improvement pathway, transferring learning that other teachers can adapt."]},
+ {t:"Organisation and teaching management", k:"Teaching management", s:"You have to prepare routine documents, summaries, communications or organisational materials.", o:[
+  "I write all minutes, reports and communications entirely by hand, from a blank document.",
+  "I use AI to review the clarity, language or structure of my own document, without including unnecessary sensitive information.",
+  "I generate drafts from authorised, minimised information and fully verify content, tone, data and recipients.",
+  "I configure or adapt authorised templates and workflows with human controls, quality criteria and periodic review of how they work."]},
+ {t:"Collaboration and sharing resources", k:"Collaboration", s:"You have created or adapted an activity, a resource or an AI-use guideline that could be useful to other teachers.", o:[
+  "I do not yet document or share, in a structured way, AI practices or resources that could help others.",
+  "I share an idea, a resource or a practical warning with colleagues in my team.",
+  "I share contextualised resources with goal, instructions, limits, licence or attribution, and feed back the improvements suggested by other teachers.",
+  "I co-design, review and maintain reusable resources with the professional community, documenting terms of use, evidence and limitations."]},
+ {t:"Taking part in school criteria and protocols", k:"School protocols", s:"The school is reviewing shared criteria on the educational use of AI.", o:[
+  "I do not yet know the school's criteria, protocols or participation channels related to AI.",
+  "I know the school's basic criteria and raise doubts or needs arising from my practice.",
+  "I apply the agreed criteria, contribute evidence from practice and collaborate in reviewing specific guidelines or protocols.",
+  "I help design, test and review school criteria on educational purpose, equity, privacy, transparency and incident response."]}
+ ]
+};
+
+/* =====================================================================
+   MULTIIDIOMA · textos de la interfície (ca · es · en)
+   ===================================================================== */
+const UI = {
+ca:{
+ title:"SELFIE · Competència digital docent en IA",
+ brand:"SELFIE · Competència digital docent en IA",
+ brandSub:"Autoavaluació individual i quadre de comandament d'equip · Marc FECC",
+ nav:{self:"El meu SELFIE", team:"Equip", evo:"Evolució", net:"Xarxa"},
+ footer:`Instrument: <b>Autoavaluació de la Competència Digital Docent en IA</b> (Grup d'Experts en l'Àmbit Digital de la FECC), alineat amb <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, desembre 2025).<br>Tot es calcula al teu navegador: no es desa ni s'envia cap dada. Les respostes només viatgen en el codi SELFIE que tu decideixes compartir.`,
+ radarAria:"Radar de 20 situacions en 4 dimensions",
+ h1:`Com et situes avui amb la IA <em>a la teva docència</em>?`,
+ intro:"Vint situacions reals, quatre maneres de respondre-hi. Tries la que més s'assembla al que fas. Uns sis minuts, cap dada personal, i al final el teu radar i els teus propers passos.",
+ start:"Comença el SELFIE", meta:"20 situacions · ~6 min",
+ priv:`<b>Les teves respostes no surten del navegador.</b> Al final obtindràs un <b>codi SELFIE</b> d'una vintena de caràcters, sense nom ni correu: només el comparteixes amb l'equip directiu si vols formar part de la fotografia d'equip.`,
+ codePh:"Tens un codi SELFIE? Enganxa'l aquí per tornar a veure el teu radar", open:"Obre",
+ fourDims:"Les quatre dimensions", situations:"situacions",
+ stagesNote:`Les respostes es corresponen amb les etapes del marc del Departament: <b>Inicial</b> (encara no), <b>Bàsica</b> (accés), <b>Intermèdia</b> (experiència) i <b>Avançada</b> (innovació).`,
+ codeTypo:"El codi té algun caràcter mal copiat: revisa'l.", codeBad:"Aquest codi no és vàlid.",
+ prev:"← Anterior", next:"Següent →", seeRadar:"Veure el meu radar",
+ hint:"Tria l'opció que més s'assembla al que fas avui — no la que t'agradaria. Tecles 1–4 per respondre.",
+ yourSelfie:"El teu SELFIE:", of3:v=>`${v} sobre 3`, myProfile:"El meu perfil", byDim:"Per dimensió", nextSteps:"Els teus propers passos",
+ fromTo:(a,b)=>`de ${a} a ${b}`, resource:"Recurs:", allAdv:"Nivell avançat a totes les dimensions: la teva aportació ara és acompanyar l'equip.",
+ yourCode:"El teu codi SELFIE",
+ codeNote:"Les teves 20 respostes codificades (no es llegeixen a simple vista, però no és un xifratge), un caràcter de control contra errors de còpia, l'etapa si ho vols, i quatre caràcters aleatoris que només distingeixen respostes idèntiques dins d'un mateix equip. Cap nom, cap correu. Fes-lo arribar a l'equip directiu pel canal que us hàgiu donat (formulari, correu, xat): així entres a la fotografia d'equip.",
+ stageLbl:"Etapa (opcional, per a la fotografia d'equip)", noStage:"— No indicar —",
+ aliasLbl:"Àlies (opcional, només al fitxer)", aliasPh:"Ex.: M.R. o Tutor 3r",
+ outputs:"Sortides", copyCode:"Copia el codi", dlFile:"Baixa el fitxer", radarPng:"Radar PNG", badgePng:"Insígnia PNG", print:"Imprimeix", redo:"Torna a començar",
+ fileNote:`El fitxer <code>.selfie.json</code> és l'alternativa al codi per a qui prefereixi adjuntar un document; conté el mateix més l'àlies, si l'has posat.`,
+ copied:"Codi copiat al porta-retalls.", copyFail:"Selecciona el codi i copia'l amb Ctrl+C.", fileDl:"Fitxer descarregat.",
+ pngDl:"Radar descarregat en PNG.", pngErr:"No s'ha pogut generar el PNG en aquest navegador.",
+ badgeDl:"Insígnia d'autoavaluació descarregada en PNG.", badgeErr:"No s'ha pogut generar la insígnia en aquest navegador.",
+ badgeTitle:"AUTOAVALUACIÓ · COMPETÈNCIA DIGITAL DOCENT EN IA", badgeSub:(v,d)=>`Etapa global · ${v} sobre 3 · ${d}`,
+ badgeHint:"Enganxa aquest codi a l'eina per tornar a veure el radar",
+ badgeFoot:"DECLARACIÓ PRÒPIA SEGONS L'INSTRUMENT FECC · MARC CDD-IA DEL DEPARTAMENT D'EDUCACIÓ",
+ teamH1:"Fotografia d'equip",
+ teamIntro:`Enganxa aquí els codis SELFIE rebuts — val qualsevol text que els contingui (un correu, una columna de full de càlcul, un xat). També pots deixar-hi anar fitxers <code>.selfie.json</code>.`,
+ addCodes:"Afegeix els codis", loadDemo:"Carrega un equip de mostra", clear:"Buida",
+ dropTeam:`Arrossega aquí fitxers <b>.selfie.json</b> (o fes-hi clic per triar-los)`,
+ staffLbl:"Plantilla docent (per calcular la participació)", staffPh:"Ex.: 42", minNLbl:"Mida mínima d'un grup per mostrar-lo",
+ roundLbl:"Nom de la ronda", roundPh:"Ex.: Octubre 2026", centerLbl:"Centre (opcional, només per a la instantània)", centerPh:"Ex.: Escola Sant Jordi",
+ saveSnap:"Desa la instantània",
+ teamPriv:`Privacitat per disseny: cap nom ni correu; els perfils individuals només es mostren de manera anònima i els grups només si arriben a la mida mínima. La instantània és un fitxer anònim (codis i plantilla) que el mòdul <b>Evolució</b> pot tornar a obrir d'aquí a uns mesos.`,
+ noneToSave:"Encara no hi ha cap SELFIE per desar.", roundDefault:"ronda",
+ snapSaved:"Instantània desada. Guarda-la: és la ronda que compararàs més endavant.",
+ added:(a,d,b)=>`${a} SELFIE(s) afegit(s)${d?` · ${d} ja hi eren`:""}${b?` · ${b} amb algun caràcter mal copiat`:""}.`,
+ noneFound:"No s'ha trobat cap codi SELFIE al text.",
+ filesAdded:(a,b)=>`${a} fitxer(s) afegit(s)${b?` · ${b} no vàlid(s)`:""}.`,
+ demoLoaded:"Equip de mostra carregat (24 docents fictícies).",
+ dashEmpty:"Encara no hi ha cap SELFIE carregat. Enganxa codis, deixa-hi fitxers o prova l'equip de mostra.",
+ kParticipation:"Participació", ofStaff:"% de la plantilla", withSelfie:"docents amb SELFIE",
+ kIndex:"Índex SELFIE d'equip", predominant:"Etapa predominant:",
+ kStrong:"Dimensió més forta", kPriority:"Prioritat", kRisk:"Seguretat i dades",
+ riskSub:"en nivell inicial en dades, seguretat, verificació o drets d'autor",
+ kCoh:"Cohesió", coh:["Equip homogeni","Equip divers","Equip polaritzat"], cohSub:v=>`dispersió mitjana ${v}`,
+ kTalent:"Talent intern", talentSub:"docents amb alguna pràctica avançada: possibles referents",
+ teamRadar:"Radar de l'equip · 20 situacions", tInd:"Perfils individuals (anònims)", tSeg:"Compara per etapa",
+ teamSeries:n=>`Equip (${n})`, eachTeacher:"cada docent",
+ hiddenSeg:(h,m)=>`${h} etapa/es amb menys de ${m} persones no es mostren per separat (privacitat).`,
+ whereTeam:"On és l'equip", strengths:"Fortaleses", priorities:"Prioritats",
+ heatTitle:"Mapa de calor · % de l'equip a cada nivell",
+ heatNote:"Lectura ràpida: les columnes de l'esquerra fosques assenyalen on cal formació de base; la columna «Avançats» diu quants docents poden fer de referents en cada situació.",
+ byStage:"Per etapa educativa", thStage:"Etapa", thGlobal:"Global", thSituation:"Situació", thMean:"Mitjana", thAdv:"Avançats",
+ dafoTitle:"DAFO de la fotografia actual", dafoSub:"· esborrany generat a partir de les dades, editable", printDash:"Imprimeix el quadre",
+ quad:["Fortaleses","Debilitats","Oportunitats","Amenaces"], rule:"regla:",
+ dafoNote:"Cada afirmació indica la regla que l'ha generat. L'equip directiu l'ha de contrastar, completar amb el que les dades no veuen i convertir-la en decisions.",
+ plaTitle:"Pla de millora suggerit · tres prioritats",
+ plaMeta:(d,m,a,b)=>`(D${d} · mitjana ${m}, de ${a} a ${b})`, teamGoal:"Objectiu d'equip:",
+ plaNote:"L'objectiu és, literalment, el descriptor del nivell següent de l'instrument: el que l'equip hauria de poder dir de si mateix d'aquí a un curs. Repetir el SELFIE al final del curs permet mesurar-ho.",
+ R:{
+  dimStrong:(lv,nom,m)=>`L'equip se situa en etapa ${lv} en «${nom}» (mitjana ${m}).`, rDimStrong:"mitjana de dimensió ≥ 1,75",
+  dimWeak:(nom,m)=>`«${nom}» queda entre l'etapa inicial i la bàsica (mitjana ${m}): és la prioritat formativa de fons.`, rDimWeak:"mitjana de dimensió < 1",
+  dimSpread:(curt,s)=>`Pràctiques molt desiguals en «${curt}» (dispersió ${s}): l'alumnat rep experiències diferents segons el docent.`, rDimSpread:"dispersió ≥ 0,85",
+  oneRef:curt=>`Un sol referent avançat en «${curt}»: el coneixement depèn d'una persona.`, rOneRef:"exactament 1 persona amb resposta D",
+  refs:list=>`Referents interns disponibles (docents amb alguna pràctica avançada): ${list}.`, refIn:(n,curt)=>`${n} en ${curt}`, rRefs:"≥ 2 persones amb alguna resposta D per dimensió",
+  itemStrong:(nm,m)=>`Fortalesa concreta: ${nm} (mitjana ${m}).`, rItemStrong:"situació amb mitjana ≥ 2",
+  itemWeak:(nm,m)=>`Punt feble concret: ${nm} (mitjana ${m}).`, rItemWeak:"situació amb mitjana < 1",
+  notStarted:(p,nm)=>`El ${p}% de l'equip encara no ha començat en ${nm}.`, rNotStarted:"≥ 40% en nivell inicial",
+  zone:(nm,p)=>`Zona de progrés en ${nm}: majoria en nivell bàsic i un ${p}% ja en intermèdia o avançada que pot fer d'aprenentatge entre iguals.`, rZone:"≥ 40% en bàsica i ≥ 25% en intermèdia/avançada (3 millors)",
+  risk:p=>`El ${p}% de l'equip es declara en nivell inicial en dades, seguretat, verificació o drets d'autor: exposició a incidències de privacitat i a desinformació.`, rRisk:"≥ 25% amb alguna A a les situacions 3, 4, 5 o 10",
+  iris:"Transparència i autoria (situació 7) per sota de l'etapa intermèdia: l'ús d'IA per part de l'alumnat pot avançar més de pressa que els criteris d'avaluació. Recurs: Generador IRIS.", rIris:"situació 7 amb mitjana < 1,5",
+  protocols:"Els protocols de centre (situació 20) encara no són coneguts per bona part de l'equip: una sessió de claustre sobre el Protocol FECC tindria efecte immediat.", rProtocols:"situació 20 amb mitjana < 1,5",
+  sharing:"Hi ha cultura de compartir (situació 19): es pot formalitzar un banc de recursos i pràctiques d'IA del centre.", rSharing:"situació 19 amb mitjana ≥ 1,5",
+  partic:p=>`Participació del ${p}%: la fotografia pot no representar tot l'equip.`, rPartic:"participació < 60%",
+  gap:(g,a,b)=>`Diferència de ${g} punts entre ${a} i ${b}: desigualtat d'experiència per a l'alumnat segons l'etapa.`, rGap:"diferència entre etapes ≥ 0,6",
+  dept:"El marc del Departament (2025) i l'instrument FECC comparteixen dimensions: la formació es pot alinear directament amb els descriptors oficials.", rContext:"context",
+  noF:"Encara no hi ha fortaleses clares a nivell d'equip: el punt de partida és compartit i això facilita una formació comuna.", rNoF:"cap dimensió ≥ 1,75",
+  noD:"Cap dimensió per sota de l'etapa bàsica: la millora és d'aprofundiment, no de base.", rNoD:"cap dimensió < 1"
+ },
+ evoH1:"Evolució de l'equip",
+ evoIntro:"Compara dues rondes del SELFIE: la d'inici de curs i la d'ara, per exemple. Cada ronda pot venir d'una instantània desada al quadre d'equip o d'un text amb codis. La comparació és d'equip (distribucions i mitjanes), mai de persones.",
+ slot:{A:"Ronda anterior",B:"Ronda actual"}, selfies:"SELFIES", label:"Etiqueta", slotPh:{A:"Ex.: Octubre 2026",B:"Ex.: Juny 2027"},
+ evoPastePh:"Enganxa aquí codis SELFIE o deixa anar instantànies de centre (.selfie-equip.json) o de xarxa (.selfie-xarxa.json)",
+ add:"Afegeix", openSnap:"Obre una instantània", takeTeam:n=>`Pren l'equip del quadre (${n})`, evoDemo:"Carrega dues rondes de mostra",
+ evoAdded:(a,s,b)=>`${a} SELFIE(s) afegit(s) a «${s}»${b?` · ${b} amb algun caràcter mal copiat`:""}.`,
+ evoFiles:(a,s)=>`${a} SELFIE(s) afegit(s) a «${s}».`,
+ demoA:"Octubre 2026", demoB:"Juny 2027", evoDemoLoaded:"Dues rondes de mostra carregades (24 docents fictícies).",
+ evoEmpty:"Carrega les dues rondes per veure l'evolució.",
+ L:{
+  idx:(a,b,d,la,lb,na,nb)=>`L'índex SELFIE d'equip ha passat de ${a} a ${b} (${d} punts) entre «${la}» i «${lb}»${na!==nb?`, amb ${na} i ${nb} SELFIES respectivament`:""}.`,
+  dims:(best,db,worst,dw)=>`La dimensió que més ha crescut és «${best}» (${db}); la que menys, «${worst}» (${dw}).`,
+  stages:(a0,b0,a3,b3)=>`La proporció de docents en etapa inicial ha passat del ${a0}% al ${b0}%; en avançada, del ${a3}% al ${b3}%.`,
+  risk:(a,b)=>`Seguretat i dades: del ${a}% al ${b}% de docents en nivell inicial en alguna de les situacions 3, 4, 5 o 10.`,
+  coh:(a,b,dir)=>`Cohesió: dispersió mitjana de ${a} a ${b} — l'equip ${dir<0?"s'ha fet més homogeni":dir>0?"s'ha polaritzat":"manté la mateixa cohesió"}.`,
+  downs:list=>`Retrocessos a vigilar: ${list}.`,
+  plan:(la,ass,tot,prog,pend)=>`Pla de millora de «${la}»: ${ass} de ${tot} prioritats assolides, ${prog} en progrés, ${pend} pendents.`
+ },
+ kTeamIdx:"Índex d'equip", before:"abans", stage:"etapa", kInitial:"En etapa inicial", kAdvanced:"En etapa avançada", pp:"pp", inInitial:"en nivell inicial",
+ cohShort:["Homogeni","Divers","Polaritzat"], dispersion:"dispersió",
+ autoRead:"Lectura automàtica", radarVs:(a,b)=>`Radar · ${a} vs ${b}`, replay:"▶ Torna a veure l'evolució",
+ varByDim:"Variació per dimensió", distStages:"Distribució per etapes", ups:"Més han pujat", downs:"Han baixat", noUps:"Cap pujada rellevant.", noDowns:"Cap retrocés.",
+ varMap:"Mapa de variació · 20 situacions", thVar:"Variació", thPctInit:"% inicial", thPctAdv:"% avançada",
+ plaOf:la=>`Pla de millora de «${la}» · què se n'ha fet`, printEvo:"Imprimeix l'evolució",
+ chips:{a:"Assolit",p:"En progrés",n:"Pendent"}, goalMeta:(to,m,now)=>`objectiu: etapa ${to} · mitjana ${m} → ${now}`,
+ evoPlaNote:"Les prioritats són les que el quadre d'equip hauria proposat amb les dades de la ronda anterior. «Assolit» vol dir que la mitjana de l'equip ha arribat a l'etapa objectiu; «en progrés», que ha pujat sense arribar-hi.",
+ netH1:"Vista de xarxa",
+ netIntro:"Per a qui agrega diversos centres —una fundació, una titularitat, una delegació o tota una xarxa—: deixa aquí les instantànies que els centres t'han fet arribar, totes de cop, i obtindràs el resum global. Es descarten les instantànies repetides (mateix identificador), mai les persones. Tot es calcula en aquest navegador.",
+ dropNet:`Arrossega aquí les instantànies <b>.selfie-equip.json</b> dels centres (o fes-hi clic per triar-les)`,
+ netDemo:"Carrega una xarxa de mostra", netRoundLbl:"Nom de la ronda de xarxa", netMinLbl:"Mida mínima de centre", saveNet:"Desa la instantània de xarxa",
+ netNote:"La instantània de xarxa és un sol fitxer amb totes les instantànies de centre d'aquesta ronda. Serveix per tornar-la a obrir aquí i, sobretot, per deixar-la a «Ronda anterior» o «Ronda actual» de la pestanya Evolució i veure com avança tota la xarxa.",
+ netPrefix:"xarxa", netSaved:n=>`Instantània de xarxa desada: ${n} centres en un sol fitxer.`,
+ netAdded:(a,d,b)=>`${a} instantània/es de centre afegida/es${d?` · ${d} repetida/es`:""}${b?` · ${b} fitxer/s no vàlid/s`:""}.`,
+ netDemoLoaded:"Xarxa de mostra carregada: 12 centres ficticis.",
+ netEmpty:"Encara no hi ha cap instantània. Deixa-hi els fitxers dels centres o prova la xarxa de mostra.",
+ kCenters:"Centres", smallCenters:(s,m)=>`${s} amb menys de ${m} docents (només al global)`, snapsLoaded:"instantànies carregades",
+ kTeachers:"Docents", partWhere:p=>`participació ${p}% on hi ha plantilla`, aggregated:"SELFIES agregats",
+ kNetIdx:"Índex de xarxa", kNetPriority:"Prioritat de xarxa", kSpread:"Diferències entre centres", spread:["Xarxa homogènia","Xarxa diversa","Xarxa desigual"],
+ spreadSub:(a,b,s)=>`índex de ${a} a ${b} · dispersió ${s}`,
+ netRadar:"Radar de la xarxa · 20 situacions", overlay:m=>`Superposa cada centre (n ≥ ${m})`, netSeries:n=>`Xarxa (${n})`, eachCenter:"cada centre",
+ whereNet:"On és la xarxa", perCenter:"Per centre", printNet:"Imprimeix la vista de xarxa",
+ thCenter:"Centre", thRound:"Ronda", thPart:"Particip.", thIdx:"Índex", thRisk:"Seg. i dades", centerN:i=>`Centre ${i}`,
+ smallNote:(s,m)=>`${s} centre/s amb menys de ${m} docents compten al global però no es mostren per separat (privacitat). `,
+ netReading:"Lectura recomanada: els centres no són una classificació sinó un mapa de necessitats; el que importa és on cal acompanyament i on hi ha referents que poden ajudar altres centres.",
+ netHeat:"Mapa de calor de la xarxa · % de docents a cada nivell"
+},
+
+es:{
+ title:"SELFIE · Competencia digital docente en IA",
+ brand:"SELFIE · Competencia digital docente en IA",
+ brandSub:"Autoevaluación individual y cuadro de mando de equipo · Marco FECC",
+ nav:{self:"Mi SELFIE", team:"Equipo", evo:"Evolución", net:"Red"},
+ footer:`Instrumento: <b>Autoevaluación de la Competencia Digital Docente en IA</b> (Grupo de Expertos en el Ámbito Digital de la FECC), alineado con <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, diciembre de 2025). Traducción de trabajo; el original es el catalán.<br>Todo se calcula en tu navegador: no se guarda ni se envía ningún dato. Las respuestas solo viajan en el código SELFIE que tú decides compartir.`,
+ radarAria:"Radar de 20 situaciones en 4 dimensiones",
+ h1:`¿Cómo te sitúas hoy con la IA <em>en tu docencia</em>?`,
+ intro:"Veinte situaciones reales, cuatro maneras de responder. Eliges la que más se parece a lo que haces. Unos seis minutos, ningún dato personal, y al final tu radar y tus próximos pasos.",
+ start:"Empieza el SELFIE", meta:"20 situaciones · ~6 min",
+ priv:`<b>Tus respuestas no salen del navegador.</b> Al final obtendrás un <b>código SELFIE</b> de una veintena de caracteres, sin nombre ni correo: solo lo compartes con el equipo directivo si quieres formar parte de la fotografía de equipo.`,
+ codePh:"¿Tienes un código SELFIE? Pégalo aquí para volver a ver tu radar", open:"Abrir",
+ fourDims:"Las cuatro dimensiones", situations:"situaciones",
+ stagesNote:`Las respuestas se corresponden con las etapas del marco del Departament: <b>Inicial</b> (todavía no), <b>Básica</b> (acceso), <b>Intermedia</b> (experiencia) y <b>Avanzada</b> (innovación).`,
+ codeTypo:"El código tiene algún carácter mal copiado: revísalo.", codeBad:"Este código no es válido.",
+ prev:"← Anterior", next:"Siguiente →", seeRadar:"Ver mi radar",
+ hint:"Elige la opción que más se parece a lo que haces hoy — no a lo que te gustaría. Teclas 1–4 para responder.",
+ yourSelfie:"Tu SELFIE:", of3:v=>`${v} sobre 3`, myProfile:"Mi perfil", byDim:"Por dimensión", nextSteps:"Tus próximos pasos",
+ fromTo:(a,b)=>`de ${a} a ${b}`, resource:"Recurso:", allAdv:"Nivel avanzado en todas las dimensiones: tu aportación ahora es acompañar al equipo.",
+ yourCode:"Tu código SELFIE",
+ codeNote:"Tus 20 respuestas codificadas (no se leen a simple vista, pero no es un cifrado), un carácter de control contra errores de copia, la etapa si quieres, y cuatro caracteres aleatorios que solo distinguen respuestas idénticas dentro de un mismo equipo. Ningún nombre, ningún correo. Házselo llegar al equipo directivo por el canal que hayáis acordado (formulario, correo, chat): así entras en la fotografía de equipo.",
+ stageLbl:"Etapa (opcional, para la fotografía de equipo)", noStage:"— No indicar —",
+ aliasLbl:"Alias (opcional, solo en el archivo)", aliasPh:"Ej.: M.R. o Tutor 3.º",
+ outputs:"Salidas", copyCode:"Copia el código", dlFile:"Descarga el archivo", radarPng:"Radar PNG", badgePng:"Insignia PNG", print:"Imprimir", redo:"Volver a empezar",
+ fileNote:`El archivo <code>.selfie.json</code> es la alternativa al código para quien prefiera adjuntar un documento; contiene lo mismo más el alias, si lo has puesto.`,
+ copied:"Código copiado al portapapeles.", copyFail:"Selecciona el código y cópialo con Ctrl+C.", fileDl:"Archivo descargado.",
+ pngDl:"Radar descargado en PNG.", pngErr:"No se ha podido generar el PNG en este navegador.",
+ badgeDl:"Insignia de autoevaluación descargada en PNG.", badgeErr:"No se ha podido generar la insignia en este navegador.",
+ badgeTitle:"AUTOEVALUACIÓN · COMPETENCIA DIGITAL DOCENTE EN IA", badgeSub:(v,d)=>`Etapa global · ${v} sobre 3 · ${d}`,
+ badgeHint:"Pega este código en la herramienta para volver a ver el radar",
+ badgeFoot:"DECLARACIÓN PROPIA SEGÚN EL INSTRUMENTO FECC · MARCO CDD-IA DEL DEPARTAMENT D'EDUCACIÓ",
+ teamH1:"Fotografía de equipo",
+ teamIntro:`Pega aquí los códigos SELFIE recibidos — vale cualquier texto que los contenga (un correo, una columna de hoja de cálculo, un chat). También puedes soltar aquí archivos <code>.selfie.json</code>.`,
+ addCodes:"Añade los códigos", loadDemo:"Carga un equipo de muestra", clear:"Vaciar",
+ dropTeam:`Arrastra aquí archivos <b>.selfie.json</b> (o haz clic para elegirlos)`,
+ staffLbl:"Plantilla docente (para calcular la participación)", staffPh:"Ej.: 42", minNLbl:"Tamaño mínimo de un grupo para mostrarlo",
+ roundLbl:"Nombre de la ronda", roundPh:"Ej.: Octubre 2026", centerLbl:"Centro (opcional, solo para la instantánea)", centerPh:"Ej.: Escuela San Jorge",
+ saveSnap:"Guarda la instantánea",
+ teamPriv:`Privacidad por diseño: ningún nombre ni correo; los perfiles individuales solo se muestran de forma anónima y los grupos solo si alcanzan el tamaño mínimo. La instantánea es un archivo anónimo (códigos y plantilla) que el módulo <b>Evolución</b> puede volver a abrir dentro de unos meses.`,
+ noneToSave:"Todavía no hay ningún SELFIE que guardar.", roundDefault:"ronda",
+ snapSaved:"Instantánea guardada. Consérvala: es la ronda que compararás más adelante.",
+ added:(a,d,b)=>`${a} SELFIE(s) añadido(s)${d?` · ${d} ya estaban`:""}${b?` · ${b} con algún carácter mal copiado`:""}.`,
+ noneFound:"No se ha encontrado ningún código SELFIE en el texto.",
+ filesAdded:(a,b)=>`${a} archivo(s) añadido(s)${b?` · ${b} no válido(s)`:""}.`,
+ demoLoaded:"Equipo de muestra cargado (24 docentes ficticios).",
+ dashEmpty:"Todavía no hay ningún SELFIE cargado. Pega códigos, suelta archivos o prueba el equipo de muestra.",
+ kParticipation:"Participación", ofStaff:"% de la plantilla", withSelfie:"docentes con SELFIE",
+ kIndex:"Índice SELFIE de equipo", predominant:"Etapa predominante:",
+ kStrong:"Dimensión más fuerte", kPriority:"Prioridad", kRisk:"Seguridad y datos",
+ riskSub:"en nivel inicial en datos, seguridad, verificación o derechos de autor",
+ kCoh:"Cohesión", coh:["Equipo homogéneo","Equipo diverso","Equipo polarizado"], cohSub:v=>`dispersión media ${v}`,
+ kTalent:"Talento interno", talentSub:"docentes con alguna práctica avanzada: posibles referentes",
+ teamRadar:"Radar del equipo · 20 situaciones", tInd:"Perfiles individuales (anónimos)", tSeg:"Compara por etapa",
+ teamSeries:n=>`Equipo (${n})`, eachTeacher:"cada docente",
+ hiddenSeg:(h,m)=>`${h} etapa/s con menos de ${m} personas no se muestran por separado (privacidad).`,
+ whereTeam:"Dónde está el equipo", strengths:"Fortalezas", priorities:"Prioridades",
+ heatTitle:"Mapa de calor · % del equipo en cada nivel",
+ heatNote:"Lectura rápida: las columnas oscuras de la izquierda señalan dónde hace falta formación de base; la columna «Avanzados» dice cuántos docentes pueden actuar como referentes en cada situación.",
+ byStage:"Por etapa educativa", thStage:"Etapa", thGlobal:"Global", thSituation:"Situación", thMean:"Media", thAdv:"Avanzados",
+ dafoTitle:"DAFO de la fotografía actual", dafoSub:"· borrador generado a partir de los datos, editable", printDash:"Imprime el cuadro",
+ quad:["Fortalezas","Debilidades","Oportunidades","Amenazas"], rule:"regla:",
+ dafoNote:"Cada afirmación indica la regla que la ha generado. El equipo directivo debe contrastarla, completarla con lo que los datos no ven y convertirla en decisiones.",
+ plaTitle:"Plan de mejora sugerido · tres prioridades",
+ plaMeta:(d,m,a,b)=>`(D${d} · media ${m}, de ${a} a ${b})`, teamGoal:"Objetivo de equipo:",
+ plaNote:"El objetivo es, literalmente, el descriptor del nivel siguiente del instrumento: lo que el equipo debería poder decir de sí mismo dentro de un curso. Repetir el SELFIE al final del curso permite medirlo.",
+ R:{
+  dimStrong:(lv,nom,m)=>`El equipo se sitúa en etapa ${lv} en «${nom}» (media ${m}).`, rDimStrong:"media de dimensión ≥ 1,75",
+  dimWeak:(nom,m)=>`«${nom}» queda entre la etapa inicial y la básica (media ${m}): es la prioridad formativa de fondo.`, rDimWeak:"media de dimensión < 1",
+  dimSpread:(curt,s)=>`Prácticas muy desiguales en «${curt}» (dispersión ${s}): el alumnado recibe experiencias distintas según el docente.`, rDimSpread:"dispersión ≥ 0,85",
+  oneRef:curt=>`Un solo referente avanzado en «${curt}»: el conocimiento depende de una persona.`, rOneRef:"exactamente 1 persona con respuesta D",
+  refs:list=>`Referentes internos disponibles (docentes con alguna práctica avanzada): ${list}.`, refIn:(n,curt)=>`${n} en ${curt}`, rRefs:"≥ 2 personas con alguna respuesta D por dimensión",
+  itemStrong:(nm,m)=>`Fortaleza concreta: ${nm} (media ${m}).`, rItemStrong:"situación con media ≥ 2",
+  itemWeak:(nm,m)=>`Punto débil concreto: ${nm} (media ${m}).`, rItemWeak:"situación con media < 1",
+  notStarted:(p,nm)=>`El ${p}% del equipo todavía no ha empezado en ${nm}.`, rNotStarted:"≥ 40% en nivel inicial",
+  zone:(nm,p)=>`Zona de progreso en ${nm}: mayoría en nivel básico y un ${p}% ya en intermedia o avanzada que puede servir de aprendizaje entre iguales.`, rZone:"≥ 40% en básica y ≥ 25% en intermedia/avanzada (3 mejores)",
+  risk:p=>`El ${p}% del equipo se declara en nivel inicial en datos, seguridad, verificación o derechos de autor: exposición a incidencias de privacidad y a desinformación.`, rRisk:"≥ 25% con alguna A en las situaciones 3, 4, 5 o 10",
+  iris:"Transparencia y autoría (situación 7) por debajo de la etapa intermedia: el uso de IA por parte del alumnado puede avanzar más deprisa que los criterios de evaluación. Recurso: Generador IRIS.", rIris:"situación 7 con media < 1,5",
+  protocols:"Los protocolos de centro (situación 20) todavía no son conocidos por buena parte del equipo: una sesión de claustro sobre el Protocolo FECC tendría efecto inmediato.", rProtocols:"situación 20 con media < 1,5",
+  sharing:"Hay cultura de compartir (situación 19): se puede formalizar un banco de recursos y prácticas de IA del centro.", rSharing:"situación 19 con media ≥ 1,5",
+  partic:p=>`Participación del ${p}%: la fotografía puede no representar a todo el equipo.`, rPartic:"participación < 60%",
+  gap:(g,a,b)=>`Diferencia de ${g} puntos entre ${a} y ${b}: desigualdad de experiencia para el alumnado según la etapa.`, rGap:"diferencia entre etapas ≥ 0,6",
+  dept:"El marco del Departament (2025) y el instrumento FECC comparten dimensiones: la formación se puede alinear directamente con los descriptores oficiales.", rContext:"contexto",
+  noF:"Todavía no hay fortalezas claras a nivel de equipo: el punto de partida es compartido y eso facilita una formación común.", rNoF:"ninguna dimensión ≥ 1,75",
+  noD:"Ninguna dimensión por debajo de la etapa básica: la mejora es de profundización, no de base.", rNoD:"ninguna dimensión < 1"
+ },
+ evoH1:"Evolución del equipo",
+ evoIntro:"Compara dos rondas del SELFIE: la de inicio de curso y la de ahora, por ejemplo. Cada ronda puede venir de una instantánea guardada en el cuadro de equipo o de un texto con códigos. La comparación es de equipo (distribuciones y medias), nunca de personas.",
+ slot:{A:"Ronda anterior",B:"Ronda actual"}, selfies:"SELFIES", label:"Etiqueta", slotPh:{A:"Ej.: Octubre 2026",B:"Ej.: Junio 2027"},
+ evoPastePh:"Pega aquí códigos SELFIE o suelta instantáneas de centro (.selfie-equip.json) o de red (.selfie-xarxa.json)",
+ add:"Añadir", openSnap:"Abre una instantánea", takeTeam:n=>`Toma el equipo del cuadro (${n})`, evoDemo:"Carga dos rondas de muestra",
+ evoAdded:(a,s,b)=>`${a} SELFIE(s) añadido(s) a «${s}»${b?` · ${b} con algún carácter mal copiado`:""}.`,
+ evoFiles:(a,s)=>`${a} SELFIE(s) añadido(s) a «${s}».`,
+ demoA:"Octubre 2026", demoB:"Junio 2027", evoDemoLoaded:"Dos rondas de muestra cargadas (24 docentes ficticios).",
+ evoEmpty:"Carga las dos rondas para ver la evolución.",
+ L:{
+  idx:(a,b,d,la,lb,na,nb)=>`El índice SELFIE de equipo ha pasado de ${a} a ${b} (${d} puntos) entre «${la}» y «${lb}»${na!==nb?`, con ${na} y ${nb} SELFIES respectivamente`:""}.`,
+  dims:(best,db,worst,dw)=>`La dimensión que más ha crecido es «${best}» (${db}); la que menos, «${worst}» (${dw}).`,
+  stages:(a0,b0,a3,b3)=>`La proporción de docentes en etapa inicial ha pasado del ${a0}% al ${b0}%; en avanzada, del ${a3}% al ${b3}%.`,
+  risk:(a,b)=>`Seguridad y datos: del ${a}% al ${b}% de docentes en nivel inicial en alguna de las situaciones 3, 4, 5 o 10.`,
+  coh:(a,b,dir)=>`Cohesión: dispersión media de ${a} a ${b} — el equipo ${dir<0?"se ha hecho más homogéneo":dir>0?"se ha polarizado":"mantiene la misma cohesión"}.`,
+  downs:list=>`Retrocesos a vigilar: ${list}.`,
+  plan:(la,ass,tot,prog,pend)=>`Plan de mejora de «${la}»: ${ass} de ${tot} prioridades logradas, ${prog} en progreso, ${pend} pendientes.`
+ },
+ kTeamIdx:"Índice de equipo", before:"antes", stage:"etapa", kInitial:"En etapa inicial", kAdvanced:"En etapa avanzada", pp:"pp", inInitial:"en nivel inicial",
+ cohShort:["Homogéneo","Diverso","Polarizado"], dispersion:"dispersión",
+ autoRead:"Lectura automática", radarVs:(a,b)=>`Radar · ${a} vs ${b}`, replay:"▶ Volver a ver la evolución",
+ varByDim:"Variación por dimensión", distStages:"Distribución por etapas", ups:"Más han subido", downs:"Han bajado", noUps:"Ninguna subida relevante.", noDowns:"Ningún retroceso.",
+ varMap:"Mapa de variación · 20 situaciones", thVar:"Variación", thPctInit:"% inicial", thPctAdv:"% avanzada",
+ plaOf:la=>`Plan de mejora de «${la}» · qué se ha hecho`, printEvo:"Imprime la evolución",
+ chips:{a:"Logrado",p:"En progreso",n:"Pendiente"}, goalMeta:(to,m,now)=>`objetivo: etapa ${to} · media ${m} → ${now}`,
+ evoPlaNote:"Las prioridades son las que el cuadro de equipo habría propuesto con los datos de la ronda anterior. «Logrado» significa que la media del equipo ha alcanzado la etapa objetivo; «en progreso», que ha subido sin llegar.",
+ netH1:"Vista de red",
+ netIntro:"Para quien agrega varios centros —una fundación, una titularidad, una delegación o toda una red—: suelta aquí las instantáneas que los centros te han hecho llegar, todas de golpe, y obtendrás el resumen global. Se descartan las instantáneas repetidas (mismo identificador), nunca las personas. Todo se calcula en este navegador.",
+ dropNet:`Arrastra aquí las instantáneas <b>.selfie-equip.json</b> de los centros (o haz clic para elegirlas)`,
+ netDemo:"Carga una red de muestra", netRoundLbl:"Nombre de la ronda de red", netMinLbl:"Tamaño mínimo de centro", saveNet:"Guarda la instantánea de red",
+ netNote:"La instantánea de red es un solo archivo con todas las instantáneas de centro de esta ronda. Sirve para volver a abrirla aquí y, sobre todo, para soltarla en «Ronda anterior» o «Ronda actual» de la pestaña Evolución y ver cómo avanza toda la red.",
+ netPrefix:"red", netSaved:n=>`Instantánea de red guardada: ${n} centros en un solo archivo.`,
+ netAdded:(a,d,b)=>`${a} instantánea/s de centro añadida/s${d?` · ${d} repetida/s`:""}${b?` · ${b} archivo/s no válido/s`:""}.`,
+ netDemoLoaded:"Red de muestra cargada: 12 centros ficticios.",
+ netEmpty:"Todavía no hay ninguna instantánea. Suelta aquí los archivos de los centros o prueba la red de muestra.",
+ kCenters:"Centros", smallCenters:(s,m)=>`${s} con menos de ${m} docentes (solo en el global)`, snapsLoaded:"instantáneas cargadas",
+ kTeachers:"Docentes", partWhere:p=>`participación ${p}% donde hay plantilla`, aggregated:"SELFIES agregados",
+ kNetIdx:"Índice de red", kNetPriority:"Prioridad de red", kSpread:"Diferencias entre centros", spread:["Red homogénea","Red diversa","Red desigual"],
+ spreadSub:(a,b,s)=>`índice de ${a} a ${b} · dispersión ${s}`,
+ netRadar:"Radar de la red · 20 situaciones", overlay:m=>`Superpón cada centro (n ≥ ${m})`, netSeries:n=>`Red (${n})`, eachCenter:"cada centro",
+ whereNet:"Dónde está la red", perCenter:"Por centro", printNet:"Imprime la vista de red",
+ thCenter:"Centro", thRound:"Ronda", thPart:"Particip.", thIdx:"Índice", thRisk:"Seg. y datos", centerN:i=>`Centro ${i}`,
+ smallNote:(s,m)=>`${s} centro/s con menos de ${m} docentes cuentan en el global pero no se muestran por separado (privacidad). `,
+ netReading:"Lectura recomendada: los centros no son una clasificación sino un mapa de necesidades; lo que importa es dónde hace falta acompañamiento y dónde hay referentes que pueden ayudar a otros centros.",
+ netHeat:"Mapa de calor de la red · % de docentes en cada nivel"
+},
+
+en:{
+ title:"SELFIE · Teachers' digital competence in AI",
+ brand:"SELFIE · Teachers' digital competence in AI",
+ brandSub:"Individual self-assessment and team dashboard · FECC Framework",
+ nav:{self:"My SELFIE", team:"Team", evo:"Progress", net:"Network"},
+ footer:`Instrument: <b>Self-assessment of Teachers' Digital Competence in AI</b> (FECC Digital Expert Group), aligned with <i>Competència digital docent en intel·ligència artificial</i> (Catalan Department of Education and VET, December 2025). Working translation; the Catalan text is the original.<br>Everything is computed in your browser: no data is stored or sent. Your answers only travel in the SELFIE code you decide to share.`,
+ radarAria:"Radar of 20 situations in 4 dimensions",
+ h1:`Where do you stand today with AI <em>in your teaching</em>?`,
+ intro:"Twenty real situations, four ways to respond. You pick the one closest to what you do. About six minutes, no personal data, and at the end your radar and your next steps.",
+ start:"Start the SELFIE", meta:"20 situations · ~6 min",
+ priv:`<b>Your answers never leave the browser.</b> At the end you get a <b>SELFIE code</b> of about twenty characters, with no name or e-mail: you only share it with the leadership team if you want to be part of the team snapshot.`,
+ codePh:"Got a SELFIE code? Paste it here to see your radar again", open:"Open",
+ fourDims:"The four dimensions", situations:"situations",
+ stagesNote:`The answers match the stages of the Department's framework: <b>Initial</b> (not yet), <b>Basic</b> (access), <b>Intermediate</b> (experience) and <b>Advanced</b> (innovation).`,
+ codeTypo:"The code has a mistyped character: please check it.", codeBad:"This code is not valid.",
+ prev:"← Back", next:"Next →", seeRadar:"See my radar",
+ hint:"Choose the option closest to what you do today — not what you would like to do. Keys 1–4 to answer.",
+ yourSelfie:"Your SELFIE:", of3:v=>`${v} out of 3`, myProfile:"My profile", byDim:"By dimension", nextSteps:"Your next steps",
+ fromTo:(a,b)=>`from ${a} to ${b}`, resource:"Resource:", allAdv:"Advanced level in every dimension: your contribution now is to support the team.",
+ yourCode:"Your SELFIE code",
+ codeNote:"Your 20 encoded answers (not readable at a glance, but not encryption), a check character against copy errors, your stage if you wish, and four random characters that only tell identical answers apart within one team. No name, no e-mail. Send it to the leadership team through the channel you have agreed (form, e-mail, chat): that is how you join the team snapshot.",
+ stageLbl:"Stage (optional, for the team snapshot)", noStage:"— Not specified —",
+ aliasLbl:"Alias (optional, file only)", aliasPh:"E.g. M.R. or Year 3 tutor",
+ outputs:"Outputs", copyCode:"Copy the code", dlFile:"Download the file", radarPng:"Radar PNG", badgePng:"Badge PNG", print:"Print", redo:"Start again",
+ fileNote:`The <code>.selfie.json</code> file is the alternative to the code for those who prefer to attach a document; it holds the same plus the alias, if you set one.`,
+ copied:"Code copied to the clipboard.", copyFail:"Select the code and copy it with Ctrl+C.", fileDl:"File downloaded.",
+ pngDl:"Radar downloaded as PNG.", pngErr:"The PNG could not be generated in this browser.",
+ badgeDl:"Self-assessment badge downloaded as PNG.", badgeErr:"The badge could not be generated in this browser.",
+ badgeTitle:"SELF-ASSESSMENT · TEACHERS' DIGITAL COMPETENCE IN AI", badgeSub:(v,d)=>`Overall stage · ${v} out of 3 · ${d}`,
+ badgeHint:"Paste this code into the tool to see the radar again",
+ badgeFoot:"SELF-DECLARATION BASED ON THE FECC INSTRUMENT · CDD-IA FRAMEWORK OF THE CATALAN DEPARTMENT OF EDUCATION",
+ teamH1:"Team snapshot",
+ teamIntro:`Paste the SELFIE codes you have received here — any text containing them will do (an e-mail, a spreadsheet column, a chat). You can also drop <code>.selfie.json</code> files here.`,
+ addCodes:"Add the codes", loadDemo:"Load a sample team", clear:"Clear",
+ dropTeam:`Drop <b>.selfie.json</b> files here (or click to choose them)`,
+ staffLbl:"Teaching staff (to compute participation)", staffPh:"E.g. 42", minNLbl:"Minimum group size to display it",
+ roundLbl:"Round name", roundPh:"E.g. October 2026", centerLbl:"School (optional, snapshot only)", centerPh:"E.g. St George's School",
+ saveSnap:"Save the snapshot",
+ teamPriv:`Privacy by design: no names or e-mails; individual profiles are only shown anonymously and groups only when they reach the minimum size. The snapshot is an anonymous file (codes and staff size) that the <b>Progress</b> module can reopen in a few months.`,
+ noneToSave:"There is no SELFIE to save yet.", roundDefault:"round",
+ snapSaved:"Snapshot saved. Keep it: it is the round you will compare later.",
+ added:(a,d,b)=>`${a} SELFIE(s) added${d?` · ${d} already there`:""}${b?` · ${b} with a mistyped character`:""}.`,
+ noneFound:"No SELFIE code found in the text.",
+ filesAdded:(a,b)=>`${a} file(s) added${b?` · ${b} invalid`:""}.`,
+ demoLoaded:"Sample team loaded (24 fictional teachers).",
+ dashEmpty:"No SELFIE loaded yet. Paste codes, drop files or try the sample team.",
+ kParticipation:"Participation", ofStaff:"% of staff", withSelfie:"teachers with a SELFIE",
+ kIndex:"Team SELFIE index", predominant:"Predominant stage:",
+ kStrong:"Strongest dimension", kPriority:"Priority", kRisk:"Security and data",
+ riskSub:"at initial level in data, security, verification or copyright",
+ kCoh:"Cohesion", coh:["Homogeneous team","Diverse team","Polarised team"], cohSub:v=>`mean dispersion ${v}`,
+ kTalent:"In-house talent", talentSub:"teachers with some advanced practice: potential leads",
+ teamRadar:"Team radar · 20 situations", tInd:"Individual profiles (anonymous)", tSeg:"Compare by stage",
+ teamSeries:n=>`Team (${n})`, eachTeacher:"each teacher",
+ hiddenSeg:(h,m)=>`${h} stage(s) with fewer than ${m} people are not shown separately (privacy).`,
+ whereTeam:"Where the team is", strengths:"Strengths", priorities:"Priorities",
+ heatTitle:"Heat map · % of the team at each level",
+ heatNote:"Quick read: dark columns on the left show where basic training is needed; the “Advanced” column says how many teachers can act as leads in each situation.",
+ byStage:"By educational stage", thStage:"Stage", thGlobal:"Overall", thSituation:"Situation", thMean:"Mean", thAdv:"Advanced",
+ dafoTitle:"SWOT of the current snapshot", dafoSub:"· draft generated from the data, editable", printDash:"Print the dashboard",
+ quad:["Strengths","Weaknesses","Opportunities","Threats"], rule:"rule:",
+ dafoNote:"Each statement shows the rule that generated it. The leadership team should check it, complete it with what the data cannot see and turn it into decisions.",
+ plaTitle:"Suggested improvement plan · three priorities",
+ plaMeta:(d,m,a,b)=>`(D${d} · mean ${m}, from ${a} to ${b})`, teamGoal:"Team goal:",
+ plaNote:"The goal is, literally, the descriptor of the next level in the instrument: what the team should be able to say about itself in a year. Repeating the SELFIE at the end of the year makes it measurable.",
+ R:{
+  dimStrong:(lv,nom,m)=>`The team is at the ${lv} stage in “${nom}” (mean ${m}).`, rDimStrong:"dimension mean ≥ 1.75",
+  dimWeak:(nom,m)=>`“${nom}” sits between the initial and basic stages (mean ${m}): it is the underlying training priority.`, rDimWeak:"dimension mean < 1",
+  dimSpread:(curt,s)=>`Very uneven practice in “${curt}” (dispersion ${s}): students get different experiences depending on the teacher.`, rDimSpread:"dispersion ≥ 0.85",
+  oneRef:curt=>`A single advanced lead in “${curt}”: the knowledge depends on one person.`, rOneRef:"exactly 1 person with a D answer",
+  refs:list=>`In-house leads available (teachers with some advanced practice): ${list}.`, refIn:(n,curt)=>`${n} in ${curt}`, rRefs:"≥ 2 people with a D answer per dimension",
+  itemStrong:(nm,m)=>`Specific strength: ${nm} (mean ${m}).`, rItemStrong:"situation with mean ≥ 2",
+  itemWeak:(nm,m)=>`Specific weak point: ${nm} (mean ${m}).`, rItemWeak:"situation with mean < 1",
+  notStarted:(p,nm)=>`${p}% of the team has not started yet in ${nm}.`, rNotStarted:"≥ 40% at initial level",
+  zone:(nm,p)=>`Progress zone in ${nm}: most at basic level and ${p}% already intermediate or advanced, who can support peer learning.`, rZone:"≥ 40% basic and ≥ 25% intermediate/advanced (top 3)",
+  risk:p=>`${p}% of the team declares an initial level in data, security, verification or copyright: exposure to privacy incidents and misinformation.`, rRisk:"≥ 25% with an A in situations 3, 4, 5 or 10",
+  iris:"Transparency and authorship (situation 7) below the intermediate stage: students' AI use may outpace the assessment criteria. Resource: IRIS Generator.", rIris:"situation 7 with mean < 1.5",
+  protocols:"School protocols (situation 20) are still unknown to much of the team: a staff session on the FECC Protocol would have an immediate effect.", rProtocols:"situation 20 with mean < 1.5",
+  sharing:"There is a culture of sharing (situation 19): a school bank of AI resources and practices can be formalised.", rSharing:"situation 19 with mean ≥ 1.5",
+  partic:p=>`Participation of ${p}%: the snapshot may not represent the whole team.`, rPartic:"participation < 60%",
+  gap:(g,a,b)=>`A gap of ${g} points between ${a} and ${b}: unequal experience for students depending on the stage.`, rGap:"gap between stages ≥ 0.6",
+  dept:"The Department's framework (2025) and the FECC instrument share dimensions: training can be aligned directly with the official descriptors.", rContext:"context",
+  noF:"No clear team-level strengths yet: the starting point is shared, which makes common training easier.", rNoF:"no dimension ≥ 1.75",
+  noD:"No dimension below the basic stage: improvement is about depth, not basics.", rNoD:"no dimension < 1"
+ },
+ evoH1:"Team progress",
+ evoIntro:"Compare two SELFIE rounds: the start of the year and now, for example. Each round can come from a snapshot saved in the team dashboard or from a text with codes. The comparison is of the team (distributions and means), never of people.",
+ slot:{A:"Previous round",B:"Current round"}, selfies:"SELFIES", label:"Label", slotPh:{A:"E.g. October 2026",B:"E.g. June 2027"},
+ evoPastePh:"Paste SELFIE codes here or drop school snapshots (.selfie-equip.json) or network snapshots (.selfie-xarxa.json)",
+ add:"Add", openSnap:"Open a snapshot", takeTeam:n=>`Take the team from the dashboard (${n})`, evoDemo:"Load two sample rounds",
+ evoAdded:(a,s,b)=>`${a} SELFIE(s) added to “${s}”${b?` · ${b} with a mistyped character`:""}.`,
+ evoFiles:(a,s)=>`${a} SELFIE(s) added to “${s}”.`,
+ demoA:"October 2026", demoB:"June 2027", evoDemoLoaded:"Two sample rounds loaded (24 fictional teachers).",
+ evoEmpty:"Load both rounds to see the progress.",
+ L:{
+  idx:(a,b,d,la,lb,na,nb)=>`The team SELFIE index went from ${a} to ${b} (${d} points) between “${la}” and “${lb}”${na!==nb?`, with ${na} and ${nb} SELFIES respectively`:""}.`,
+  dims:(best,db,worst,dw)=>`The dimension that grew most is “${best}” (${db}); the least, “${worst}” (${dw}).`,
+  stages:(a0,b0,a3,b3)=>`The share of teachers at the initial stage went from ${a0}% to ${b0}%; at the advanced stage, from ${a3}% to ${b3}%.`,
+  risk:(a,b)=>`Security and data: from ${a}% to ${b}% of teachers at initial level in any of situations 3, 4, 5 or 10.`,
+  coh:(a,b,dir)=>`Cohesion: mean dispersion from ${a} to ${b} — the team ${dir<0?"has become more homogeneous":dir>0?"has polarised":"keeps the same cohesion"}.`,
+  downs:list=>`Setbacks to watch: ${list}.`,
+  plan:(la,ass,tot,prog,pend)=>`“${la}” improvement plan: ${ass} of ${tot} priorities achieved, ${prog} in progress, ${pend} pending.`
+ },
+ kTeamIdx:"Team index", before:"before", stage:"stage", kInitial:"At initial stage", kAdvanced:"At advanced stage", pp:"pp", inInitial:"at initial level",
+ cohShort:["Homogeneous","Diverse","Polarised"], dispersion:"dispersion",
+ autoRead:"Automatic reading", radarVs:(a,b)=>`Radar · ${a} vs ${b}`, replay:"▶ Replay the progress",
+ varByDim:"Change by dimension", distStages:"Distribution by stage", ups:"Biggest gains", downs:"Declines", noUps:"No relevant gains.", noDowns:"No declines.",
+ varMap:"Change map · 20 situations", thVar:"Change", thPctInit:"% initial", thPctAdv:"% advanced",
+ plaOf:la=>`“${la}” improvement plan · what came of it`, printEvo:"Print the progress",
+ chips:{a:"Achieved",p:"In progress",n:"Pending"}, goalMeta:(to,m,now)=>`goal: ${to} stage · mean ${m} → ${now}`,
+ evoPlaNote:"The priorities are those the team dashboard would have proposed with the previous round's data. “Achieved” means the team mean reached the target stage; “in progress”, that it rose without reaching it.",
+ netH1:"Network view",
+ netIntro:"For whoever aggregates several schools —a foundation, a school owner, a regional office or a whole network—: drop here the snapshots the schools have sent you, all at once, and get the overall summary. Duplicate snapshots (same identifier) are discarded, never people. Everything is computed in this browser.",
+ dropNet:`Drop the schools' <b>.selfie-equip.json</b> snapshots here (or click to choose them)`,
+ netDemo:"Load a sample network", netRoundLbl:"Network round name", netMinLbl:"Minimum school size", saveNet:"Save the network snapshot",
+ netNote:"The network snapshot is a single file with all the school snapshots of this round. Use it to reopen it here and, above all, to drop it into “Previous round” or “Current round” in the Progress tab and see how the whole network moves.",
+ netPrefix:"network", netSaved:n=>`Network snapshot saved: ${n} schools in a single file.`,
+ netAdded:(a,d,b)=>`${a} school snapshot(s) added${d?` · ${d} duplicate(s)`:""}${b?` · ${b} invalid file(s)`:""}.`,
+ netDemoLoaded:"Sample network loaded: 12 fictional schools.",
+ netEmpty:"No snapshot yet. Drop the schools' files here or try the sample network.",
+ kCenters:"Schools", smallCenters:(s,m)=>`${s} with fewer than ${m} teachers (overall only)`, snapsLoaded:"snapshots loaded",
+ kTeachers:"Teachers", partWhere:p=>`participation ${p}% where staff size is known`, aggregated:"aggregated SELFIES",
+ kNetIdx:"Network index", kNetPriority:"Network priority", kSpread:"Differences between schools", spread:["Homogeneous network","Diverse network","Uneven network"],
+ spreadSub:(a,b,s)=>`index from ${a} to ${b} · dispersion ${s}`,
+ netRadar:"Network radar · 20 situations", overlay:m=>`Overlay each school (n ≥ ${m})`, netSeries:n=>`Network (${n})`, eachCenter:"each school",
+ whereNet:"Where the network is", perCenter:"By school", printNet:"Print the network view",
+ thCenter:"School", thRound:"Round", thPart:"Partic.", thIdx:"Index", thRisk:"Sec. & data", centerN:i=>`School ${i}`,
+ smallNote:(s,m)=>`${s} school(s) with fewer than ${m} teachers count in the overall figures but are not shown separately (privacy). `,
+ netReading:"Recommended reading: schools are not a ranking but a map of needs; what matters is where support is needed and where there are leads who can help other schools.",
+ netHeat:"Network heat map · % of teachers at each level"
+}
+};
+
+/* ---- idioma actiu ---- */
+let LANG = "ca";
+const T = () => UI[LANG];
+const LOCALE = { ca:"ca-ES", es:"es-ES", en:"en-GB" };
+const today = () => new Date().toLocaleDateString(LOCALE[LANG]);
+function setLang(lang){
+  if (!UI[lang]) lang = "ca";
+  LANG = lang; document.documentElement.lang = lang;
+  const X = TX[lang];
+  DIMS.forEach((d,k)=>{ d.nom = X.dims[k][0]; d.curt = X.dims[k][1]; });
+  LEVELS.splice(0, LEVELS.length, ...X.levels);
+  Object.keys(ETAPES).forEach(k=>{ ETAPES[k] = X.etapes[k]; });
+  Object.keys(RECURSOS).forEach(k=>{ RECURSOS[k] = X.recursos[k]; });
+  ITEMS.forEach((it,i)=>{ const s = X.items[i]; it.t = s.t; it.k = s.k; it.s = s.s; it.o = s.o.slice(); });
+  const t = UI[lang];
+  document.title = t.title;
+  document.getElementById("brandB").textContent = t.brand;
+  document.getElementById("brandS").textContent = t.brandSub;
+  document.getElementById("navSelf").textContent = t.nav.self;
+  document.getElementById("navTeam").textContent = t.nav.team;
+  document.getElementById("navEvo").textContent = t.nav.evo;
+  document.getElementById("navNet").textContent = t.nav.net;
+  document.getElementById("foot").innerHTML = t.footer;
+  document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
+}
+/* =====================================================================
    UTILITATS
    ===================================================================== */
 const $ = id => document.getElementById(id);
@@ -367,7 +1025,7 @@ const RG = { S:520, c:260, R:190, n:20,
 function radar20(series, opts={}){
   const S = RG.S, c = RG.c, R = RG.R, n = RG.n, lab = opts.labels !== false;
   const ang = RG.ang, pt = RG.pt;
-  let s = `<svg viewBox="0 0 ${S} ${S}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radar de 20 situacions en 4 dimensions">`;
+  let s = `<svg viewBox="0 0 ${S} ${S}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(T().radarAria)}">`;
   /* sectors de dimensió */
   DIMS.forEach(d=>{
     const a0 = -Math.PI/2 + (2*Math.PI*d.items[0])/n, a1 = -Math.PI/2 + (2*Math.PI*(d.items[d.items.length-1]+1))/n;
@@ -401,6 +1059,7 @@ function radar20(series, opts={}){
   return s + `</svg>`;
 }
 
+
 /* =====================================================================
    ROUTER I VISTES
    ===================================================================== */
@@ -411,6 +1070,7 @@ $("navSelf").addEventListener("click", ()=>go("self"));
 $("navTeam").addEventListener("click", ()=>go("team"));
 $("navEvo").addEventListener("click", ()=>go("evo"));
 $("navNet").addEventListener("click", ()=>go("net"));
+document.querySelectorAll(".langs button").forEach(b=>b.addEventListener("click", ()=>{ setLang(b.dataset.lang); render(); }));
 function render(){
   $("navSelf").classList.toggle("on", route==="self");
   $("navTeam").classList.toggle("on", route==="team");
@@ -429,32 +1089,34 @@ function renderSelf(){
 }
 
 function renderLanding(){
+  const t = T();
   app.innerHTML = `
   <div class="card hero">
     <div>
-      <h1>Com et situes avui amb la IA <em>a la teva docència</em>?</h1>
-      <p class="muted" style="margin:0 0 14px">Vint situacions reals, quatre maneres de respondre-hi. Tries la que més s'assembla al que fas. Uns sis minuts, cap dada personal, i al final el teu radar i els teus propers passos.</p>
-      <div class="row" style="margin-bottom:14px"><button class="btn" id="start">Comença el SELFIE</button><span class="small muted">20 situacions · ~6 min</span></div>
-      <div class="priv"><b>Les teves respostes no surten del navegador.</b> Al final obtindràs un <b>codi SELFIE</b> d'una vintena de caràcters, sense nom ni correu: només el comparteixes amb l'equip directiu si vols formar part de la fotografia d'equip.</div>
-      <div class="code-in noprint"><input type="text" id="codeIn" placeholder="Tens un codi SELFIE? Enganxa'l aquí per tornar a veure el teu radar"><button class="btn light" id="codeGo">Obre</button></div>
+      <h1>${t.h1}</h1>
+      <p class="muted" style="margin:0 0 14px">${t.intro}</p>
+      <div class="row" style="margin-bottom:14px"><button class="btn" id="start">${t.start}</button><span class="small muted">${t.meta}</span></div>
+      <div class="priv">${t.priv}</div>
+      <div class="code-in noprint"><input type="text" id="codeIn" placeholder="${esc(t.codePh)}"><button class="btn light" id="codeGo">${t.open}</button></div>
       <div class="status" id="st"></div>
     </div>
     <div>
-      <h2>Les quatre dimensions</h2>
-      <div class="dims">${DIMS.map((d,i)=>`<div class="dim" style="--c:${d.c};--bg:${d.bg}"><b>D${i+1}</b><span>${esc(d.nom)} <span class="muted">· ${d.items.length} situacions</span></span></div>`).join("")}</div>
-      <p class="note" style="margin-top:12px">Les respostes es corresponen amb les etapes del marc del Departament: <b>Inicial</b> (encara no), <b>Bàsica</b> (accés), <b>Intermèdia</b> (experiència) i <b>Avançada</b> (innovació).</p>
+      <h2>${t.fourDims}</h2>
+      <div class="dims">${DIMS.map((d,i)=>`<div class="dim" style="--c:${d.c};--bg:${d.bg}"><b>D${i+1}</b><span>${esc(d.nom)} <span class="muted">· ${d.items.length} ${t.situations}</span></span></div>`).join("")}</div>
+      <p class="note" style="margin-top:12px">${t.stagesNote}</p>
     </div>
   </div>`;
   $("start").addEventListener("click", ()=>{ self.step=0; self.ans=Array(20).fill(null); self.phase="quiz"; renderSelf(); });
   $("codeGo").addEventListener("click", ()=>{
     const p = parseCode($("codeIn").value);
-    if (!p){ flash("st", codeLooksTypo($("codeIn").value) ? "El codi té algun caràcter mal copiat: revisa'l." : "Aquest codi no és vàlid."); return; }
+    if (!p){ flash("st", codeLooksTypo($("codeIn").value) ? T().codeTypo : T().codeBad); return; }
     self.ans = p.ans; self.etapa = p.etapa; self.id = p.id; self.phase="result"; renderSelf();
   });
 }
 
 function renderQuiz(){
-  const i = self.step, it = ITEMS[i], d = dimOf(i), done = self.ans.filter(v=>v!==null).length;
+  const t = T();
+  const i = self.step, it = ITEMS[i], d = dimOf(i);
   app.innerHTML = `
   <div class="card quiz" style="--c:${d.c};--bg:${d.bg}">
     <div class="prog"><span class="chip">D${DIMS.indexOf(d)+1} · ${esc(d.curt)}</span><div class="bar"><i style="width:${(i/20)*100}%"></i></div><span>${i+1} / 20</span></div>
@@ -465,10 +1127,10 @@ function renderQuiz(){
         <span class="k">${L[k]}</span><span><small>${LEVELS[k]}</small>${esc(o)}</span>
       </button>`).join("")}</div>
     <div class="navq noprint">
-      <button class="btn ghost" id="prev" ${i===0?'disabled':''}>← Anterior</button>
-      <button class="btn" id="next" ${self.ans[i]===null?'disabled':''}>${i===19?'Veure el meu radar':'Següent →'}</button>
+      <button class="btn ghost" id="prev" ${i===0?'disabled':''}>${t.prev}</button>
+      <button class="btn" id="next" ${self.ans[i]===null?'disabled':''}>${i===19?t.seeRadar:t.next}</button>
     </div>
-    <p class="hint">Tria l'opció que més s'assembla al que fas avui — no la que t'agradaria. Tecles 1–4 per respondre.</p>
+    <p class="hint">${t.hint}</p>
   </div>`;
   app.querySelectorAll(".opt").forEach(b=>b.addEventListener("click", ()=>{ choose(+b.dataset.k); }));
   $("prev").addEventListener("click", ()=>{ self.step--; renderQuiz(); });
@@ -502,64 +1164,65 @@ function nextSteps(ans){
 }
 
 function renderResult(){
+  const t = T();
   const ans = self.ans, ds = dimScores(ans), overall = mean(ans);
   const code = makeCode(ans, self.etapa, self.id);
   app.innerHTML = `
   <div class="card">
     <div class="row" style="justify-content:space-between;margin-bottom:10px">
-      <h1 style="margin:0">El teu SELFIE: <em>${esc(lvName(overall))}</em> <span class="muted" style="font-size:.9rem;font-weight:600">(${fmt(overall)} sobre 3)</span></h1>
-      <span class="small muted">${new Date().toLocaleDateString("ca-ES")}</span>
+      <h1 style="margin:0">${t.yourSelfie} <em>${esc(lvName(overall))}</em> <span class="muted" style="font-size:.9rem;font-weight:600">(${t.of3(fmt(overall))})</span></h1>
+      <span class="small muted">${today()}</span>
     </div>
     <div class="res">
       <div class="radar-wrap" id="radarWrap">${radar20([{values:ans, color:"#0e7c8a", bold:true}])}
-        <div class="legend">${DIMS.map(d=>`<span><i style="background:${d.hex}"></i>${esc(d.curt)}</span>`).join("")}<span><i style="background:#0e7c8a"></i>El meu perfil</span></div>
+        <div class="legend">${DIMS.map(d=>`<span><i style="background:${d.hex}"></i>${esc(d.curt)}</span>`).join("")}<span><i style="background:#0e7c8a"></i>${t.myProfile}</span></div>
       </div>
       <div>
-        <h2>Per dimensió</h2>
+        <h2>${t.byDim}</h2>
         <div class="gauges">${DIMS.map((d,k)=>`
           <div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span>
             <span class="track"><i style="width:${ds[k]/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span>
             <span class="val">${esc(lvName(ds[k]))} <span class="muted">${fmt(ds[k])}</span></span></div>`).join("")}</div>
-        <h2 style="margin-top:16px">Els teus propers passos</h2>
-        <div class="next">${nextSteps(ans).map(n=>`<div style="--c:${n.d.c};--bg:${n.d.bg}"><b>${n.i+1}. ${esc(ITEMS[n.i].k)} · de ${LEVELS[n.from].toLowerCase()} a ${LEVELS[n.from+1].toLowerCase()}</b>${esc(n.text)}${n.rec?`<div class="small muted" style="margin-top:3px">Recurs: ${esc(n.rec)}</div>`:""}</div>`).join("") || `<div style="--c:var(--ok);--bg:#effaf4">Nivell avançat a totes les dimensions: la teva aportació ara és acompanyar l'equip.</div>`}</div>
+        <h2 style="margin-top:16px">${t.nextSteps}</h2>
+        <div class="next">${nextSteps(ans).map(n=>`<div style="--c:${n.d.c};--bg:${n.d.bg}"><b>${n.i+1}. ${esc(ITEMS[n.i].k)} · ${t.fromTo(LEVELS[n.from].toLowerCase(), LEVELS[n.from+1].toLowerCase())}</b>${esc(n.text)}${n.rec?`<div class="small muted" style="margin-top:3px">${t.resource} ${esc(n.rec)}</div>`:""}</div>`).join("") || `<div style="--c:var(--ok);--bg:#effaf4">${t.allAdv}</div>`}</div>
       </div>
     </div>
   </div>
   <div class="card noprint" style="margin-top:14px">
     <div class="grid2">
       <div>
-        <h2>El teu codi SELFIE</h2>
+        <h2>${t.yourCode}</h2>
         <div class="codebox" id="codeBox">${code}</div>
-        <p class="note" style="margin:8px 0 10px">Les teves 20 respostes codificades (no es llegeixen a simple vista, però no és un xifratge), un caràcter de control contra errors de còpia, l'etapa si ho vols, i quatre caràcters aleatoris que només distingeixen respostes idèntiques dins d'un mateix equip. Cap nom, cap correu. Sense nom, sense correu. Fes-lo arribar a l'equip directiu pel canal que us hàgiu donat (formulari, correu, xat): així entres a la fotografia d'equip.</p>
+        <p class="note" style="margin:8px 0 10px">${t.codeNote}</p>
         <div class="grid2">
-          <label class="fld">Etapa (opcional, per a la fotografia d'equip)
-            <select id="etapaSel"><option value="">— No indicar —</option>${Object.entries(ETAPES).map(([k,v])=>`<option value="${k}" ${self.etapa===k?'selected':''}>${v}</option>`).join("")}</select></label>
-          <label class="fld">Àlies (opcional, només al fitxer)<input type="text" id="alias" value="${esc(self.alias)}" placeholder="Ex.: M.R. o Tutor 3r"></label>
+          <label class="fld">${t.stageLbl}
+            <select id="etapaSel"><option value="">${t.noStage}</option>${Object.entries(ETAPES).map(([k,v])=>`<option value="${k}" ${self.etapa===k?'selected':''}>${v}</option>`).join("")}</select></label>
+          <label class="fld">${t.aliasLbl}<input type="text" id="alias" value="${esc(self.alias)}" placeholder="${esc(t.aliasPh)}"></label>
         </div>
       </div>
       <div>
-        <h2>Sortides</h2>
+        <h2>${t.outputs}</h2>
         <div class="row">
-          <button class="btn" id="copyCode">Copia el codi</button>
-          <button class="btn light" id="dlJson">Baixa el fitxer</button>
-          <button class="btn light" id="dlPng">Radar PNG</button>
-          <button class="btn light" id="dlBadge">Insígnia PNG</button>
-          <button class="btn ghost" id="print">Imprimeix</button>
-          <button class="btn ghost" id="redo">Torna a començar</button>
+          <button class="btn" id="copyCode">${t.copyCode}</button>
+          <button class="btn light" id="dlJson">${t.dlFile}</button>
+          <button class="btn light" id="dlPng">${t.radarPng}</button>
+          <button class="btn light" id="dlBadge">${t.badgePng}</button>
+          <button class="btn ghost" id="print">${t.print}</button>
+          <button class="btn ghost" id="redo">${t.redo}</button>
         </div>
         <div class="status" id="st"></div>
-        <p class="note">El fitxer <code>.selfie.json</code> és l'alternativa al codi per a qui prefereixi adjuntar un document; conté el mateix més l'àlies, si l'has posat.</p>
+        <p class="note">${t.fileNote}</p>
       </div>
     </div>
   </div>`;
   $("etapaSel").addEventListener("change", e=>{ self.etapa=e.target.value; $("codeBox").textContent = makeCode(ans, self.etapa, self.id); });
   $("alias").addEventListener("input", e=>{ self.alias=e.target.value.trim(); });
-  $("copyCode").addEventListener("click", async ()=>{ try{ await navigator.clipboard.writeText($("codeBox").textContent); flash("st","Codi copiat al porta-retalls."); }catch(_){ flash("st","Selecciona el codi i copia'l amb Ctrl+C."); } });
+  $("copyCode").addEventListener("click", async ()=>{ try{ await navigator.clipboard.writeText($("codeBox").textContent); flash("st",T().copied); }catch(_){ flash("st",T().copyFail); } });
   $("dlJson").addEventListener("click", ()=>{
     const data = { format:"selfie-fecc-1", code: makeCode(ans, self.etapa, self.id), answers: ans.map(v=>L[v]), etapa: self.etapa||null, alias: self.alias||null, date: new Date().toISOString().slice(0,10) };
     const b = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `selfie-${self.id}.selfie.json`; a.click(); URL.revokeObjectURL(a.href);
-    flash("st","Fitxer descarregat.");
+    flash("st",T().fileDl);
   });
   $("dlPng").addEventListener("click", ()=>svgToPng($("radarWrap").querySelector("svg"), `selfie-radar-${self.id}.png`));
   $("dlBadge").addEventListener("click", ()=>drawBadge(ans, ds, overall, makeCode(ans, self.etapa, self.id)));
@@ -568,6 +1231,7 @@ function renderResult(){
 }
 /* Insígnia d'autoavaluació: declaració pròpia, no acreditació. Reutilitza el radar en SVG. */
 function drawBadge(ans, ds, overall, code){
+  const t = T();
   try{
     const W=640, H=1040, lv=Math.min(3,Math.max(0,Math.round(overall))), hex=LHEX[Math.max(1,lv)], FONT='"Segoe UI",Arial,sans-serif';
     const cv=document.createElement("canvas"); cv.width=W*2; cv.height=H*2; const x=cv.getContext("2d"); x.scale(2,2);
@@ -575,9 +1239,9 @@ function drawBadge(ans, ds, overall, code){
     rr(3,3,W-6,H-6,26); x.fillStyle="#fff"; x.fill(); x.lineWidth=6; x.strokeStyle=hex; x.stroke();
     x.save(); rr(3,3,W-6,H-6,26); x.clip(); x.fillStyle=hex; x.fillRect(3,3,W-6,190); x.restore();
     x.textAlign="center"; x.fillStyle="#fff";
-    x.globalAlpha=.9; x.font="700 17px "+FONT; x.fillText("AUTOAVALUACIÓ · COMPETÈNCIA DIGITAL DOCENT EN IA", W/2, 58); x.globalAlpha=1;
+    x.globalAlpha=.9; x.font="700 17px "+FONT; x.fillText(t.badgeTitle, W/2, 58); x.globalAlpha=1;
     x.font="800 64px "+FONT; x.fillText(LEVELS[lv], W/2, 130);
-    x.font="600 20px "+FONT; x.fillText(`Etapa global · ${fmt(overall)} sobre 3 · ${new Date().toLocaleDateString("ca-ES")}`, W/2, 166);
+    x.font="600 20px "+FONT; x.fillText(t.badgeSub(fmt(overall), today()), W/2, 166);
     const svg=$("radarWrap").querySelector("svg"); const xml=new XMLSerializer().serializeToString(svg);
     const url=URL.createObjectURL(new Blob([xml],{type:"image/svg+xml;charset=utf-8"})); const img=new Image();
     img.onload=()=>{
@@ -587,12 +1251,12 @@ function drawBadge(ans, ds, overall, code){
         x.fillStyle="#e4ebed"; rr(230,yy-13,300,14,7); x.fill(); x.fillStyle=d.hex; rr(230,yy-13,Math.max(14,300*ds[k]/3),14,7); x.fill();
         x.fillStyle="#12313b"; x.font="700 16px "+FONT; x.fillText(lvName(ds[k]), 545, yy); yy+=34; });
       x.textAlign="center"; x.fillStyle="#12313b"; x.font="700 20px Consolas,Menlo,monospace"; x.fillText(code, W/2, yy+22);
-      x.fillStyle="#5b7078"; x.font="500 14px "+FONT; x.fillText("Enganxa aquest codi a l'eina per tornar a veure el radar", W/2, yy+46);
-      x.fillStyle="#8ea6ab"; x.font="800 14px "+FONT; x.fillText("DECLARACIÓ PRÒPIA SEGONS L'INSTRUMENT FECC · MARC CDD-IA DEL DEPARTAMENT D'EDUCACIÓ", W/2, H-26);
-      cv.toBlob(b=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`selfie-insignia-${self.id}.png`; a.click(); URL.revokeObjectURL(a.href); URL.revokeObjectURL(url); flash("st","Insígnia d'autoavaluació descarregada en PNG."); });
+      x.fillStyle="#5b7078"; x.font="500 14px "+FONT; x.fillText(t.badgeHint, W/2, yy+46);
+      x.fillStyle="#8ea6ab"; x.font="800 13px "+FONT; x.fillText(t.badgeFoot, W/2, H-26);
+      cv.toBlob(b=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`selfie-insignia-${self.id}.png`; a.click(); URL.revokeObjectURL(a.href); URL.revokeObjectURL(url); flash("st",T().badgeDl); });
     };
     img.src=url;
-  }catch(_){ flash("st","No s'ha pogut generar la insígnia en aquest navegador."); }
+  }catch(_){ flash("st",T().badgeErr); }
 }
 function svgToPng(svg, name){
   try{
@@ -600,9 +1264,9 @@ function svgToPng(svg, name){
     const url = URL.createObjectURL(new Blob([xml],{type:"image/svg+xml;charset=utf-8"}));
     const img = new Image();
     img.onload = ()=>{ const cv=document.createElement("canvas"); cv.width=1200; cv.height=1200; const x=cv.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,1200,1200); x.drawImage(img,0,0,1200,1200);
-      cv.toBlob(b=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); URL.revokeObjectURL(a.href); URL.revokeObjectURL(url); flash("st","Radar descarregat en PNG."); }); };
+      cv.toBlob(b=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); URL.revokeObjectURL(a.href); URL.revokeObjectURL(url); flash("st",T().pngDl); }); };
     img.src = url;
-  }catch(_){ flash("st","No s'ha pogut generar el PNG en aquest navegador."); }
+  }catch(_){ flash("st",T().pngErr); }
 }
 
 /* ------------------------------ EQUIP ------------------------------ */
@@ -615,31 +1279,33 @@ function peopleFromSnapshot(d){
 }
 
 function renderTeam(){
+  const t = T();
   app.innerHTML = `
   <div class="card noprint">
     <div class="grid2">
       <div>
-        <h1 style="font-size:1.3rem">Fotografia d'equip</h1>
-        <p class="muted small" style="margin:0 0 8px">Enganxa aquí els codis SELFIE rebuts — val qualsevol text que els contingui (un correu, una columna de full de càlcul, un xat). També pots deixar-hi anar fitxers <code>.selfie.json</code>.</p>
+        <h1 style="font-size:1.3rem">${t.teamH1}</h1>
+        <p class="muted small" style="margin:0 0 8px">${t.teamIntro}</p>
         <textarea class="paste" id="paste" placeholder="SF2-K7QM3-9D2X-ESO-7KQ4&#10;SF2-…">${esc(team.pasted)}</textarea>
-        <div class="row" style="margin-top:8px"><button class="btn" id="addCodes">Afegeix els codis</button><button class="btn ghost" id="demo">Carrega un equip de mostra</button><button class="btn ghost" id="clear">Buida</button><span class="status" id="st"></span></div>
+        <div class="row" style="margin-top:8px"><button class="btn" id="addCodes">${t.addCodes}</button><button class="btn ghost" id="demo">${t.loadDemo}</button><button class="btn ghost" id="clear">${t.clear}</button><span class="status" id="st"></span></div>
       </div>
       <div>
-        <div class="drop" id="drop">Arrossega aquí fitxers <b>.selfie.json</b> (o fes-hi clic per triar-los)<input type="file" id="file" multiple accept=".json,application/json"></div>
+        <div class="drop" id="drop">${t.dropTeam}<input type="file" id="file" multiple accept=".json,application/json"></div>
         <div class="grid2" style="margin-top:10px">
-          <label class="fld">Plantilla docent (per calcular la participació)<input type="number" id="plantilla" min="0" value="${team.plantilla||''}" placeholder="Ex.: 42"></label>
-          <label class="fld">Mida mínima d'un grup per mostrar-lo<input type="number" id="minN" min="2" value="${team.minN}"></label>
+          <label class="fld">${t.staffLbl}<input type="number" id="plantilla" min="0" value="${team.plantilla||''}" placeholder="${esc(t.staffPh)}"></label>
+          <label class="fld">${t.minNLbl}<input type="number" id="minN" min="2" value="${team.minN}"></label>
         </div>
         <div class="row" style="margin-top:10px">
-          <label class="fld" style="flex:1">Nom de la ronda<input type="text" id="roundName" value="${esc(team.roundName)}" placeholder="Ex.: Octubre 2026"></label>
-          <label class="fld" style="flex:1">Centre (opcional, només per a la instantània)<input type="text" id="centerName" value="${esc(team.center)}" placeholder="Ex.: Escola Sant Jordi"></label>
-          <button class="btn light" id="saveSnap" style="align-self:end">Desa la instantània</button>
+          <label class="fld" style="flex:1">${t.roundLbl}<input type="text" id="roundName" value="${esc(team.roundName)}" placeholder="${esc(t.roundPh)}"></label>
+          <label class="fld" style="flex:1">${t.centerLbl}<input type="text" id="centerName" value="${esc(team.center)}" placeholder="${esc(t.centerPh)}"></label>
+          <button class="btn light" id="saveSnap" style="align-self:end">${t.saveSnap}</button>
         </div>
-        <p class="note" style="margin-top:8px">Privacitat per disseny: cap nom ni correu; els perfils individuals només es mostren de manera anònima i els grups només si arriben a la mida mínima. La instantània és un fitxer anònim (codis i plantilla) que el mòdul <b>Evolució</b> pot tornar a obrir d'aquí a uns mesos.</p>
+        <p class="note" style="margin-top:8px">${t.teamPriv}</p>
       </div>
     </div>
   </div>
   <div id="dash"></div>`;
+  $("paste").addEventListener("input", e=>{ team.pasted=e.target.value; });
   $("addCodes").addEventListener("click", ()=>{ addFromText($("paste").value); });
   $("demo").addEventListener("click", loadDemo);
   $("clear").addEventListener("click", ()=>{ team.people=[]; team.pasted=""; renderTeam(); });
@@ -647,12 +1313,12 @@ function renderTeam(){
   $("roundName").addEventListener("input", e=>{ team.roundName=e.target.value; });
   $("centerName").addEventListener("input", e=>{ team.center=e.target.value; });
   $("saveSnap").addEventListener("click", ()=>{
-    if (!team.people.length){ flash("st","Encara no hi ha cap SELFIE per desar."); return; }
+    if (!team.people.length){ flash("st",T().noneToSave); return; }
     const data = snapshotOf(team.people, team.roundName, team.plantilla, team.center);
     const b = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(b);
-    a.download = `${(team.roundName||"ronda").replace(/[^\p{L}\p{N}]+/gu,"-").toLowerCase()}-${data.date}.selfie-equip.json`; a.click(); URL.revokeObjectURL(a.href);
-    flash("st","Instantània desada. Guarda-la: és la ronda que compararàs més endavant.");
+    a.download = `${(team.roundName||T().roundDefault).replace(/[^\p{L}\p{N}]+/gu,"-").toLowerCase()}-${data.date}.selfie-equip.json`; a.click(); URL.revokeObjectURL(a.href);
+    flash("st",T().snapSaved);
   });
   $("minN").addEventListener("input", e=>{ team.minN=Math.max(2,+e.target.value||5); renderDash(); });
   const drop = $("drop");
@@ -672,7 +1338,7 @@ function addFromText(txt){
   for (const m of String(txt).toUpperCase().matchAll(CODE_RE)){ const p=parseCode(m[0]); if(!p){bad++;continue;} addPerson({...p, alias:null})?added++:dup++; }
   team.pasted = "";
   renderTeam();
-  flash("st", (added+dup+bad) ? `${added} SELFIE(s) afegit(s)${dup?` · ${dup} ja hi eren`:""}${bad?` · ${bad} amb algun caràcter mal copiat`:""}.` : "No s'ha trobat cap codi SELFIE al text.");
+  flash("st", (added+dup+bad) ? T().added(added,dup,bad) : T().noneFound);
 }
 async function loadFiles(files){
   let added=0, bad=0;
@@ -683,14 +1349,14 @@ async function loadFiles(files){
       const p = parseCode(d.code||""); if(!p){bad++;continue;} if(addPerson({...p, alias:d.alias||null})) added++;
     } catch(_){ bad++; }
   }
-  renderTeam(); flash("st", `${added} fitxer(s) afegit(s)${bad?` · ${bad} no vàlid(s)`:""}.`);
+  renderTeam(); flash("st", T().filesAdded(added,bad));
 }
+const DEMO_SEEDS = ["BCBBC-CBBAB-CBBCBA-BCBB-PRI","ABAAB-BBABA-BBABAA-ABAB-PRI","CDCCD-CCBCB-CCCDCC-CCDC-ESO","BBBAB-BAABB-BBBBBB-BBBB-INF","CCCBC-CCBBC-DCCCCD-CBCC-ESO","ABAAA-BAAAA-AAABAA-AABA-INF","BCBAC-BBABB-CBBCBB-BCBB-ESO","DDCDD-DCCCC-DDCDDD-DDDD-BAT","BBCAB-CBBAB-BBBCBB-BBCB-PRI","AAAAB-AAAAA-BAAAAA-AAAA-PRI","CBCBC-CBBBB-CBCCBC-CBBC-BAT","BBBBB-BBBBB-CBBBBB-BBBB-ESO","CCDCC-CCCBC-CCCCCC-DCCD-ESO","BABAB-ABAAB-BABABA-BABA-INF","CBBAB-BBABB-BBBBBB-BBBB-PRI","BCCBC-CBBBB-CCBCCB-CCBC-BAT","AABAA-BAAAA-ABAAAA-ABAA-ESO","BBBBC-BBABB-CBBBBB-BCBB-PRI","CCCBB-CBBBB-CCBCBC-CCBB-ESO","BBBAB-BBAAB-BBBBBB-BBBB-INF","DCCCD-CCBBC-CCDCCC-DCCC-ESO","BCBBB-BBABB-BBBCBB-BCBB-PRI","ABBAA-BAAAB-BBAAAA-ABAB-CF","CBBBC-CBBBB-CBBCBB-BCBB-CF"];
 function loadDemo(){
   /* equip fictici de 24 docents amb perfils diversos, per veure el quadre de comandament */
-  const seeds = ["BCBBC-CBBAB-CBBCBA-BCBB-PRI","ABAAB-BBABA-BBABAA-ABAB-PRI","CDCCD-CCBCB-CCCDCC-CCDC-ESO","BBBAB-BAABB-BBBBBB-BBBB-INF","CCCBC-CCBBC-DCCCCD-CBCC-ESO","ABAAA-BAAAA-AAABAA-AABA-INF","BCBAC-BBABB-CBBCBB-BCBB-ESO","DDCDD-DCCCC-DDCDDD-DDDD-BAT","BBCAB-CBBAB-BBBCBB-BBCB-PRI","AAAAB-AAAAA-BAAAAA-AAAA-PRI","CBCBC-CBBBB-CBCCBC-CBBC-BAT","BBBBB-BBBBB-CBBBBB-BBBB-ESO","CCDCC-CCCBC-CCCCCC-DCCD-ESO","BABAB-ABAAB-BABABA-BABA-INF","CBBAB-BBABB-BBBBBB-BBBB-PRI","BCCBC-CBBBB-CCBCCB-CCBC-BAT","AABAA-BAAAA-ABAAAA-ABAA-ESO","BBBBC-BBABB-CBBBBB-BCBB-PRI","CCCBB-CBBBB-CCBCBC-CCBB-ESO","BBBAB-BBAAB-BBBBBB-BBBB-INF","DCCCD-CCBBC-CCDCCC-DCCC-ESO","BCBBB-BBABB-BBBCBB-BCBB-PRI","ABBAA-BAAAB-BBAAAA-ABAB-CF","CBBBC-CBBBB-CBBCBB-BCBB-CF"];
-  team.people=[]; seeds.forEach((s,i)=>{ const p=parseCode(`SF1-${s}-${(i+10).toString(36).toUpperCase().padStart(2,"0")}`); if(p) addPerson({...p, alias:null}); });
+  team.people=[]; DEMO_SEEDS.forEach((s,i)=>{ const p=parseCode(`SF1-${s}-${(i+10).toString(36).toUpperCase().padStart(2,"0")}`); if(p) addPerson({...p, alias:null}); });
   team.plantilla = 30;
-  renderTeam(); flash("st","Equip de mostra carregat (24 docents fictícies).");
+  renderTeam(); flash("st",T().demoLoaded);
 }
 
 /* ---- càlculs d'equip ---- */
@@ -709,33 +1375,34 @@ function stats(people){
 }
 
 function dafo(S){
+  const R = T().R;
   const F=[], D=[], O=[], A=[];
   const nm = i => `${i+1}. ${ITEMS[i].k}`;
   DIMS.forEach((d,k)=>{
-    if (S.dim[k].m >= 1.75) F.push({t:`L'equip se situa en etapa ${lvName(S.dim[k].m).toLowerCase()} en «${d.nom}» (mitjana ${fmt(S.dim[k].m)}).`, r:"mitjana de dimensió ≥ 1,75"});
-    if (S.dim[k].m < 1) D.push({t:`«${d.nom}» queda entre l'etapa inicial i la bàsica (mitjana ${fmt(S.dim[k].m)}): és la prioritat formativa de fons.`, r:"mitjana de dimensió < 1"});
-    if (S.dim[k].sd >= 0.85) D.push({t:`Pràctiques molt desiguals en «${d.curt}» (dispersió ${fmt(S.dim[k].sd)}): l'alumnat rep experiències diferents segons el docent.`, r:"dispersió ≥ 0,85"});
-    if (S.dim[k].nD === 1) A.push({t:`Un sol referent avançat en «${d.curt}»: el coneixement depèn d'una persona.`, r:"exactament 1 persona amb resposta D"});
+    if (S.dim[k].m >= 1.75) F.push({t:R.dimStrong(lvName(S.dim[k].m).toLowerCase(), d.nom, fmt(S.dim[k].m)), r:R.rDimStrong});
+    if (S.dim[k].m < 1) D.push({t:R.dimWeak(d.nom, fmt(S.dim[k].m)), r:R.rDimWeak});
+    if (S.dim[k].sd >= 0.85) D.push({t:R.dimSpread(d.curt, fmt(S.dim[k].sd)), r:R.rDimSpread});
+    if (S.dim[k].nD === 1) A.push({t:R.oneRef(d.curt), r:R.rOneRef});
   });
-  const refs = DIMS.map((d,k)=>S.dim[k].nD>=2?`${S.dim[k].nD} en ${d.curt}`:null).filter(Boolean);
-  if (refs.length) F.push({t:`Referents interns disponibles (docents amb alguna pràctica avançada): ${refs.join(", ")}.`, r:"≥ 2 persones amb alguna resposta D per dimensió"});
+  const refs = DIMS.map((d,k)=>S.dim[k].nD>=2?R.refIn(S.dim[k].nD, d.curt):null).filter(Boolean);
+  if (refs.length) F.push({t:R.refs(refs.join(", ")), r:R.rRefs});
   const top = S.item.map((x,i)=>({i,m:x.m})).sort((a,b)=>b.m-a.m);
-  top.slice(0,2).filter(x=>x.m>=2).forEach(x=>F.push({t:`Fortalesa concreta: ${nm(x.i)} (mitjana ${fmt(x.m)}).`, r:"situació amb mitjana ≥ 2"}));
-  top.slice(-2).filter(x=>x.m<1).forEach(x=>D.push({t:`Punt feble concret: ${nm(x.i)} (mitjana ${fmt(x.m)}).`, r:"situació amb mitjana < 1"}));
-  S.item.forEach((x,i)=>{ if (x.pA>=40) D.push({t:`El ${x.pA}% de l'equip encara no ha començat en ${nm(i)}.`, r:"≥ 40% en nivell inicial"}); });
+  top.slice(0,2).filter(x=>x.m>=2).forEach(x=>F.push({t:R.itemStrong(nm(x.i), fmt(x.m)), r:R.rItemStrong}));
+  top.slice(-2).filter(x=>x.m<1).forEach(x=>D.push({t:R.itemWeak(nm(x.i), fmt(x.m)), r:R.rItemWeak}));
+  S.item.forEach((x,i)=>{ if (x.pA>=40) D.push({t:R.notStarted(x.pA, nm(i)), r:R.rNotStarted}); });
   S.item.map((x,i)=>({i, pB:pct(x.dist[1],S.n), pCD:pct(x.dist[2]+x.dist[3],S.n)})).filter(z=>z.pB>=40 && z.pCD>=25).sort((a,b)=>b.pCD-a.pCD).slice(0,3)
-    .forEach(z=>O.push({t:`Zona de progrés en ${nm(z.i)}: majoria en nivell bàsic i un ${z.pCD}% ja en intermèdia o avançada que pot fer d'aprenentatge entre iguals.`, r:"≥ 40% en bàsica i ≥ 25% en intermèdia/avançada (3 millors)"}));
+    .forEach(z=>O.push({t:R.zone(nm(z.i), z.pCD), r:R.rZone}));
   const riskPct = pct(S.risk,S.n);
-  if (riskPct >= 25) A.push({t:`El ${riskPct}% de l'equip es declara en nivell inicial en dades, seguretat, verificació o drets d'autor: exposició a incidències de privacitat i a desinformació.`, r:"≥ 25% amb alguna A a les situacions 3, 4, 5 o 10"});
-  if (S.item[6].m < 1.5) A.push({t:`Transparència i autoria (situació 7) per sota de l'etapa intermèdia: l'ús d'IA per part de l'alumnat pot avançar més de pressa que els criteris d'avaluació. Recurs: Generador IRIS.`, r:"situació 7 amb mitjana < 1,5"});
-  if (S.item[19].m < 1.5) O.push({t:`Els protocols de centre (situació 20) encara no són coneguts per bona part de l'equip: una sessió de claustre sobre el Protocol FECC tindria efecte immediat.`, r:"situació 20 amb mitjana < 1,5"});
-  if (S.item[18].m >= 1.5) O.push({t:`Hi ha cultura de compartir (situació 19): es pot formalitzar un banc de recursos i pràctiques d'IA del centre.`, r:"situació 19 amb mitjana ≥ 1,5"});
-  if (team.plantilla && S.n/team.plantilla < 0.6) A.push({t:`Participació del ${pct(S.n,team.plantilla)}%: la fotografia pot no representar tot l'equip.`, r:"participació < 60%"});
+  if (riskPct >= 25) A.push({t:R.risk(riskPct), r:R.rRisk});
+  if (S.item[6].m < 1.5) A.push({t:R.iris, r:R.rIris});
+  if (S.item[19].m < 1.5) O.push({t:R.protocols, r:R.rProtocols});
+  if (S.item[18].m >= 1.5) O.push({t:R.sharing, r:R.rSharing});
+  if (team.plantilla && S.n/team.plantilla < 0.6) A.push({t:R.partic(pct(S.n,team.plantilla)), r:R.rPartic});
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN);
-  if (segKeys.length>=2){ const ms = segKeys.map(k=>({k, m:mean(S.segs[k].map(p=>mean(p.ans)))})).sort((a,b)=>b.m-a.m); const gap = ms[0].m-ms[ms.length-1].m; if (gap>=0.6) A.push({t:`Diferència de ${fmt(gap)} punts entre ${ETAPES[ms[0].k]} i ${ETAPES[ms[ms.length-1].k]}: desigualtat d'experiència per a l'alumnat segons l'etapa.`, r:"diferència entre etapes ≥ 0,6"}); }
-  O.push({t:"El marc del Departament (2025) i l'instrument FECC comparteixen dimensions: la formació es pot alinear directament amb els descriptors oficials.", r:"context"});
-  if (!F.length) F.push({t:"Encara no hi ha fortaleses clares a nivell d'equip: el punt de partida és compartit i això facilita una formació comuna.", r:"cap dimensió ≥ 1,75"});
-  if (!D.length) D.push({t:"Cap dimensió per sota de l'etapa bàsica: la millora és d'aprofundiment, no de base.", r:"cap dimensió < 1"});
+  if (segKeys.length>=2){ const ms = segKeys.map(k=>({k, m:mean(S.segs[k].map(p=>mean(p.ans)))})).sort((a,b)=>b.m-a.m); const gap = ms[0].m-ms[ms.length-1].m; if (gap>=0.6) A.push({t:R.gap(fmt(gap), ETAPES[ms[0].k], ETAPES[ms[ms.length-1].k]), r:R.rGap}); }
+  O.push({t:R.dept, r:R.rContext});
+  if (!F.length) F.push({t:R.noF, r:R.rNoF});
+  if (!D.length) D.push({t:R.noD, r:R.rNoD});
   const cap = a => a.slice(0,5);
   return {F:cap(F),D:cap(D),O:cap(O),A:cap(A)};
 }
@@ -745,27 +1412,29 @@ function pla(S){
   const cand = S.item.map((x,i)=>({i,m:x.m,d:dimOf(i)})).sort((a,b)=>a.m-b.m);
   const out=[], used=new Set();
   for (const c of cand){ if (used.has(c.d.id)) continue; used.add(c.d.id); out.push(c); if (out.length===3) break; }
-  return out.map(c=>{ const lv=Math.min(2,Math.max(0,Math.floor(c.m))); return {i:c.i, d:c.d, m:c.m, from:LEVELS[lv], to:LEVELS[lv+1], action:ITEMS[c.i].o[lv+1], rec:RECURSOS[c.i]}; });
+  return out.map(c=>{ const lv=Math.min(2,Math.max(0,Math.floor(c.m))); return {i:c.i, d:c.d, m:c.m, lv, from:LEVELS[lv], to:LEVELS[lv+1], action:ITEMS[c.i].o[lv+1], rec:RECURSOS[c.i]}; });
 }
 
 function heatTable(S){
+  const t = T();
   return `<table class="heat">
-      <thead><tr><th></th><th>Situació</th>${LEVELS.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:center">Mitjana</th><th style="text-align:center">Avançats</th></tr></thead>
+      <thead><tr><th></th><th>${t.thSituation}</th>${LEVELS.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:center">${t.thMean}</th><th style="text-align:center">${t.thAdv}</th></tr></thead>
       <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="8">D${k+1} · ${esc(d.nom)} — ${fmt(S.dim[k].m)}</td></tr>`+d.items.map(i=>`<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td>${S.item[i].dist.map((c,l)=>{const p=pct(c,S.n);return `<td class="c" style="background:rgba(14,124,138,${(p/100*0.55).toFixed(2)});color:${p>45?'#fff':'inherit'}">${p?p+"%":"·"}</td>`;}).join("")}<td class="m" style="color:${d.hex}">${fmt(S.item[i].m)}</td><td class="c">${S.item[i].dist[3]||"·"}</td></tr>`).join("")).join("")}</tbody>
     </table>`;
 }
 function renderDash(){
   const box = $("dash"); if(!box) return;
+  const t = T();
   const P = team.people;
-  if (!P.length){ box.innerHTML = `<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">Encara no hi ha cap SELFIE carregat. Enganxa codis, deixa-hi fitxers o prova l'equip de mostra.</div>`; return; }
+  if (!P.length){ box.innerHTML = `<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">${t.dashEmpty}</div>`; return; }
   const S = stats(P);
   const best = S.dim.reduce((a,b,k)=>b.m>S.dim[a].m?k:a,0), worst = S.dim.reduce((a,b,k)=>b.m<S.dim[a].m?k:a,0);
-  const cohTxt = S.coh<0.5?"Equip homogeni":S.coh<0.85?"Equip divers":"Equip polaritzat";
+  const cohTxt = t.coh[S.coh<0.5?0:S.coh<0.85?1:2];
   const riskPct = pct(S.risk,S.n);
   const talent = P.filter(p=>p.ans.some(v=>v===3)).length;
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN).sort();
   const hidden = Object.keys(S.segs).length - segKeys.length;
-  const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:`Equip (${S.n})`}];
+  const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:t.teamSeries(S.n)}];
   if (team.bySeg) segKeys.forEach((k,i)=>series.push({values:ITEMS.map((_,j)=>mean(S.segs[k].map(p=>p.ans[j]))), color:["#7c5ca8","#4e9a54","#cf8f1f","#b42318","#2563eb","#db2777"][i%6], label:`${ETAPES[k]} (${S.segs[k].length})`}));
   if (team.showInd) P.forEach(p=>series.unshift({values:p.ans, color:"#5b7078", bold:false}));
   const DF = dafo(S), PL = pla(S);
@@ -773,63 +1442,63 @@ function renderDash(){
 
   box.innerHTML = `
   <div class="kpis sec">
-    <div class="kpi"><div class="t">Participació</div><div class="v">${S.n}${team.plantilla?` <span class="muted" style="font-size:1rem">/ ${team.plantilla}</span>`:""}</div><div class="s">${team.plantilla?pct(S.n,team.plantilla)+"% de la plantilla":"docents amb SELFIE"}</div></div>
-    <div class="kpi"><div class="t">Índex SELFIE d'equip</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">Etapa predominant: <b>${lvName(mean(S.overall))}</b></div></div>
-    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">Dimensió més forta</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${fmt(S.dim[best].m)} · ${lvName(S.dim[best].m)}</div></div>
-    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">Prioritat</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${fmt(S.dim[worst].m)} · ${lvName(S.dim[worst].m)}</div></div>
-    <div class="kpi ${riskPct>=40?'bad':riskPct>=25?'warn':'ok'}"><div class="t">Seguretat i dades</div><div class="v">${riskPct}%</div><div class="s">en nivell inicial en dades, seguretat, verificació o drets d'autor</div></div>
-    <div class="kpi ${S.coh<0.5?'ok':S.coh<0.85?'warn':'bad'}"><div class="t">Cohesió</div><div class="v" style="font-size:1.15rem">${cohTxt}</div><div class="s">dispersió mitjana ${fmt(S.coh)}</div></div>
-    <div class="kpi ok"><div class="t">Talent intern</div><div class="v">${talent}</div><div class="s">docents amb alguna pràctica avançada: possibles referents</div></div>
+    <div class="kpi"><div class="t">${t.kParticipation}</div><div class="v">${S.n}${team.plantilla?` <span class="muted" style="font-size:1rem">/ ${team.plantilla}</span>`:""}</div><div class="s">${team.plantilla?pct(S.n,team.plantilla)+t.ofStaff:t.withSelfie}</div></div>
+    <div class="kpi"><div class="t">${t.kIndex}</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">${t.predominant} <b>${lvName(mean(S.overall))}</b></div></div>
+    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">${t.kStrong}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${fmt(S.dim[best].m)} · ${lvName(S.dim[best].m)}</div></div>
+    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">${t.kPriority}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${fmt(S.dim[worst].m)} · ${lvName(S.dim[worst].m)}</div></div>
+    <div class="kpi ${riskPct>=40?'bad':riskPct>=25?'warn':'ok'}"><div class="t">${t.kRisk}</div><div class="v">${riskPct}%</div><div class="s">${t.riskSub}</div></div>
+    <div class="kpi ${S.coh<0.5?'ok':S.coh<0.85?'warn':'bad'}"><div class="t">${t.kCoh}</div><div class="v" style="font-size:1.15rem">${cohTxt}</div><div class="s">${t.cohSub(fmt(S.coh))}</div></div>
+    <div class="kpi ok"><div class="t">${t.kTalent}</div><div class="v">${talent}</div><div class="s">${t.talentSub}</div></div>
   </div>
 
   <div class="card sec">
     <div class="grid2">
       <div>
-        <h2>Radar de l'equip · 20 situacions</h2>
+        <h2>${t.teamRadar}</h2>
         <div class="toggles noprint" style="margin-bottom:6px">
-          <label><input type="checkbox" id="tInd" ${team.showInd?'checked':''}> Perfils individuals (anònims)</label>
-          <label><input type="checkbox" id="tSeg" ${team.bySeg?'checked':''} ${segKeys.length?'':'disabled'}> Compara per etapa</label>
+          <label><input type="checkbox" id="tInd" ${team.showInd?'checked':''}> ${t.tInd}</label>
+          <label><input type="checkbox" id="tSeg" ${team.bySeg?'checked':''} ${segKeys.length?'':'disabled'}> ${t.tSeg}</label>
         </div>
         <div class="radar-wrap" id="teamRadar">${radar20(series)}</div>
-        <div class="legend">${series.filter(s=>s.label).map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("")}${team.showInd?`<span><i style="background:#5b7078"></i>cada docent</span>`:""}</div>
-        ${hidden?`<p class="note">${hidden} etapa/es amb menys de ${team.minN} persones no es mostren per separat (privacitat).</p>`:""}
+        <div class="legend">${series.filter(s=>s.label).map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("")}${team.showInd?`<span><i style="background:#5b7078"></i>${t.eachTeacher}</span>`:""}</div>
+        ${hidden?`<p class="note">${t.hiddenSeg(hidden, team.minN)}</p>`:""}
       </div>
       <div>
-        <h2>On és l'equip</h2>
+        <h2>${t.whereTeam}</h2>
         <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l} (${S.stage[i]})</span>`).join("")}</div>
-        <h2 style="margin-top:14px">Per dimensió</h2>
+        <h2 style="margin-top:14px">${t.byDim}</h2>
         <div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="track"><i style="width:${S.dim[k].m/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span><span class="val">${fmt(S.dim[k].m)} <span class="muted small">±${fmt(S.dim[k].sd)}</span></span></div>`).join("")}</div>
         <div class="grid2" style="margin-top:14px">
-          <div><h2>Fortaleses</h2><div class="plist">${S.item.map((x,i)=>({x,i})).sort((a,b)=>b.x.m-a.x.m).slice(0,3).map(({x,i})=>`<div style="--c:${dimOf(i).c}"><span class="n">${i+1}</span>${esc(ITEMS[i].k)}<span class="m">${fmt(x.m)}</span></div>`).join("")}</div></div>
-          <div><h2>Prioritats</h2><div class="plist">${S.item.map((x,i)=>({x,i})).sort((a,b)=>a.x.m-b.x.m).slice(0,3).map(({x,i})=>`<div style="--c:${dimOf(i).c}"><span class="n">${i+1}</span>${esc(ITEMS[i].k)}<span class="m">${fmt(x.m)}</span></div>`).join("")}</div></div>
+          <div><h2>${t.strengths}</h2><div class="plist">${S.item.map((x,i)=>({x,i})).sort((a,b)=>b.x.m-a.x.m).slice(0,3).map(({x,i})=>`<div style="--c:${dimOf(i).c}"><span class="n">${i+1}</span>${esc(ITEMS[i].k)}<span class="m">${fmt(x.m)}</span></div>`).join("")}</div></div>
+          <div><h2>${t.priorities}</h2><div class="plist">${S.item.map((x,i)=>({x,i})).sort((a,b)=>a.x.m-b.x.m).slice(0,3).map(({x,i})=>`<div style="--c:${dimOf(i).c}"><span class="n">${i+1}</span>${esc(ITEMS[i].k)}<span class="m">${fmt(x.m)}</span></div>`).join("")}</div></div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="card sec">
-    <h2>Mapa de calor · % de l'equip a cada nivell</h2>
+    <h2>${t.heatTitle}</h2>
     ${heatTable(S)}
-    <p class="note">Lectura ràpida: les columnes de l'esquerra fosques assenyalen on cal formació de base; la columna «Avançats» diu quants docents poden fer de referents en cada situació.</p>
+    <p class="note">${t.heatNote}</p>
   </div>
 
-  ${segKeys.length?`<div class="card sec"><h2>Per etapa educativa</h2>
-    <table class="heat"><thead><tr><th>Etapa</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">Global</th></tr></thead>
+  ${segKeys.length?`<div class="card sec"><h2>${t.byStage}</h2>
+    <table class="heat"><thead><tr><th>${t.thStage}</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thGlobal}</th></tr></thead>
     <tbody>${segKeys.map(k=>{const g=S.segs[k]; return `<tr><td><b>${ETAPES[k]}</b></td><td class="c">${g.length}</td>${DIMS.map(d=>`<td class="c">${fmt(mean(g.map(p=>mean(d.items.map(i=>p.ans[i])))))}</td>`).join("")}<td class="m">${fmt(mean(g.map(p=>mean(p.ans))))}</td></tr>`;}).join("")}</tbody></table></div>`:""}
 
   <div class="card sec">
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">DAFO de la fotografia actual <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">· esborrany generat a partir de les dades, editable</span></h2><button class="btn ghost noprint" id="printDash">Imprimeix el quadre</button></div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">${t.dafoTitle} <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">${t.dafoSub}</span></h2><button class="btn ghost noprint" id="printDash">${t.printDash}</button></div>
     <div class="dafo" style="margin-top:10px">
-      ${[["f","Fortaleses",DF.F],["d","Debilitats",DF.D],["o","Oportunitats",DF.O],["a","Amenaces",DF.A]].map(([c,t,arr])=>`<div class="dq ${c}"><h3>${t}</h3><ul contenteditable="true" spellcheck="false">${arr.map(x=>`<li>${esc(x.t)}<small>regla: ${esc(x.r)}</small></li>`).join("")}</ul></div>`).join("")}
+      ${[["f",t.quad[0],DF.F],["d",t.quad[1],DF.D],["o",t.quad[2],DF.O],["a",t.quad[3],DF.A]].map(([c,tt,arr])=>`<div class="dq ${c}"><h3>${tt}</h3><ul contenteditable="true" spellcheck="false">${arr.map(x=>`<li>${esc(x.t)}<small>${t.rule} ${esc(x.r)}</small></li>`).join("")}</ul></div>`).join("")}
     </div>
-    <p class="note" style="margin-top:8px">Cada afirmació indica la regla que l'ha generat. L'equip directiu l'ha de contrastar, completar amb el que les dades no veuen i convertir-la en decisions.</p>
+    <p class="note" style="margin-top:8px">${t.dafoNote}</p>
   </div>
 
   <div class="card sec">
-    <h2>Pla de millora suggerit · tres prioritats</h2>
-    <div class="pla">${PL.map((p,k)=>`<div style="--c:${p.d.c}"><b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">(D${DIMS.indexOf(p.d)+1} · mitjana ${fmt(p.m)}, de ${p.from.toLowerCase()} a ${p.to.toLowerCase()})</span><br>Objectiu d'equip: ${esc(p.action)}${p.rec?`<br><span class="small muted">Recurs: ${esc(p.rec)}</span>`:""}</div>`).join("")}</div>
-    <p class="note" style="margin-top:8px">L'objectiu és, literalment, el descriptor del nivell següent de l'instrument: el que l'equip hauria de poder dir de si mateix d'aquí a un curs. Repetir el SELFIE al final del curs permet mesurar-ho.</p>
+    <h2>${t.plaTitle}</h2>
+    <div class="pla">${PL.map((p,k)=>`<div style="--c:${p.d.c}"><b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">${t.plaMeta(DIMS.indexOf(p.d)+1, fmt(p.m), p.from.toLowerCase(), p.to.toLowerCase())}</span><br>${t.teamGoal} ${esc(p.action)}${p.rec?`<br><span class="small muted">${t.resource} ${esc(p.rec)}</span>`:""}</div>`).join("")}</div>
+    <p class="note" style="margin-top:8px">${t.plaNote}</p>
   </div>`;
 
   $("tInd").addEventListener("change", e=>{ team.showInd=e.target.checked; renderDash(); });
@@ -838,36 +1507,37 @@ function renderDash(){
 }
 
 /* ------------------------------ EVOLUCIÓ ------------------------------ */
-const evo = { A:{label:"", people:[], plantilla:0}, B:{label:"", people:[], plantilla:0} };
-const SLOT_TXT = { A:"Ronda anterior", B:"Ronda actual" };
+const evo = { A:{label:"", people:[], plantilla:0, pasted:""}, B:{label:"", people:[], plantilla:0, pasted:""} };
 
 function renderEvo(){
+  const t = T();
   app.innerHTML = `
   <div class="card noprint">
-    <h1 style="font-size:1.3rem">Evolució de l'equip</h1>
-    <p class="muted small" style="margin:0 0 12px">Compara dues rondes del SELFIE: la d'inici de curs i la d'ara, per exemple. Cada ronda pot venir d'una instantània desada al quadre d'equip o d'un text amb codis. La comparació és d'equip (distribucions i mitjanes), mai de persones.</p>
+    <h1 style="font-size:1.3rem">${t.evoH1}</h1>
+    <p class="muted small" style="margin:0 0 12px">${t.evoIntro}</p>
     <div class="grid2">${["A","B"].map(k=>`
       <div class="slot" id="slot${k}">
-        <h3>${SLOT_TXT[k]} · <span class="cnt">${evo[k].people.length} SELFIES</span>${evo[k].label?` · ${esc(evo[k].label)}`:""}</h3>
-        <label class="fld">Etiqueta<input type="text" id="lab${k}" value="${esc(evo[k].label)}" placeholder="${k==="A"?"Ex.: Octubre 2026":"Ex.: Juny 2027"}"></label>
-        <textarea class="paste" id="paste${k}" style="min-height:70px;margin-top:8px" placeholder="Enganxa aquí codis SELFIE o deixa anar instantànies de centre (.selfie-equip.json) o de xarxa (.selfie-xarxa.json)"></textarea>
+        <h3>${t.slot[k]} · <span class="cnt">${evo[k].people.length} ${t.selfies}</span>${evo[k].label?` · ${esc(evo[k].label)}`:""}</h3>
+        <label class="fld">${t.label}<input type="text" id="lab${k}" value="${esc(evo[k].label)}" placeholder="${esc(t.slotPh[k])}"></label>
+        <textarea class="paste" id="paste${k}" style="min-height:70px;margin-top:8px" placeholder="${esc(t.evoPastePh)}">${esc(evo[k].pasted)}</textarea>
         <div class="row" style="margin-top:6px">
-          <button class="btn light" data-add="${k}">Afegeix</button>
-          <button class="btn ghost" data-file="${k}">Obre una instantània</button>
-          ${k==="B" && team.people.length?`<button class="btn ghost" id="takeTeam">Pren l'equip del quadre (${team.people.length})</button>`:""}
-          <button class="btn ghost" data-clear="${k}">Buida</button>
+          <button class="btn light" data-add="${k}">${t.add}</button>
+          <button class="btn ghost" data-file="${k}">${t.openSnap}</button>
+          ${k==="B" && team.people.length?`<button class="btn ghost" id="takeTeam">${t.takeTeam(team.people.length)}</button>`:""}
+          <button class="btn ghost" data-clear="${k}">${t.clear}</button>
           <input type="file" id="file${k}" hidden accept=".json,application/json" multiple>
         </div>
       </div>`).join("")}</div>
-    <div class="row" style="margin-top:10px"><button class="btn ghost" id="evoDemo">Carrega dues rondes de mostra</button><span class="status" id="st"></span></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost" id="evoDemo">${t.evoDemo}</button><span class="status" id="st"></span></div>
   </div>
   <div id="evoDash"></div>`;
   ["A","B"].forEach(k=>{
     $("lab"+k).addEventListener("input", e=>{ evo[k].label=e.target.value; });
+    $("paste"+k).addEventListener("input", e=>{ evo[k].pasted=e.target.value; });
     app.querySelector(`[data-add="${k}"]`).addEventListener("click", ()=>{ addEvoText(k, $("paste"+k).value); });
     app.querySelector(`[data-file="${k}"]`).addEventListener("click", ()=>$("file"+k).click());
     $("file"+k).addEventListener("change", e=>{ loadEvoFiles(k,[...e.target.files]); e.target.value=""; });
-    app.querySelector(`[data-clear="${k}"]`).addEventListener("click", ()=>{ evo[k]={label:"",people:[],plantilla:0}; renderEvo(); });
+    app.querySelector(`[data-clear="${k}"]`).addEventListener("click", ()=>{ evo[k]={label:"",people:[],plantilla:0,pasted:""}; renderEvo(); });
     const sl=$("slot"+k);
     ["dragenter","dragover"].forEach(ev=>sl.addEventListener(ev,e=>{e.preventDefault();sl.style.background="#e3f0f2";}));
     ["dragleave","drop"].forEach(ev=>sl.addEventListener(ev,e=>{e.preventDefault();sl.style.background="";}));
@@ -880,7 +1550,8 @@ function renderEvo(){
 function addEvoText(k, txt){
   let added=0, bad=0;
   for (const m of String(txt).toUpperCase().matchAll(CODE_RE)){ const p=parseCode(m[0]); if(!p){bad++;continue;} if(!evo[k].people.some(q=>q.code===p.code)){ evo[k].people.push({...p,alias:null}); added++; } }
-  renderEvo(); flash("st", (added||bad)?`${added} SELFIE(s) afegit(s) a «${SLOT_TXT[k]}»${bad?` · ${bad} amb algun caràcter mal copiat`:""}.`:"No s'ha trobat cap codi SELFIE al text.");
+  evo[k].pasted = "";
+  renderEvo(); flash("st", (added||bad)?T().evoAdded(added, T().slot[k], bad):T().noneFound);
 }
 async function loadEvoFiles(k, files){
   let added=0;
@@ -889,13 +1560,12 @@ async function loadEvoFiles(k, files){
     else if (d.format==="selfie-equip-1"){ peopleFromSnapshot(d).forEach(p=>{ if(!evo[k].people.some(q=>q.code===p.code)){evo[k].people.push(p);added++;} }); if(d.plantilla) evo[k].plantilla=d.plantilla; if(d.name && !evo[k].label) evo[k].label=d.name; }
     else { const p=parseCode(d.code||""); if(p && !evo[k].people.some(q=>q.code===p.code)){ evo[k].people.push({...p,alias:null}); added++; } }
   }catch(_){} }
-  renderEvo(); flash("st", `${added} SELFIE(s) afegit(s) a «${SLOT_TXT[k]}».`);
+  renderEvo(); flash("st", T().evoFiles(added, T().slot[k]));
 }
 function loadEvoDemo(){
   /* ronda A = equip de mostra; ronda B = el mateix equip uns mesos després, amb millores desiguals (determinista) */
-  const seeds = ["BCBBC-CBBAB-CBBCBA-BCBB-PRI","ABAAB-BBABA-BBABAA-ABAB-PRI","CDCCD-CCBCB-CCCDCC-CCDC-ESO","BBBAB-BAABB-BBBBBB-BBBB-INF","CCCBC-CCBBC-DCCCCD-CBCC-ESO","ABAAA-BAAAA-AAABAA-AABA-INF","BCBAC-BBABB-CBBCBB-BCBB-ESO","DDCDD-DCCCC-DDCDDD-DDDD-BAT","BBCAB-CBBAB-BBBCBB-BBCB-PRI","AAAAB-AAAAA-BAAAAA-AAAA-PRI","CBCBC-CBBBB-CBCCBC-CBBC-BAT","BBBBB-BBBBB-CBBBBB-BBBB-ESO","CCDCC-CCCBC-CCCCCC-DCCD-ESO","BABAB-ABAAB-BABABA-BABA-INF","CBBAB-BBABB-BBBBBB-BBBB-PRI","BCCBC-CBBBB-CCBCCB-CCBC-BAT","AABAA-BAAAA-ABAAAA-ABAA-ESO","BBBBC-BBABB-CBBBBB-BCBB-PRI","CCCBB-CBBBB-CCBCBC-CCBB-ESO","BBBAB-BBAAB-BBBBBB-BBBB-INF","DCCCD-CCBBC-CCDCCC-DCCC-ESO","BCBBB-BBABB-BBBCBB-BCBB-PRI","ABBAA-BAAAB-BBAAAA-ABAB-CF","CBBBC-CBBBB-CBBCBB-BCBB-CF"];
   const A=[], B=[];
-  seeds.forEach((s,i)=>{
+  DEMO_SEEDS.forEach((s,i)=>{
     const pa = parseCode(`SF1-${s}-${(i+10).toString(36).toUpperCase().padStart(2,"0")}`); if(!pa) return; A.push({...pa,alias:null});
     /* millora: les situacions 2,3,4,5,7,20 pugen un nivell en 2 de cada 3 docents; la 9 i la 13 baixen en algun cas (per veure retrocessos) */
     const ans = pa.ans.slice();
@@ -904,8 +1574,8 @@ function loadEvoDemo(){
     if (i%2===0 && ans[12]<3) ans[12]++;
     const pb = parseCode(makeCode(ans, pa.etapa, (i+40).toString(36).toUpperCase().padStart(2,"0"))); if(pb) B.push({...pb,alias:null});
   });
-  evo.A={label:"Octubre 2026",people:A,plantilla:30}; evo.B={label:"Juny 2027",people:B,plantilla:30};
-  renderEvo(); flash("st","Dues rondes de mostra carregades (24 docents fictícies).");
+  evo.A={label:T().demoA,people:A,plantilla:30,pasted:""}; evo.B={label:T().demoB,people:B,plantilla:30,pasted:""};
+  renderEvo(); flash("st",T().evoDemoLoaded);
 }
 function animateRadar(svg, from, to, ms=1500){
   if (!svg || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
@@ -927,10 +1597,11 @@ const sgn = (v,dec=2) => (v>0?"+":"")+ (Math.round(v*10**dec)/10**dec).toFixed(d
 
 function renderEvoDash(){
   const box=$("evoDash"); if(!box) return;
+  const t = T();
   const A=evo.A.people, B=evo.B.people;
-  if (!A.length || !B.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">Carrega les dues rondes per veure l'evolució.</div>`; return; }
+  if (!A.length || !B.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">${t.evoEmpty}</div>`; return; }
   const SA=stats(A), SB=stats(B);
-  const la=evo.A.label||"Ronda anterior", lb=evo.B.label||"Ronda actual";
+  const la=evo.A.label||t.slot.A, lb=evo.B.label||t.slot.B;
   const dIdx=SB.index-SA.index;
   const riskA=pct(SA.risk,SA.n), riskB=pct(SB.risk,SB.n);
   const talA=A.filter(p=>p.ans.some(v=>v===3)).length, talB=B.filter(p=>p.ans.some(v=>v===3)).length;
@@ -941,69 +1612,69 @@ function renderEvoDash(){
   const moves=dItem.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
   const ups=moves.filter(m=>m.v>0.04).slice(0,3), downs=moves.filter(m=>m.v<-0.04).sort((a,b)=>a.v-b.v).slice(0,3);
   /* pla de la ronda anterior contrastat amb l'actual */
-  const PLA=pla(SA).map(p=>{ const target=LEVELS.indexOf(p.to); const now=SB.item[p.i].m; const st= now>=target?"a": now>p.m+0.04?"p":"n"; return {...p, now, st}; });
+  const PLA=pla(SA).map(p=>{ const target=p.lv+1; const now=SB.item[p.i].m; const st= now>=target?"a": now>p.m+0.04?"p":"n"; return {...p, now, st}; });
   /* lectura automàtica */
   const R=[];
-  R.push({c:dcls(dIdx/10), t:`L'índex SELFIE d'equip ha passat de ${SA.index} a ${SB.index} (${sgn(dIdx,0)} punts) entre «${la}» i «${lb}»${SA.n!==SB.n?`, amb ${SA.n} i ${SB.n} SELFIES respectivament`:""}.`});
+  R.push({c:dcls(dIdx/10), t:t.L.idx(SA.index, SB.index, sgn(dIdx,0), la, lb, SA.n, SB.n)});
   const kBest=dDim.indexOf(Math.max(...dDim)), kWorst=dDim.indexOf(Math.min(...dDim));
-  R.push({c:"ok", t:`La dimensió que més ha crescut és «${DIMS[kBest].nom}» (${sgn(dDim[kBest])}); la que menys, «${DIMS[kWorst].nom}» (${sgn(dDim[kWorst])}).`});
-  if (stA[0]!==stB[0]) R.push({c:dcls(stA[0]-stB[0]), t:`La proporció de docents en etapa inicial ha passat del ${stA[0]}% al ${stB[0]}%; en avançada, del ${stA[3]}% al ${stB[3]}%.`});
-  R.push({c:dcls(riskA-riskB), t:`Seguretat i dades: del ${riskA}% al ${riskB}% de docents en nivell inicial en alguna de les situacions 3, 4, 5 o 10.`});
-  R.push({c:dcls(SA.coh-SB.coh), t:`Cohesió: dispersió mitjana de ${fmt(SA.coh)} a ${fmt(SB.coh)} — l'equip ${SB.coh<SA.coh-0.04?"s'ha fet més homogeni":SB.coh>SA.coh+0.04?"s'ha polaritzat":"manté la mateixa cohesió"}.`});
-  if (downs.length) R.push({c:"bad", t:`Retrocessos a vigilar: ${downs.map(m=>`${m.i+1}. ${ITEMS[m.i].k} (${sgn(m.v)})`).join(", ")}.`});
-  const ass=PLA.filter(p=>p.st==="a").length; R.push({c:ass===PLA.length?"ok":ass?"":"bad", t:`Pla de millora de «${la}»: ${ass} de ${PLA.length} prioritats assolides, ${PLA.filter(p=>p.st==="p").length} en progrés, ${PLA.filter(p=>p.st==="n").length} pendents.`});
+  R.push({c:"ok", t:t.L.dims(DIMS[kBest].nom, sgn(dDim[kBest]), DIMS[kWorst].nom, sgn(dDim[kWorst]))});
+  if (stA[0]!==stB[0]) R.push({c:dcls(stA[0]-stB[0]), t:t.L.stages(stA[0], stB[0], stA[3], stB[3])});
+  R.push({c:dcls(riskA-riskB), t:t.L.risk(riskA, riskB)});
+  R.push({c:dcls(SA.coh-SB.coh), t:t.L.coh(fmt(SA.coh), fmt(SB.coh), SB.coh<SA.coh-0.04?-1:SB.coh>SA.coh+0.04?1:0)});
+  if (downs.length) R.push({c:"bad", t:t.L.downs(downs.map(m=>`${m.i+1}. ${ITEMS[m.i].k} (${sgn(m.v)})`).join(", "))});
+  const ass=PLA.filter(p=>p.st==="a").length; R.push({c:ass===PLA.length?"ok":ass?"":"bad", t:t.L.plan(la, ass, PLA.length, PLA.filter(p=>p.st==="p").length, PLA.filter(p=>p.st==="n").length)});
 
   box.innerHTML=`
   <div class="kpis sec">
-    <div class="kpi ${dcls(dIdx)}"><div class="t">Índex d'equip</div><div class="v">${SB.index} <span class="delta ${dcls(dIdx)}" style="font-size:1rem">${dsym(dIdx)} ${sgn(dIdx,0)}</span></div><div class="s">abans ${SA.index} · etapa ${lvName(mean(SB.overall))}</div></div>
-    <div class="kpi ${dcls(stA[0]-stB[0])}"><div class="t">En etapa inicial</div><div class="v">${stB[0]}% <span class="delta ${dcls(stA[0]-stB[0])}" style="font-size:1rem">${dsym(stB[0]-stA[0])} ${sgn(stB[0]-stA[0],0)} pp</span></div><div class="s">abans ${stA[0]}%</div></div>
-    <div class="kpi ${dcls(stB[3]-stA[3])}"><div class="t">En etapa avançada</div><div class="v">${stB[3]}% <span class="delta ${dcls(stB[3]-stA[3])}" style="font-size:1rem">${dsym(stB[3]-stA[3])} ${sgn(stB[3]-stA[3],0)} pp</span></div><div class="s">abans ${stA[3]}%</div></div>
-    <div class="kpi ${dcls(riskA-riskB)}"><div class="t">Seguretat i dades</div><div class="v">${riskB}% <span class="delta ${dcls(riskA-riskB)}" style="font-size:1rem">${dsym(riskB-riskA)} ${sgn(riskB-riskA,0)} pp</span></div><div class="s">abans ${riskA}% en nivell inicial</div></div>
-    <div class="kpi ${dcls(SA.coh-SB.coh)}"><div class="t">Cohesió</div><div class="v" style="font-size:1.15rem">${SB.coh<0.5?"Homogeni":SB.coh<0.85?"Divers":"Polaritzat"}</div><div class="s">dispersió ${fmt(SA.coh)} → ${fmt(SB.coh)}</div></div>
-    <div class="kpi ${dcls(talB-talA)}"><div class="t">Talent intern</div><div class="v">${talB} <span class="delta ${dcls(talB-talA)}" style="font-size:1rem">${dsym(talB-talA)} ${sgn(talB-talA,0)}</span></div><div class="s">docents amb alguna pràctica avançada</div></div>
+    <div class="kpi ${dcls(dIdx)}"><div class="t">${t.kTeamIdx}</div><div class="v">${SB.index} <span class="delta ${dcls(dIdx)}" style="font-size:1rem">${dsym(dIdx)} ${sgn(dIdx,0)}</span></div><div class="s">${t.before} ${SA.index} · ${t.stage} ${lvName(mean(SB.overall))}</div></div>
+    <div class="kpi ${dcls(stA[0]-stB[0])}"><div class="t">${t.kInitial}</div><div class="v">${stB[0]}% <span class="delta ${dcls(stA[0]-stB[0])}" style="font-size:1rem">${dsym(stB[0]-stA[0])} ${sgn(stB[0]-stA[0],0)} ${t.pp}</span></div><div class="s">${t.before} ${stA[0]}%</div></div>
+    <div class="kpi ${dcls(stB[3]-stA[3])}"><div class="t">${t.kAdvanced}</div><div class="v">${stB[3]}% <span class="delta ${dcls(stB[3]-stA[3])}" style="font-size:1rem">${dsym(stB[3]-stA[3])} ${sgn(stB[3]-stA[3],0)} ${t.pp}</span></div><div class="s">${t.before} ${stA[3]}%</div></div>
+    <div class="kpi ${dcls(riskA-riskB)}"><div class="t">${t.kRisk}</div><div class="v">${riskB}% <span class="delta ${dcls(riskA-riskB)}" style="font-size:1rem">${dsym(riskB-riskA)} ${sgn(riskB-riskA,0)} ${t.pp}</span></div><div class="s">${t.before} ${riskA}% ${t.inInitial}</div></div>
+    <div class="kpi ${dcls(SA.coh-SB.coh)}"><div class="t">${t.kCoh}</div><div class="v" style="font-size:1.15rem">${t.cohShort[SB.coh<0.5?0:SB.coh<0.85?1:2]}</div><div class="s">${t.dispersion} ${fmt(SA.coh)} → ${fmt(SB.coh)}</div></div>
+    <div class="kpi ${dcls(talB-talA)}"><div class="t">${t.kTalent}</div><div class="v">${talB} <span class="delta ${dcls(talB-talA)}" style="font-size:1rem">${dsym(talB-talA)} ${sgn(talB-talA,0)}</span></div><div class="s">${t.talentSub.split(":")[0]}</div></div>
   </div>
 
   <div class="card sec">
-    <h2>Lectura automàtica</h2>
+    <h2>${t.autoRead}</h2>
     <div class="read">${R.map(r=>`<div class="${r.c==="up"?"ok":r.c==="down"?"bad":r.c}">${esc(r.t)}</div>`).join("")}</div>
   </div>
 
   <div class="card sec">
     <div class="grid2">
       <div>
-        <h2>Radar · ${esc(la)} vs ${esc(lb)}</h2>
+        <h2>${t.radarVs(esc(la), esc(lb))}</h2>
         <div class="radar-wrap" id="evoRadar">${radar20([{values:SA.item.map(x=>x.m),color:"#8ea6ab",dashed:true},{values:SB.item.map(x=>x.m),color:"#0e7c8a",bold:true}])}</div>
-        <div class="legend"><span><i style="background:#8ea6ab"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span><button type="button" class="helpLink noprint" id="replayEvo" style="margin:0 0 0 auto">▶ Torna a veure l'evolució</button></div>
+        <div class="legend"><span><i style="background:#8ea6ab"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span><button type="button" class="helpLink noprint" id="replayEvo" style="margin:0 0 0 auto">${t.replay}</button></div>
       </div>
       <div>
-        <h2>Variació per dimensió</h2>
+        <h2>${t.varByDim}</h2>
         <div class="dbars">${DIMS.map((d,k)=>{const v=dDim[k]; const w=Math.abs(v)/maxAbs*50; const left=v>=0?50:50-w; return `<div class="dbar" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="ax"><s></s><i style="left:${left}%;width:${w}%"></i></span><span class="delta ${dcls(v)}">${dsym(v)} ${sgn(v)}</span></div>`;}).join("")}</div>
-        <h2 style="margin-top:16px">Distribució per etapes</h2>
+        <h2 style="margin-top:16px">${t.distStages}</h2>
         <div class="twostack">
           <span class="muted">${esc(la)}</span><div class="stack">${stA.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]}">${p}%</div>`:"").join("")}</div>
           <span class="muted">${esc(lb)}</span><div class="stack">${stB.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]}">${p}%</div>`:"").join("")}</div>
         </div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l}</span>`).join("")}</div>
         <div class="grid2" style="margin-top:14px">
-          <div><h2>Més han pujat</h2><div class="plist">${ups.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m up">${sgn(m.v)}</span></div>`).join("")||'<span class="note">Cap pujada rellevant.</span>'}</div></div>
-          <div><h2>Han baixat</h2><div class="plist">${downs.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m down">${sgn(m.v)}</span></div>`).join("")||'<span class="note">Cap retrocés.</span>'}</div></div>
+          <div><h2>${t.ups}</h2><div class="plist">${ups.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m up">${sgn(m.v)}</span></div>`).join("")||`<span class="note">${t.noUps}</span>`}</div></div>
+          <div><h2>${t.downs}</h2><div class="plist">${downs.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m down">${sgn(m.v)}</span></div>`).join("")||`<span class="note">${t.noDowns}</span>`}</div></div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="card sec">
-    <h2>Mapa de variació · 20 situacions</h2>
+    <h2>${t.varMap}</h2>
     <table class="heat">
-      <thead><tr><th></th><th>Situació</th><th style="text-align:center">${esc(la)}</th><th style="text-align:center">${esc(lb)}</th><th style="text-align:center">Variació</th><th style="text-align:center">% inicial</th><th style="text-align:center">% avançada</th></tr></thead>
+      <thead><tr><th></th><th>${t.thSituation}</th><th style="text-align:center">${esc(la)}</th><th style="text-align:center">${esc(lb)}</th><th style="text-align:center">${t.thVar}</th><th style="text-align:center">${t.thPctInit}</th><th style="text-align:center">${t.thPctAdv}</th></tr></thead>
       <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="7">D${k+1} · ${esc(d.nom)} — ${fmt(SA.dim[k].m)} → ${fmt(SB.dim[k].m)} <span class="delta ${dcls(dDim[k])}">${dsym(dDim[k])} ${sgn(dDim[k])}</span></td></tr>`+d.items.map(i=>{const v=dItem[i]; return `<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td><td class="c">${fmt(SA.item[i].m)}</td><td class="c" style="font-weight:800">${fmt(SB.item[i].m)}</td><td class="c delta ${dcls(v)}" style="background:${v>0.04?`rgba(23,122,82,${Math.min(0.45,Math.abs(v)/2)})`:v<-0.04?`rgba(180,35,24,${Math.min(0.45,Math.abs(v)/2)})`:"transparent"}">${dsym(v)} ${sgn(v)}</td><td class="c">${SA.item[i].pA}% → ${SB.item[i].pA}%</td><td class="c">${SA.item[i].pD}% → ${SB.item[i].pD}%</td></tr>`;}).join("")).join("")}</tbody>
     </table>
   </div>
 
   <div class="card sec">
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Pla de millora de «${esc(la)}» · què se n'ha fet</h2><button class="btn ghost noprint" id="printEvo">Imprimeix l'evolució</button></div>
-    <div class="pla" style="margin-top:10px">${PLA.map((p,k)=>`<div style="--c:${p.d.c}"><span class="chipst ${p.st}">${p.st==="a"?"Assolit":p.st==="p"?"En progrés":"Pendent"}</span> <b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">objectiu: etapa ${p.to.toLowerCase()} · mitjana ${fmt(p.m)} → ${fmt(p.now)}</span></div>`).join("")}</div>
-    <p class="note" style="margin-top:8px">Les prioritats són les que el quadre d'equip hauria proposat amb les dades de la ronda anterior. «Assolit» vol dir que la mitjana de l'equip ha arribat a l'etapa objectiu; «en progrés», que ha pujat sense arribar-hi.</p>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">${t.plaOf(esc(la))}</h2><button class="btn ghost noprint" id="printEvo">${t.printEvo}</button></div>
+    <div class="pla" style="margin-top:10px">${PLA.map((p,k)=>`<div style="--c:${p.d.c}"><span class="chipst ${p.st}">${t.chips[p.st]}</span> <b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">${t.goalMeta(p.to.toLowerCase(), fmt(p.m), fmt(p.now))}</span></div>`).join("")}</div>
+    <p class="note" style="margin-top:8px">${t.evoPlaNote}</p>
   </div>`;
   $("printEvo").addEventListener("click", ()=>window.print());
   const fromV = SA.item.map(x=>x.m), toV = SB.item.map(x=>x.m);
@@ -1018,20 +1689,21 @@ function networkSnapshotOf(){
     snapshots: net.snaps.map(s=>({ id:s.id, name:s.name, center:s.center, date:s.date, plantilla:s.plantilla, codes:s.people.map(p=>p.code) })) };
 }
 function renderNet(){
+  const t = T();
   app.innerHTML = `
   <div class="card noprint">
-    <h1 style="font-size:1.3rem">Vista de xarxa</h1>
-    <p class="muted small" style="margin:0 0 10px">Per a qui agrega diversos centres —una fundació, una titularitat, una delegació o tota una xarxa—: deixa aquí les instantànies que els centres t'han fet arribar, totes de cop, i obtindràs el resum global. Es descarten les instantànies repetides (mateix identificador), mai les persones. Tot es calcula en aquest navegador.</p>
+    <h1 style="font-size:1.3rem">${t.netH1}</h1>
+    <p class="muted small" style="margin:0 0 10px">${t.netIntro}</p>
     <div class="grid2">
-      <div class="drop" id="netDrop">Arrossega aquí les instantànies <b>.selfie-equip.json</b> dels centres (o fes-hi clic per triar-les)<input type="file" id="netFile" multiple accept=".json,application/json"></div>
+      <div class="drop" id="netDrop">${t.dropNet}<input type="file" id="netFile" multiple accept=".json,application/json"></div>
       <div>
-        <div class="row"><button class="btn ghost" id="netDemo">Carrega una xarxa de mostra</button><button class="btn ghost" id="netClear">Buida</button><span class="status" id="st"></span></div>
+        <div class="row"><button class="btn ghost" id="netDemo">${t.netDemo}</button><button class="btn ghost" id="netClear">${t.clear}</button><span class="status" id="st"></span></div>
         <div class="row" style="margin-top:10px">
-          <label class="fld" style="flex:1">Nom de la ronda de xarxa<input type="text" id="netRound" value="${esc(net.roundName)}" placeholder="Ex.: Octubre 2026"></label>
-          <label class="fld" style="width:150px">Mida mínima de centre<input type="number" id="netMinN" min="2" value="${team.minN}"></label>
-          <button class="btn light" id="saveNet" style="align-self:end" ${net.snaps.length?'':'disabled'}>Desa la instantània de xarxa</button>
+          <label class="fld" style="flex:1">${t.netRoundLbl}<input type="text" id="netRound" value="${esc(net.roundName)}" placeholder="${esc(t.roundPh)}"></label>
+          <label class="fld" style="width:150px">${t.netMinLbl}<input type="number" id="netMinN" min="2" value="${team.minN}"></label>
+          <button class="btn light" id="saveNet" style="align-self:end" ${net.snaps.length?'':'disabled'}>${t.saveNet}</button>
         </div>
-        <p class="note" style="margin-top:8px">La instantània de xarxa és un sol fitxer amb totes les instantànies de centre d'aquesta ronda. Serveix per tornar-la a obrir aquí i, sobretot, per deixar-la a «Ronda anterior» o «Ronda actual» de la pestanya Evolució i veure com avança tota la xarxa.</p>
+        <p class="note" style="margin-top:8px">${t.netNote}</p>
       </div>
     </div>
   </div>
@@ -1051,8 +1723,8 @@ function renderNet(){
     const data = networkSnapshotOf();
     const b = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(b);
-    a.download = `xarxa-${(net.roundName||"ronda").replace(/[^\p{L}\p{N}]+/gu,"-").toLowerCase()}-${data.date}.selfie-xarxa.json`; a.click(); URL.revokeObjectURL(a.href);
-    flash("st",`Instantània de xarxa desada: ${net.snaps.length} centres en un sol fitxer.`);
+    a.download = `${T().netPrefix}-${(net.roundName||T().roundDefault).replace(/[^\p{L}\p{N}]+/gu,"-").toLowerCase()}-${data.date}.selfie-xarxa.json`; a.click(); URL.revokeObjectURL(a.href);
+    flash("st",T().netSaved(net.snaps.length));
   });
   renderNetDash();
 }
@@ -1069,7 +1741,7 @@ async function loadNetFiles(files){
   for (const f of files){ try{ const d=JSON.parse(await f.text());
     if (d.format==="selfie-xarxa-1"){ (d.snapshots||[]).forEach(s=>{ addSnap({...s, format:"selfie-equip-1"})?added++:dup++; }); if(d.name && !net.roundName) net.roundName=d.name; continue; }
     if (d.format!=="selfie-equip-1"){bad++;continue;} addSnap(d)?added++:dup++; }catch(_){ bad++; } }
-  renderNet(); flash("st", `${added} instantània/es de centre afegida/es${dup?` · ${dup} repetida/es`:""}${bad?` · ${bad} fitxer/s no vàlid/s`:""}.`);
+  renderNet(); flash("st", T().netAdded(added,dup,bad));
 }
 function loadNetDemo(){
   /* 12 centres ficticis: mides i perfils diferents, generats de manera determinista */
@@ -1087,13 +1759,14 @@ function loadNetDemo(){
       const et = etapes[Math.floor(rnd()*etapes.length)];
       const p = parseCode(makeCode(ans, et, randId(4))); if (p) people.push({...p,alias:null});
     }
-    net.snaps.push({ id:"DEMO"+ci, name:"Octubre 2026", center:nm, date:"2026-10-15", plantilla:plant, people });
+    net.snaps.push({ id:"DEMO"+ci, name:T().demoA, center:nm, date:"2026-10-15", plantilla:plant, people });
   });
-  renderNet(); flash("st","Xarxa de mostra carregada: 12 centres ficticis.");
+  renderNet(); flash("st",T().netDemoLoaded);
 }
 function renderNetDash(){
   const box=$("netDash"); if(!box) return;
-  if (!net.snaps.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">Encara no hi ha cap instantània. Deixa-hi els fitxers dels centres o prova la xarxa de mostra.</div>`; return; }
+  const t = T();
+  if (!net.snaps.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">${t.netEmpty}</div>`; return; }
   const all = net.snaps.flatMap(s=>s.people);
   const S = stats(all);
   const centres = net.snaps.length, docents = all.length;
@@ -1104,53 +1777,53 @@ function renderNetDash(){
   const best = S.dim.reduce((a,b,k)=>b.m>S.dim[a].m?k:a,0), worst = S.dim.reduce((a,b,k)=>b.m<S.dim[a].m?k:a,0);
   const riskPct = pct(S.risk,S.n);
   const small = rows.filter(r=>r.s.people.length<team.minN).length;
-  const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:`Xarxa (${docents})`}];
+  const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:t.netSeries(docents)}];
   if (net.showCenters) rows.filter(r=>r.s.people.length>=team.minN).forEach(r=>series.unshift({values:r.st.item.map(x=>x.m), color:"#8ea6ab", bold:false}));
   const stageTotal = S.stage.reduce((a,b)=>a+b,0);
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN).sort();
   box.innerHTML = `
   <div class="kpis sec">
-    <div class="kpi"><div class="t">Centres</div><div class="v">${centres}</div><div class="s">${small?`${small} amb menys de ${team.minN} docents (només al global)`:"instantànies carregades"}</div></div>
-    <div class="kpi"><div class="t">Docents</div><div class="v">${docents}</div><div class="s">${part!==null?`participació ${part}% on hi ha plantilla`:"SELFIES agregats"}</div></div>
-    <div class="kpi"><div class="t">Índex de xarxa</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">Etapa predominant: <b>${lvName(mean(S.overall))}</b></div></div>
-    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">Dimensió més forta</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${fmt(S.dim[best].m)}</div></div>
-    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">Prioritat de xarxa</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${fmt(S.dim[worst].m)}</div></div>
-    <div class="kpi ${riskPct>=40?'bad':riskPct>=25?'warn':'ok'}"><div class="t">Seguretat i dades</div><div class="v">${riskPct}%</div><div class="s">en nivell inicial en dades, seguretat, verificació o drets d'autor</div></div>
-    <div class="kpi ${spread<8?'ok':spread<15?'warn':'bad'}"><div class="t">Diferències entre centres</div><div class="v" style="font-size:1.15rem">${spread<8?"Xarxa homogènia":spread<15?"Xarxa diversa":"Xarxa desigual"}</div><div class="s">índex de ${Math.min(...idxs)} a ${Math.max(...idxs)} · dispersió ${fmt(spread)}</div></div>
+    <div class="kpi"><div class="t">${t.kCenters}</div><div class="v">${centres}</div><div class="s">${small?t.smallCenters(small, team.minN):t.snapsLoaded}</div></div>
+    <div class="kpi"><div class="t">${t.kTeachers}</div><div class="v">${docents}</div><div class="s">${part!==null?t.partWhere(part):t.aggregated}</div></div>
+    <div class="kpi"><div class="t">${t.kNetIdx}</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">${t.predominant} <b>${lvName(mean(S.overall))}</b></div></div>
+    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">${t.kStrong}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${fmt(S.dim[best].m)}</div></div>
+    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">${t.kNetPriority}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${fmt(S.dim[worst].m)}</div></div>
+    <div class="kpi ${riskPct>=40?'bad':riskPct>=25?'warn':'ok'}"><div class="t">${t.kRisk}</div><div class="v">${riskPct}%</div><div class="s">${t.riskSub}</div></div>
+    <div class="kpi ${spread<8?'ok':spread<15?'warn':'bad'}"><div class="t">${t.kSpread}</div><div class="v" style="font-size:1.15rem">${t.spread[spread<8?0:spread<15?1:2]}</div><div class="s">${t.spreadSub(Math.min(...idxs), Math.max(...idxs), fmt(spread))}</div></div>
   </div>
 
   <div class="card sec">
     <div class="grid2">
       <div>
-        <h2>Radar de la xarxa · 20 situacions</h2>
-        <div class="toggles noprint" style="margin-bottom:6px"><label><input type="checkbox" id="tCenters" ${net.showCenters?'checked':''}> Superposa cada centre (n ≥ ${team.minN})</label></div>
+        <h2>${t.netRadar}</h2>
+        <div class="toggles noprint" style="margin-bottom:6px"><label><input type="checkbox" id="tCenters" ${net.showCenters?'checked':''}> ${t.overlay(team.minN)}</label></div>
         <div class="radar-wrap">${radar20(series)}</div>
-        <div class="legend"><span><i style="background:#0e7c8a"></i>Xarxa (${docents})</span>${net.showCenters?`<span><i style="background:#8ea6ab"></i>cada centre</span>`:""}</div>
+        <div class="legend"><span><i style="background:#0e7c8a"></i>${t.netSeries(docents)}</span>${net.showCenters?`<span><i style="background:#8ea6ab"></i>${t.eachCenter}</span>`:""}</div>
       </div>
       <div>
-        <h2>On és la xarxa</h2>
+        <h2>${t.whereNet}</h2>
         <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l} (${S.stage[i]})</span>`).join("")}</div>
-        <h2 style="margin-top:14px">Per dimensió</h2>
+        <h2 style="margin-top:14px">${t.byDim}</h2>
         <div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="track"><i style="width:${S.dim[k].m/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span><span class="val">${fmt(S.dim[k].m)} <span class="muted small">±${fmt(S.dim[k].sd)}</span></span></div>`).join("")}</div>
-        ${segKeys.length?`<h2 style="margin-top:14px">Per etapa educativa</h2>
-        <table class="heat"><thead><tr><th>Etapa</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">Global</th></tr></thead>
+        ${segKeys.length?`<h2 style="margin-top:14px">${t.byStage}</h2>
+        <table class="heat"><thead><tr><th>${t.thStage}</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thGlobal}</th></tr></thead>
         <tbody>${segKeys.map(k=>{const g=S.segs[k]; return `<tr><td><b>${ETAPES[k]}</b></td><td class="c">${g.length}</td>${DIMS.map(d=>`<td class="c">${fmt(mean(g.map(p=>mean(d.items.map(i=>p.ans[i])))))}</td>`).join("")}<td class="m">${fmt(mean(g.map(p=>mean(p.ans))))}</td></tr>`;}).join("")}</tbody></table>`:""}
       </div>
     </div>
   </div>
 
   <div class="card sec">
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Per centre</h2><button class="btn ghost noprint" id="printNet">Imprimeix la vista de xarxa</button></div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">${t.perCenter}</h2><button class="btn ghost noprint" id="printNet">${t.printNet}</button></div>
     <table class="heat" style="margin-top:8px">
-      <thead><tr><th>Centre</th><th>Ronda</th><th style="text-align:center">n</th><th style="text-align:center">Particip.</th><th style="text-align:center">Índex</th><th style="text-align:center">Etapa</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">Seg. i dades</th></tr></thead>
-      <tbody>${rows.filter(r=>r.s.people.length>=team.minN).map((r,i)=>`<tr><td><b>${esc(r.s.center||("Centre "+(i+1)))}</b></td><td class="muted">${esc(r.s.name)}${r.s.date?` · ${r.s.date}`:""}</td><td class="c">${r.s.people.length}</td><td class="c">${r.part!==null?r.part+"%":"·"}</td><td class="m">${r.idx}</td><td class="c">${lvName(mean(r.st.overall))}</td>${DIMS.map((d,k)=>`<td class="c" style="background:rgba(14,124,138,${(r.st.dim[k].m/3*0.45).toFixed(2)});color:${r.st.dim[k].m>1.9?'#fff':'inherit'}">${fmt(r.st.dim[k].m)}</td>`).join("")}<td class="c ${r.risk>=40?'down':r.risk>=25?'':'up'}">${r.risk}%</td></tr>`).join("")}</tbody>
+      <thead><tr><th>${t.thCenter}</th><th>${t.thRound}</th><th style="text-align:center">n</th><th style="text-align:center">${t.thPart}</th><th style="text-align:center">${t.thIdx}</th><th style="text-align:center">${t.thStage}</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thRisk}</th></tr></thead>
+      <tbody>${rows.filter(r=>r.s.people.length>=team.minN).map((r,i)=>`<tr><td><b>${esc(r.s.center||t.centerN(i+1))}</b></td><td class="muted">${esc(r.s.name)}${r.s.date?` · ${r.s.date}`:""}</td><td class="c">${r.s.people.length}</td><td class="c">${r.part!==null?r.part+"%":"·"}</td><td class="m">${r.idx}</td><td class="c">${lvName(mean(r.st.overall))}</td>${DIMS.map((d,k)=>`<td class="c" style="background:rgba(14,124,138,${(r.st.dim[k].m/3*0.45).toFixed(2)});color:${r.st.dim[k].m>1.9?'#fff':'inherit'}">${fmt(r.st.dim[k].m)}</td>`).join("")}<td class="c ${r.risk>=40?'down':r.risk>=25?'':'up'}">${r.risk}%</td></tr>`).join("")}</tbody>
     </table>
-    <p class="note">${small?`${small} centre/s amb menys de ${team.minN} docents compten al global però no es mostren per separat (privacitat). `:""}Lectura recomanada: els centres no són una classificació sinó un mapa de necessitats; el que importa és on cal acompanyament i on hi ha referents que poden ajudar altres centres.</p>
+    <p class="note">${small?t.smallNote(small, team.minN):""}${t.netReading}</p>
   </div>
 
   <div class="card sec">
-    <h2>Mapa de calor de la xarxa · % de docents a cada nivell</h2>
+    <h2>${t.netHeat}</h2>
     ${heatTable(S)}
   </div>`;
   $("tCenters").addEventListener("change", e=>{ net.showCenters=e.target.checked; renderNetDash(); });
@@ -1173,6 +1846,11 @@ document.addEventListener("click", e=>{ const el = e.target.closest && e.target.
 document.addEventListener("scroll", hideTip, true);
 
 /* arrencada */
+(function(){
+  const q = (new URLSearchParams(location.search).get("lang")||"").toLowerCase();
+  const h = {"#es":"es","#en":"en","#ca":"ca"}[location.hash.toLowerCase()];
+  setLang(UI[q] ? q : (h || "ca"));
+})();
 if (location.hash === "#equip" || location.hash === "#demo") route = "team";
 if (location.hash === "#evolucio" || location.hash === "#evolucio-demo") route = "evo";
 if (location.hash === "#xarxa" || location.hash === "#xarxa-demo") route = "net";
@@ -1181,7 +1859,7 @@ render();
 if (location.hash === "#demo") loadDemo();
 if (location.hash === "#evolucio-demo") loadEvoDemo();
 if (location.hash === "#xarxa-demo") loadNetDemo();
-window.__selfie = { team, self, evo, net, stats, dafo, pla, parseCode, makeCode, encodeAns, decodeAns, codeLooksTypo, radar20, snapshotOf, networkSnapshotOf, peopleFromSnapshot, loadEvoDemo, loadNetDemo, addSnap, animateRadar, RG };   /* accés per a proves */
+window.__selfie = { team, self, evo, net, stats, dafo, pla, parseCode, makeCode, encodeAns, decodeAns, codeLooksTypo, radar20, snapshotOf, networkSnapshotOf, peopleFromSnapshot, loadDemo, loadEvoDemo, loadNetDemo, addSnap, animateRadar, RG, setLang, render, UI, TX, get LANG(){ return LANG; } };   /* accés per a proves */
 </script>
 </body>
 </html>
