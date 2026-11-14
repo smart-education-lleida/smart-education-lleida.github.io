@@ -35,6 +35,9 @@
   nav button.on{background:var(--d1);border-color:var(--d1);color:#fff}
   nav button#navSelf{padding:10px 20px;font-size:.98rem;border-width:2px}
   nav button#navSelf:not(.on){color:var(--d1);border-color:var(--d1)}
+  /* Evolució compara dues instantànies: es distingeix de les tres vistes d'instantània (individu, equip, xarxa) */
+  nav button#navEvo{background:#dcecee;border-color:#8fc3c9;color:#0a5b66;margin-left:10px}
+  nav button#navEvo.on{background:#0a5b66;border-color:#0a5b66;color:#fff}
 
   main{padding:6px 0 40px}
   .card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:20px 22px}
@@ -114,9 +117,11 @@
   .heat th{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
   .heat td{padding:5px 6px;border-bottom:1px solid #eef3f4;vertical-align:middle}
   .heat td.n{font-weight:800;color:var(--c);width:28px}
-  .heat td.c{text-align:center;font-weight:700;width:68px;border-radius:6px}
-  .heat td.m{text-align:center;font-weight:800;width:64px}
+  .heat td.c{text-align:center;font-weight:700;width:68px;border-radius:6px;white-space:nowrap}
+  .heat td.m{text-align:center;font-weight:800;width:64px;white-space:nowrap}
   .heat tr.dimrow td{background:var(--bg);font-weight:800;color:var(--c);font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;padding:7px 6px}
+  .tscroll{overflow-x:auto}
+  .grid2 > *,.res > *,.hero > *{min-width:0}
   .stack{display:flex;height:26px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
   .stack div{display:grid;place-items:center;font-size:.72rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden}
   .dafo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -146,12 +151,14 @@
   .slot .cnt{font-weight:800;color:var(--d1)}
   .delta{font-weight:800}
   .up{color:var(--ok)} .down{color:var(--bad)} .flat{color:var(--muted)}
-  .dbars{display:grid;gap:8px}
-  .dbar{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;font-size:.84rem}
-  .dbar .lab{font-weight:700;color:var(--c)}
-  .dbar .ax{position:relative;height:14px;background:#e4ebed;border-radius:7px}
-  .dbar .ax i{position:absolute;top:0;bottom:0;border-radius:7px;background:var(--c)}
-  .dbar .ax s{position:absolute;top:-2px;bottom:-2px;left:50%;width:2px;background:#5b7078}
+  .dimevo{display:grid;gap:9px}
+  .dimevo > div{display:grid;grid-template-columns:158px 1fr;gap:10px;align-items:center;font-size:.84rem}
+  .dimevo .lab{font-weight:700;color:var(--c)}
+  .dimevo .two{display:grid;gap:3px}
+  .dimevo .delta{display:block;font-size:.76rem}
+  .plist .m{white-space:nowrap}
+  .stack.sm{height:17px;border-radius:6px}
+  .stack.sm div{font-size:.66rem}
   .twostack{display:grid;grid-template-columns:70px 1fr;gap:8px 10px;align-items:center;font-size:.8rem}
   .read{display:grid;gap:6px}
   .read div{border-left:4px solid var(--d1);background:#eef6f7;border-radius:10px;padding:8px 12px;font-size:.86rem}
@@ -165,10 +172,10 @@
     transform:translate(-50%,-130%);white-space:nowrap;opacity:0;transition:opacity .12s}
   .tip.on{opacity:1}
   footer{padding:14px 0 30px;color:var(--muted);font-size:.72rem;text-align:center;line-height:1.6;border-top:1px solid var(--line)}
-  @media (max-width:860px){.hero,.res,.grid2,.dafo{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}.gauge .lab{width:110px}}
+  @media (max-width:860px){.hero,.res,.grid2,.dafo{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}.gauge .lab{width:110px}.dimevo > div{grid-template-columns:1fr}}
   @media print{
     body{background:#fff} header nav,.noprint{display:none !important}
-    .card{border:0;padding:0} .shell{width:100%} .kpi{break-inside:avoid} .dq{break-inside:avoid}
+    .card{border:0;padding:0} .shell{width:100%} .tscroll{overflow:visible} .kpi{break-inside:avoid} .dq{break-inside:avoid}
   }
   .langs{display:flex;gap:4px;margin-left:6px}
   .langs button{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-weight:800;font-size:.74rem;color:var(--muted);letter-spacing:.02em}
@@ -184,8 +191,8 @@
     <nav>
       <button type="button" id="navSelf">El meu SELFIE</button>
       <button type="button" id="navTeam">Equip</button>
-      <button type="button" id="navEvo">Evolució</button>
       <button type="button" id="navNet">Xarxa</button>
+      <button type="button" id="navEvo">Evolució</button>
     </nav>
     <div class="langs noprint" role="group" aria-label="Idioma">
       <button type="button" data-lang="ca" class="on" lang="ca" title="Català" aria-label="Català">CA</button>
@@ -197,12 +204,14 @@
   <footer id="foot">
     Instrument: <b>Autoavaluació de la Competència Digital Docent en IA</b> (Grup d'Experts en l'Àmbit Digital de la FECC), alineat amb
     <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, desembre 2025).<br>
-    Tot es calcula al teu navegador: no es desa ni s'envia cap dada. Les respostes només viatgen en el codi SELFIE que tu decideixes compartir.
+    Tot es calcula al teu navegador: no es desa ni s'envia cap dada. Les respostes només viatgen en el codi SELFIE que tu decideixes compartir.<br>
+    Versió 5.0 · Els resums de grup fan servir la mediana baixa: amb un nombre parell de dades es pren el valor central inferior.
   </footer>
 </div>
 
 <script>
 "use strict";
+/* SELFIE IA · v5.0 (novembre 2026) · mediana baixa com a estadístic central */
 /* =====================================================================
    DADES DE L'INSTRUMENT (text íntegre de l'autoavaluació FECC)
    Escala: A = 0 (inicial, encara no) · B = 1 (bàsica) · C = 2 (intermèdia) · D = 3 (avançada)
@@ -554,7 +563,7 @@ ca:{
  brand:"SELFIE · Competència digital docent en IA",
  brandSub:"Autoavaluació individual i quadre de comandament d'equip · Marc FECC",
  nav:{self:"El meu SELFIE", team:"Equip", evo:"Evolució", net:"Xarxa"},
- footer:`Instrument: <b>Autoavaluació de la Competència Digital Docent en IA</b> (Grup d'Experts en l'Àmbit Digital de la FECC), alineat amb <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, desembre 2025).<br>Tot es calcula al teu navegador: no es desa ni s'envia cap dada. Les respostes només viatgen en el codi SELFIE que tu decideixes compartir.`,
+ footer:`Instrument: <b>Autoavaluació de la Competència Digital Docent en IA</b> (Grup d'Experts en l'Àmbit Digital de la FECC), alineat amb <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, desembre 2025).<br>Tot es calcula al teu navegador: no es desa ni s'envia cap dada. Les respostes només viatgen en el codi SELFIE que tu decideixes compartir.<br>Versió 5.0 · Els resums de grup fan servir la mediana baixa: amb un nombre parell de dades es pren el valor central inferior.`,
  radarAria:"Radar de 20 situacions en 4 dimensions", radarDesc:"Valors per situació", progressAria:"Progrés del qüestionari", navAria:"Seccions", langAria:"Idioma",
  h1:`Com et situes avui amb la IA <em>a la teva docència</em>?`,
  intro:"Vint situacions reals, quatre maneres de respondre-hi. Tries la que més s'assembla al que fas. Uns sis minuts, cap dada personal, i al final el teu radar i els teus propers passos.",
@@ -566,8 +575,8 @@ ca:{
  codeTypo:"El codi té algun caràcter mal copiat: revisa'l.", codeBad:"Aquest codi no és vàlid.",
  prev:"← Anterior", next:"Següent →", seeRadar:"Veure el meu radar",
  hint:"Tria l'opció que més s'assembla al que fas avui — no la que t'agradaria. Tecles 1–4 per respondre.",
- yourSelfie:"El teu SELFIE:", of3:v=>`${v} sobre 3`, myProfile:"El meu perfil", byDim:"Per dimensió", nextSteps:"Els teus propers passos",
- fromTo:(a,b)=>`de ${a} a ${b}`, resource:"Recurs:", allAdv:"Nivell avançat a totes les dimensions: la teva aportació ara és acompanyar l'equip.",
+ yourSelfie:"El teu SELFIE:", medNote:"etapa mediana de les 20 situacions", myProfile:"El meu perfil", byDim:"Per dimensió", nextSteps:"Els teus propers passos",
+ fromTo:(a,b)=>`${/^[aeiou]/i.test(a)?"d'":"de "}${a} a ${b}`, resource:"Recurs:", allAdv:"Nivell avançat a totes les dimensions: la teva aportació ara és acompanyar l'equip.",
  yourCode:"El teu codi SELFIE",
  codeNote:"Les teves 20 respostes codificades (no es llegeixen a simple vista, però no és un xifratge), un caràcter de control contra errors de còpia, l'etapa si ho vols, i quatre caràcters aleatoris que només distingeixen respostes idèntiques dins d'un mateix equip. Cap nom, cap correu. Fes-lo arribar a l'equip directiu pel canal que us hàgiu donat (formulari, correu, xat): així entres a la fotografia d'equip.",
  stageLbl:"Etapa (opcional, per a la fotografia d'equip)", noStage:"— No indicar —",
@@ -577,7 +586,7 @@ ca:{
  copied:"Codi copiat al porta-retalls.", copyFail:"Selecciona el codi i copia'l amb Ctrl+C.", fileDl:"Fitxer descarregat.",
  pngDl:"Radar descarregat en PNG.", pngErr:"No s'ha pogut generar el PNG en aquest navegador.",
  badgeDl:"Insígnia d'autoavaluació descarregada en PNG.", badgeErr:"No s'ha pogut generar la insígnia en aquest navegador.",
- badgeTitle:"AUTOAVALUACIÓ · COMPETÈNCIA DIGITAL DOCENT EN IA", badgeSub:(v,d)=>`Etapa global · ${v} sobre 3 · ${d}`,
+ badgeTitle:"AUTOAVALUACIÓ · COMPETÈNCIA DIGITAL DOCENT EN IA", badgeSub:d=>`Etapa global (mediana) · ${d}`,
  badgeHint:"Enganxa aquest codi a l'eina per tornar a veure el radar",
  badgeFoot:"DECLARACIÓ PRÒPIA SEGONS L'INSTRUMENT FECC · MARC CDD-IA DEL DEPARTAMENT D'EDUCACIÓ",
  teamH1:"Fotografia d'equip",
@@ -599,7 +608,9 @@ ca:{
  kIndex:"Índex SELFIE d'equip", predominant:"Etapa predominant:",
  kStrong:"Dimensió més forta", kPriority:"Prioritat", kRisk:"Seguretat i dades",
  riskSub:"en nivell inicial en dades, seguretat, verificació o drets d'autor",
- kCoh:"Cohesió", coh:["Equip homogeni","Equip divers","Equip polaritzat"], cohSub:v=>`dispersió mitjana ${v}`,
+ kPolar:"Polarització", polarShort:["No polaritzat","Polaritzat"], polarNet:["No polaritzada","Polaritzada"], polarSub:(a,d)=>`${a}% en inicial · ${d}% en avançada (llindar: 25% i 25%)`,
+ tMean:"Línia de mitjanes", meanLine:"Mitjana (línia de punts)", meanLegend:"línies de punts: mitjanes", pUpSub:p=>`${p}% en intermèdia o avançada`, pASub:p=>`${p}% en inicial`,
+ dimNote:"Cada barra mostra com es reparteixen els docents en aquella dimensió; a la dreta, l'etapa mediana.",
  kTalent:"Talent intern", talentSub:"docents amb alguna pràctica avançada: possibles referents",
  teamRadar:"Radar de l'equip · 20 situacions", tInd:"Perfils individuals (anònims)", tSeg:"Compara per etapa",
  teamSeries:n=>`Equip (${n})`, eachTeacher:"cada docent",
@@ -607,35 +618,36 @@ ca:{
  whereTeam:"On és l'equip", strengths:"Fortaleses", priorities:"Prioritats",
  heatTitle:"Mapa de calor · % de l'equip a cada nivell",
  heatNote:"Lectura ràpida: les columnes de l'esquerra fosques assenyalen on cal formació de base; la columna «Avançats» diu quants docents poden fer de referents en cada situació.",
- byStage:"Per etapa educativa", thStage:"Etapa", thGlobal:"Global", thSituation:"Situació", thMean:"Mitjana", thAdv:"Avançats",
+ byStage:"Per etapa educativa", thStage:"Etapa", thGlobal:"Global", thSituation:"Situació", thMed:"Mediana", thAdv:"Avançats",
  dafoTitle:"DAFO de la fotografia actual", dafoSub:"· esborrany generat a partir de les dades, editable", printDash:"Imprimeix el quadre",
  quad:["Fortaleses","Debilitats","Oportunitats","Amenaces"], rule:"regla:",
  dafoNote:"Cada afirmació indica la regla que l'ha generat. L'equip directiu l'ha de contrastar, completar amb el que les dades no veuen i convertir-la en decisions.",
  plaTitle:"Pla de millora suggerit · tres prioritats",
- plaMeta:(d,m,a,b)=>`(D${d} · mitjana ${m}, de ${a} a ${b})`, teamGoal:"Objectiu d'equip:",
+ plaMeta:(d,a,b)=>`(D${d} · mediana: ${a} · objectiu: ${b})`, teamGoal:"Objectiu d'equip:",
  plaNote:"L'objectiu és, literalment, el descriptor del nivell següent de l'instrument: el que l'equip hauria de poder dir de si mateix d'aquí a un curs. Repetir el SELFIE al final del curs permet mesurar-ho.",
  R:{
-  dimStrong:(lv,nom,m)=>`L'equip se situa en etapa ${lv} en «${nom}» (mitjana ${m}).`, rDimStrong:"mitjana de dimensió ≥ 1,75",
-  dimWeak:(nom,m)=>`«${nom}» queda entre l'etapa inicial i la bàsica (mitjana ${m}): és la prioritat formativa de fons.`, rDimWeak:"mitjana de dimensió < 1",
-  dimSpread:(curt,s)=>`Pràctiques molt desiguals en «${curt}» (dispersió ${s}): l'alumnat rep experiències diferents segons el docent.`, rDimSpread:"dispersió ≥ 0,85",
+  dimStrong:(lv,nom)=>`L'equip se situa en etapa ${lv} en «${nom}».`, rDimStrong:"mediana de la dimensió ≥ Intermèdia",
+  dimWeak:nom=>`«${nom}» queda en etapa inicial: és la prioritat formativa de fons.`, rDimWeak:"mediana de la dimensió = Inicial",
+  teamPolar:(a,d)=>`Equip polaritzat: el ${a}% dels docents és en etapa inicial i el ${d}% en avançada. L'alumnat rep experiències molt diferents segons el docent.`, rTeamPolar:"≥ 25% de docents en inicial i ≥ 25% en avançada",
+  dimSpread:(curt,a,d)=>`Pràctiques polaritzades en «${curt}»: ${a}% dels docents en inicial i ${d}% en avançada.`, rDimSpread:"dimensió amb ≥ 25% en inicial i ≥ 25% en avançada",
   oneRef:curt=>`Un sol referent avançat en «${curt}»: el coneixement depèn d'una persona.`, rOneRef:"exactament 1 persona amb resposta D",
   refs:list=>`Referents interns disponibles (docents amb alguna pràctica avançada): ${list}.`, refIn:(n,curt)=>`${n} en ${curt}`, rRefs:"≥ 2 persones amb alguna resposta D per dimensió",
-  itemStrong:(nm,m)=>`Fortalesa concreta: ${nm} (mitjana ${m}).`, rItemStrong:"situació amb mitjana ≥ 2",
-  itemWeak:(nm,m)=>`Punt feble concret: ${nm} (mitjana ${m}).`, rItemWeak:"situació amb mitjana < 1",
+  itemStrong:(nm,lv)=>`Fortalesa concreta: ${nm} (mediana: ${lv}).`, rItemStrong:"situació amb mediana ≥ Intermèdia",
+  itemWeak:nm=>`Punt feble concret: ${nm} (mediana: inicial).`, rItemWeak:"situació amb mediana = Inicial",
   notStarted:(p,nm)=>`El ${p}% de l'equip encara no ha començat en ${nm}.`, rNotStarted:"≥ 40% en nivell inicial",
   zone:(nm,p)=>`Zona de progrés en ${nm}: majoria en nivell bàsic i un ${p}% ja en intermèdia o avançada que pot fer d'aprenentatge entre iguals.`, rZone:"≥ 40% en bàsica i ≥ 25% en intermèdia/avançada (3 millors)",
   risk:p=>`El ${p}% de l'equip es declara en nivell inicial en dades, seguretat, verificació o drets d'autor: exposició a incidències de privacitat i a desinformació.`, rRisk:"≥ 25% amb alguna A a les situacions 3, 4, 5 o 10",
-  iris:"Transparència i autoria (situació 7) per sota de l'etapa intermèdia: l'ús d'IA per part de l'alumnat pot avançar més de pressa que els criteris d'avaluació. Recurs: Generador IRIS.", rIris:"situació 7 amb mitjana < 1,5",
-  protocols:"Els protocols de centre (situació 20) encara no són coneguts per bona part de l'equip: una sessió de claustre sobre el Protocol FECC tindria efecte immediat.", rProtocols:"situació 20 amb mitjana < 1,5",
-  sharing:"Hi ha cultura de compartir (situació 19): es pot formalitzar un banc de recursos i pràctiques d'IA del centre.", rSharing:"situació 19 amb mitjana ≥ 1,5",
+  iris:"Transparència i autoria (situació 7) per sota de l'etapa intermèdia: l'ús d'IA per part de l'alumnat pot avançar més de pressa que els criteris d'avaluació. Recurs: Generador IRIS.", rIris:"situació 7 amb mediana ≤ Bàsica",
+  protocols:"Els protocols de centre (situació 20) encara no són coneguts per bona part de l'equip: una sessió de claustre sobre el Protocol FECC tindria efecte immediat.", rProtocols:"situació 20 amb mediana ≤ Bàsica",
+  sharing:"Hi ha cultura de compartir (situació 19): es pot formalitzar un banc de recursos i pràctiques d'IA del centre.", rSharing:"situació 19 amb mediana ≥ Intermèdia",
   partic:p=>`Participació del ${p}%: la fotografia pot no representar tot l'equip.`, rPartic:"participació < 60%",
-  gap:(g,a,b)=>`Diferència de ${g} punts entre ${a} i ${b}: desigualtat d'experiència per a l'alumnat segons l'etapa.`, rGap:"diferència entre etapes ≥ 0,6",
+  gap:(a,la,b,lb)=>`Etapa predominant diferent segons l'etapa educativa: ${a} (${la}) i ${b} (${lb}). Desigualtat d'experiència per a l'alumnat.`, rGap:"etapa predominant diferent entre etapes educatives (grups que arriben a la mida mínima)",
   dept:"El marc del Departament (2025) i l'instrument FECC comparteixen dimensions: la formació es pot alinear directament amb els descriptors oficials.", rContext:"context",
-  noF:"Encara no hi ha fortaleses clares a nivell d'equip: el punt de partida és compartit i això facilita una formació comuna.", rNoF:"cap dimensió ≥ 1,75",
-  noD:"Cap dimensió per sota de l'etapa bàsica: la millora és d'aprofundiment, no de base.", rNoD:"cap dimensió < 1"
+  noF:"Encara no hi ha fortaleses clares a nivell d'equip: el punt de partida és compartit i això facilita una formació comuna.", rNoF:"cap dimensió amb mediana ≥ Intermèdia",
+  noD:"Cap dimensió en etapa inicial: la millora és d'aprofundiment, no de base.", rNoD:"cap dimensió amb mediana = Inicial"
  },
  evoH1:"Evolució de l'equip",
- evoIntro:"Compara dues rondes del SELFIE: la d'inici de curs i la d'ara, per exemple. Cada ronda pot venir d'una instantània desada al quadre d'equip o d'un text amb codis. La comparació és d'equip (distribucions i mitjanes), mai de persones.",
+ evoIntro:"Compara dues rondes del SELFIE: la d'inici de curs i la d'ara, per exemple. Cada ronda pot venir d'una instantània desada al quadre d'equip o d'un text amb codis. La comparació és d'equip (distribucions i medianes), mai de persones.",
  slot:{A:"Ronda anterior",B:"Ronda actual"}, selfies:"SELFIES", label:"Etiqueta", slotPh:{A:"Ex.: Octubre 2026",B:"Ex.: Juny 2027"},
  evoPastePh:"Enganxa aquí codis SELFIE o deixa anar instantànies de centre (.selfie-equip.json) o de xarxa (.selfie-xarxa.json)",
  add:"Afegeix", openSnap:"Obre una instantània", takeTeam:n=>`Pren l'equip del quadre (${n})`, evoDemo:"Carrega dues rondes de mostra",
@@ -645,21 +657,22 @@ ca:{
  evoEmpty:"Carrega les dues rondes per veure l'evolució.",
  L:{
   idx:(a,b,d,la,lb,na,nb)=>`L'índex SELFIE d'equip ha passat de ${a} a ${b} (${d} punts) entre «${la}» i «${lb}»${na!==nb?`, amb ${na} i ${nb} SELFIES respectivament`:""}.`,
-  dims:(best,db,worst,dw)=>`La dimensió que més ha crescut és «${best}» (${db}); la que menys, «${worst}» (${dw}).`,
+  pred:(a,b,dir)=>dir>0?`L'etapa predominant de l'equip puja: ${a} → ${b}.`:dir<0?`L'etapa predominant de l'equip baixa: ${a} → ${b}.`:`L'etapa predominant de l'equip es manté (${b}): el docent del mig no ha canviat d'etapa.`,
+  dimsCh:(ups,downs)=>[ups?`Dimensions que pugen d'etapa: ${ups}.`:"", downs?`Dimensions que baixen d'etapa: ${downs}.`:""].filter(Boolean).join(" "),
+  dimsNone:"Cap dimensió canvia d'etapa mediana. Els avenços més petits es veuen a l'índex, a les distribucions i a la línia de mitjanes.",
   stages:(a0,b0,a3,b3)=>`La proporció de docents en etapa inicial ha passat del ${a0}% al ${b0}%; en avançada, del ${a3}% al ${b3}%.`,
   risk:(a,b)=>`Seguretat i dades: del ${a}% al ${b}% de docents en nivell inicial en alguna de les situacions 3, 4, 5 o 10.`,
-  coh:(a,b,dir)=>`Cohesió: dispersió mitjana de ${a} a ${b} — l'equip ${dir<0?"s'ha fet més homogeni":dir>0?"s'ha polaritzat":"manté la mateixa cohesió"}.`,
+  polar:(a,b)=>a&&b?"L'equip continua polaritzat: un 25% o més dels docents en etapa inicial i un 25% o més en avançada.":a?"L'equip ha deixat d'estar polaritzat.":b?"L'equip s'ha polaritzat: un 25% o més dels docents en etapa inicial i un 25% o més en avançada.":"L'equip no està polaritzat en cap de les dues rondes.",
   downs:list=>`Retrocessos a vigilar: ${list}.`,
   plan:(la,ass,tot,prog,pend)=>`Pla de millora de «${la}»: ${ass} de ${tot} prioritats assolides, ${prog} en progrés, ${pend} pendents.`
  },
  kTeamIdx:"Índex d'equip", before:"abans", stage:"etapa", kInitial:"En etapa inicial", kAdvanced:"En etapa avançada", pp:"pp", inInitial:"en nivell inicial",
- cohShort:["Homogeni","Divers","Polaritzat"], dispersion:"dispersió",
  autoRead:"Lectura automàtica", radarVs:(a,b)=>`Radar · ${a} vs ${b}`, replay:"▶ Torna a veure l'evolució",
- varByDim:"Variació per dimensió", distStages:"Distribució per etapes", ups:"Més han pujat", downs:"Han baixat", noUps:"Cap pujada rellevant.", noDowns:"Cap retrocés.",
+ varByDim:"Per dimensió: abans i ara", barsNote:(a,b)=>`Barra superior: ${a}. Barra inferior: ${b}. Sota el nom, l'etapa mediana.`, distStages:"Distribució per etapes", ups:"Pugen d'etapa", downs:"Baixen d'etapa", noUps:"Cap situació puja d'etapa mediana.", noDowns:"Cap situació baixa d'etapa.",
  varMap:"Mapa de variació · 20 situacions", thVar:"Variació", thPctInit:"% inicial", thPctAdv:"% avançada",
  plaOf:la=>`Pla de millora de «${la}» · què se n'ha fet`, printEvo:"Imprimeix l'evolució",
- chips:{a:"Assolit",p:"En progrés",n:"Pendent"}, goalMeta:(to,m,now)=>`objectiu: etapa ${to} · mitjana ${m} → ${now}`,
- evoPlaNote:"Les prioritats són les que el quadre d'equip hauria proposat amb les dades de la ronda anterior. «Assolit» vol dir que la mitjana de l'equip ha arribat a l'etapa objectiu; «en progrés», que ha pujat sense arribar-hi.",
+ chips:{a:"Assolit",p:"En progrés",n:"Pendent"}, goalMeta:(to,a,b,pa,pb)=>`objectiu: etapa ${to} · mediana: ${a} → ${b} · docents a l'objectiu o més: ${pa}% → ${pb}%`,
+ evoPlaNote:"Les prioritats són les que el quadre d'equip hauria proposat amb les dades de la ronda anterior. «Assolit» vol dir que la mediana de l'equip ha arribat a l'etapa objectiu; «en progrés», que encara no hi ha arribat però la proporció de docents que ja hi són ha pujat 5 punts o més.",
  netH1:"Vista de xarxa",
  netIntro:"Per a qui agrega diversos centres —una fundació, una titularitat, una delegació o tota una xarxa—: deixa aquí les instantànies que els centres t'han fet arribar, totes de cop, i obtindràs el resum global. Es descarten les instantànies repetides (mateix identificador), mai les persones. Tot es calcula en aquest navegador.",
  dropNet:`Arrossega aquí les instantànies <b>.selfie-equip.json</b> dels centres (o fes-hi clic per triar-les)`,
@@ -686,7 +699,7 @@ es:{
  brand:"SELFIE · Competencia digital docente en IA",
  brandSub:"Autoevaluación individual y cuadro de mando de equipo · Marco FECC",
  nav:{self:"Mi SELFIE", team:"Equipo", evo:"Evolución", net:"Red"},
- footer:`Instrumento: <b>Autoevaluación de la Competencia Digital Docente en IA</b> (Grupo de Expertos en el Ámbito Digital de la FECC), alineado con <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, diciembre de 2025). Traducción de trabajo; el original es el catalán.<br>Todo se calcula en tu navegador: no se guarda ni se envía ningún dato. Las respuestas solo viajan en el código SELFIE que tú decides compartir.`,
+ footer:`Instrumento: <b>Autoevaluación de la Competencia Digital Docente en IA</b> (Grupo de Expertos en el Ámbito Digital de la FECC), alineado con <i>Competència digital docent en intel·ligència artificial</i> (Departament d'Educació i FP, diciembre de 2025). Traducción de trabajo; el original es el catalán.<br>Todo se calcula en tu navegador: no se guarda ni se envía ningún dato. Las respuestas solo viajan en el código SELFIE que tú decides compartir.<br>Versión 5.0 · Los resúmenes de grupo usan la mediana baja: con un número par de datos se toma el valor central inferior.`,
  radarAria:"Radar de 20 situaciones en 4 dimensiones", radarDesc:"Valores por situación", progressAria:"Progreso del cuestionario", navAria:"Secciones", langAria:"Idioma",
  h1:`¿Cómo te sitúas hoy con la IA <em>en tu docencia</em>?`,
  intro:"Veinte situaciones reales, cuatro maneras de responder. Eliges la que más se parece a lo que haces. Unos seis minutos, ningún dato personal, y al final tu radar y tus próximos pasos.",
@@ -698,7 +711,7 @@ es:{
  codeTypo:"El código tiene algún carácter mal copiado: revísalo.", codeBad:"Este código no es válido.",
  prev:"← Anterior", next:"Siguiente →", seeRadar:"Ver mi radar",
  hint:"Elige la opción que más se parece a lo que haces hoy — no a lo que te gustaría. Teclas 1–4 para responder.",
- yourSelfie:"Tu SELFIE:", of3:v=>`${v} sobre 3`, myProfile:"Mi perfil", byDim:"Por dimensión", nextSteps:"Tus próximos pasos",
+ yourSelfie:"Tu SELFIE:", medNote:"etapa mediana de las 20 situaciones", myProfile:"Mi perfil", byDim:"Por dimensión", nextSteps:"Tus próximos pasos",
  fromTo:(a,b)=>`de ${a} a ${b}`, resource:"Recurso:", allAdv:"Nivel avanzado en todas las dimensiones: tu aportación ahora es acompañar al equipo.",
  yourCode:"Tu código SELFIE",
  codeNote:"Tus 20 respuestas codificadas (no se leen a simple vista, pero no es un cifrado), un carácter de control contra errores de copia, la etapa si quieres, y cuatro caracteres aleatorios que solo distinguen respuestas idénticas dentro de un mismo equipo. Ningún nombre, ningún correo. Házselo llegar al equipo directivo por el canal que hayáis acordado (formulario, correo, chat): así entras en la fotografía de equipo.",
@@ -709,7 +722,7 @@ es:{
  copied:"Código copiado al portapapeles.", copyFail:"Selecciona el código y cópialo con Ctrl+C.", fileDl:"Archivo descargado.",
  pngDl:"Radar descargado en PNG.", pngErr:"No se ha podido generar el PNG en este navegador.",
  badgeDl:"Insignia de autoevaluación descargada en PNG.", badgeErr:"No se ha podido generar la insignia en este navegador.",
- badgeTitle:"AUTOEVALUACIÓN · COMPETENCIA DIGITAL DOCENTE EN IA", badgeSub:(v,d)=>`Etapa global · ${v} sobre 3 · ${d}`,
+ badgeTitle:"AUTOEVALUACIÓN · COMPETENCIA DIGITAL DOCENTE EN IA", badgeSub:d=>`Etapa global (mediana) · ${d}`,
  badgeHint:"Pega este código en la herramienta para volver a ver el radar",
  badgeFoot:"DECLARACIÓN PROPIA SEGÚN EL INSTRUMENTO FECC · MARCO CDD-IA DEL DEPARTAMENT D'EDUCACIÓ",
  teamH1:"Fotografía de equipo",
@@ -731,7 +744,9 @@ es:{
  kIndex:"Índice SELFIE de equipo", predominant:"Etapa predominante:",
  kStrong:"Dimensión más fuerte", kPriority:"Prioridad", kRisk:"Seguridad y datos",
  riskSub:"en nivel inicial en datos, seguridad, verificación o derechos de autor",
- kCoh:"Cohesión", coh:["Equipo homogéneo","Equipo diverso","Equipo polarizado"], cohSub:v=>`dispersión media ${v}`,
+ kPolar:"Polarización", polarShort:["No polarizado","Polarizado"], polarNet:["No polarizada","Polarizada"], polarSub:(a,d)=>`${a}% en inicial · ${d}% en avanzada (umbral: 25% y 25%)`,
+ tMean:"Línea de medias", meanLine:"Media (línea de puntos)", meanLegend:"líneas de puntos: medias", pUpSub:p=>`${p}% en intermedia o avanzada`, pASub:p=>`${p}% en inicial`,
+ dimNote:"Cada barra muestra cómo se reparten los docentes en esa dimensión; a la derecha, la etapa mediana.",
  kTalent:"Talento interno", talentSub:"docentes con alguna práctica avanzada: posibles referentes",
  teamRadar:"Radar del equipo · 20 situaciones", tInd:"Perfiles individuales (anónimos)", tSeg:"Compara por etapa",
  teamSeries:n=>`Equipo (${n})`, eachTeacher:"cada docente",
@@ -739,35 +754,36 @@ es:{
  whereTeam:"Dónde está el equipo", strengths:"Fortalezas", priorities:"Prioridades",
  heatTitle:"Mapa de calor · % del equipo en cada nivel",
  heatNote:"Lectura rápida: las columnas oscuras de la izquierda señalan dónde hace falta formación de base; la columna «Avanzados» dice cuántos docentes pueden actuar como referentes en cada situación.",
- byStage:"Por etapa educativa", thStage:"Etapa", thGlobal:"Global", thSituation:"Situación", thMean:"Media", thAdv:"Avanzados",
+ byStage:"Por etapa educativa", thStage:"Etapa", thGlobal:"Global", thSituation:"Situación", thMed:"Mediana", thAdv:"Avanzados",
  dafoTitle:"DAFO de la fotografía actual", dafoSub:"· borrador generado a partir de los datos, editable", printDash:"Imprime el cuadro",
  quad:["Fortalezas","Debilidades","Oportunidades","Amenazas"], rule:"regla:",
  dafoNote:"Cada afirmación indica la regla que la ha generado. El equipo directivo debe contrastarla, completarla con lo que los datos no ven y convertirla en decisiones.",
  plaTitle:"Plan de mejora sugerido · tres prioridades",
- plaMeta:(d,m,a,b)=>`(D${d} · media ${m}, de ${a} a ${b})`, teamGoal:"Objetivo de equipo:",
+ plaMeta:(d,a,b)=>`(D${d} · mediana: ${a} · objetivo: ${b})`, teamGoal:"Objetivo de equipo:",
  plaNote:"El objetivo es, literalmente, el descriptor del nivel siguiente del instrumento: lo que el equipo debería poder decir de sí mismo dentro de un curso. Repetir el SELFIE al final del curso permite medirlo.",
  R:{
-  dimStrong:(lv,nom,m)=>`El equipo se sitúa en etapa ${lv} en «${nom}» (media ${m}).`, rDimStrong:"media de dimensión ≥ 1,75",
-  dimWeak:(nom,m)=>`«${nom}» queda entre la etapa inicial y la básica (media ${m}): es la prioridad formativa de fondo.`, rDimWeak:"media de dimensión < 1",
-  dimSpread:(curt,s)=>`Prácticas muy desiguales en «${curt}» (dispersión ${s}): el alumnado recibe experiencias distintas según el docente.`, rDimSpread:"dispersión ≥ 0,85",
+  dimStrong:(lv,nom)=>`El equipo se sitúa en etapa ${lv} en «${nom}».`, rDimStrong:"mediana de la dimensión ≥ Intermedia",
+  dimWeak:nom=>`«${nom}» queda en etapa inicial: es la prioridad formativa de fondo.`, rDimWeak:"mediana de la dimensión = Inicial",
+  teamPolar:(a,d)=>`Equipo polarizado: el ${a}% de los docentes está en etapa inicial y el ${d}% en avanzada. El alumnado recibe experiencias muy distintas según el docente.`, rTeamPolar:"≥ 25% de docentes en inicial y ≥ 25% en avanzada",
+  dimSpread:(curt,a,d)=>`Prácticas polarizadas en «${curt}»: ${a}% de los docentes en inicial y ${d}% en avanzada.`, rDimSpread:"dimensión con ≥ 25% en inicial y ≥ 25% en avanzada",
   oneRef:curt=>`Un solo referente avanzado en «${curt}»: el conocimiento depende de una persona.`, rOneRef:"exactamente 1 persona con respuesta D",
   refs:list=>`Referentes internos disponibles (docentes con alguna práctica avanzada): ${list}.`, refIn:(n,curt)=>`${n} en ${curt}`, rRefs:"≥ 2 personas con alguna respuesta D por dimensión",
-  itemStrong:(nm,m)=>`Fortaleza concreta: ${nm} (media ${m}).`, rItemStrong:"situación con media ≥ 2",
-  itemWeak:(nm,m)=>`Punto débil concreto: ${nm} (media ${m}).`, rItemWeak:"situación con media < 1",
+  itemStrong:(nm,lv)=>`Fortaleza concreta: ${nm} (mediana: ${lv}).`, rItemStrong:"situación con mediana ≥ Intermedia",
+  itemWeak:nm=>`Punto débil concreto: ${nm} (mediana: inicial).`, rItemWeak:"situación con mediana = Inicial",
   notStarted:(p,nm)=>`El ${p}% del equipo todavía no ha empezado en ${nm}.`, rNotStarted:"≥ 40% en nivel inicial",
   zone:(nm,p)=>`Zona de progreso en ${nm}: mayoría en nivel básico y un ${p}% ya en intermedia o avanzada que puede servir de aprendizaje entre iguales.`, rZone:"≥ 40% en básica y ≥ 25% en intermedia/avanzada (3 mejores)",
   risk:p=>`El ${p}% del equipo se declara en nivel inicial en datos, seguridad, verificación o derechos de autor: exposición a incidencias de privacidad y a desinformación.`, rRisk:"≥ 25% con alguna A en las situaciones 3, 4, 5 o 10",
-  iris:"Transparencia y autoría (situación 7) por debajo de la etapa intermedia: el uso de IA por parte del alumnado puede avanzar más deprisa que los criterios de evaluación. Recurso: Generador IRIS.", rIris:"situación 7 con media < 1,5",
-  protocols:"Los protocolos de centro (situación 20) todavía no son conocidos por buena parte del equipo: una sesión de claustro sobre el Protocolo FECC tendría efecto inmediato.", rProtocols:"situación 20 con media < 1,5",
-  sharing:"Hay cultura de compartir (situación 19): se puede formalizar un banco de recursos y prácticas de IA del centro.", rSharing:"situación 19 con media ≥ 1,5",
+  iris:"Transparencia y autoría (situación 7) por debajo de la etapa intermedia: el uso de IA por parte del alumnado puede avanzar más deprisa que los criterios de evaluación. Recurso: Generador IRIS.", rIris:"situación 7 con mediana ≤ Básica",
+  protocols:"Los protocolos de centro (situación 20) todavía no son conocidos por buena parte del equipo: una sesión de claustro sobre el Protocolo FECC tendría efecto inmediato.", rProtocols:"situación 20 con mediana ≤ Básica",
+  sharing:"Hay cultura de compartir (situación 19): se puede formalizar un banco de recursos y prácticas de IA del centro.", rSharing:"situación 19 con mediana ≥ Intermedia",
   partic:p=>`Participación del ${p}%: la fotografía puede no representar a todo el equipo.`, rPartic:"participación < 60%",
-  gap:(g,a,b)=>`Diferencia de ${g} puntos entre ${a} y ${b}: desigualdad de experiencia para el alumnado según la etapa.`, rGap:"diferencia entre etapas ≥ 0,6",
+  gap:(a,la,b,lb)=>`Etapa predominante distinta según la etapa educativa: ${a} (${la}) y ${b} (${lb}). Desigualdad de experiencia para el alumnado.`, rGap:"etapa predominante distinta entre etapas educativas (grupos que alcanzan el tamaño mínimo)",
   dept:"El marco del Departament (2025) y el instrumento FECC comparten dimensiones: la formación se puede alinear directamente con los descriptores oficiales.", rContext:"contexto",
-  noF:"Todavía no hay fortalezas claras a nivel de equipo: el punto de partida es compartido y eso facilita una formación común.", rNoF:"ninguna dimensión ≥ 1,75",
-  noD:"Ninguna dimensión por debajo de la etapa básica: la mejora es de profundización, no de base.", rNoD:"ninguna dimensión < 1"
+  noF:"Todavía no hay fortalezas claras a nivel de equipo: el punto de partida es compartido y eso facilita una formación común.", rNoF:"ninguna dimensión con mediana ≥ Intermedia",
+  noD:"Ninguna dimensión en etapa inicial: la mejora es de profundización, no de base.", rNoD:"ninguna dimensión con mediana = Inicial"
  },
  evoH1:"Evolución del equipo",
- evoIntro:"Compara dos rondas del SELFIE: la de inicio de curso y la de ahora, por ejemplo. Cada ronda puede venir de una instantánea guardada en el cuadro de equipo o de un texto con códigos. La comparación es de equipo (distribuciones y medias), nunca de personas.",
+ evoIntro:"Compara dos rondas del SELFIE: la de inicio de curso y la de ahora, por ejemplo. Cada ronda puede venir de una instantánea guardada en el cuadro de equipo o de un texto con códigos. La comparación es de equipo (distribuciones y medianas), nunca de personas.",
  slot:{A:"Ronda anterior",B:"Ronda actual"}, selfies:"SELFIES", label:"Etiqueta", slotPh:{A:"Ej.: Octubre 2026",B:"Ej.: Junio 2027"},
  evoPastePh:"Pega aquí códigos SELFIE o suelta instantáneas de centro (.selfie-equip.json) o de red (.selfie-xarxa.json)",
  add:"Añadir", openSnap:"Abre una instantánea", takeTeam:n=>`Toma el equipo del cuadro (${n})`, evoDemo:"Carga dos rondas de muestra",
@@ -777,21 +793,22 @@ es:{
  evoEmpty:"Carga las dos rondas para ver la evolución.",
  L:{
   idx:(a,b,d,la,lb,na,nb)=>`El índice SELFIE de equipo ha pasado de ${a} a ${b} (${d} puntos) entre «${la}» y «${lb}»${na!==nb?`, con ${na} y ${nb} SELFIES respectivamente`:""}.`,
-  dims:(best,db,worst,dw)=>`La dimensión que más ha crecido es «${best}» (${db}); la que menos, «${worst}» (${dw}).`,
+  pred:(a,b,dir)=>dir>0?`La etapa predominante del equipo sube: ${a} → ${b}.`:dir<0?`La etapa predominante del equipo baja: ${a} → ${b}.`:`La etapa predominante del equipo se mantiene (${b}): el docente del medio no ha cambiado de etapa.`,
+  dimsCh:(ups,downs)=>[ups?`Dimensiones que suben de etapa: ${ups}.`:"", downs?`Dimensiones que bajan de etapa: ${downs}.`:""].filter(Boolean).join(" "),
+  dimsNone:"Ninguna dimensión cambia de etapa mediana. Los avances más pequeños se ven en el índice, en las distribuciones y en la línea de medias.",
   stages:(a0,b0,a3,b3)=>`La proporción de docentes en etapa inicial ha pasado del ${a0}% al ${b0}%; en avanzada, del ${a3}% al ${b3}%.`,
   risk:(a,b)=>`Seguridad y datos: del ${a}% al ${b}% de docentes en nivel inicial en alguna de las situaciones 3, 4, 5 o 10.`,
-  coh:(a,b,dir)=>`Cohesión: dispersión media de ${a} a ${b} — el equipo ${dir<0?"se ha hecho más homogéneo":dir>0?"se ha polarizado":"mantiene la misma cohesión"}.`,
+  polar:(a,b)=>a&&b?"El equipo sigue polarizado: un 25% o más de los docentes en etapa inicial y un 25% o más en avanzada.":a?"El equipo ha dejado de estar polarizado.":b?"El equipo se ha polarizado: un 25% o más de los docentes en etapa inicial y un 25% o más en avanzada.":"El equipo no está polarizado en ninguna de las dos rondas.",
   downs:list=>`Retrocesos a vigilar: ${list}.`,
   plan:(la,ass,tot,prog,pend)=>`Plan de mejora de «${la}»: ${ass} de ${tot} prioridades logradas, ${prog} en progreso, ${pend} pendientes.`
  },
  kTeamIdx:"Índice de equipo", before:"antes", stage:"etapa", kInitial:"En etapa inicial", kAdvanced:"En etapa avanzada", pp:"pp", inInitial:"en nivel inicial",
- cohShort:["Homogéneo","Diverso","Polarizado"], dispersion:"dispersión",
  autoRead:"Lectura automática", radarVs:(a,b)=>`Radar · ${a} vs ${b}`, replay:"▶ Volver a ver la evolución",
- varByDim:"Variación por dimensión", distStages:"Distribución por etapas", ups:"Más han subido", downs:"Han bajado", noUps:"Ninguna subida relevante.", noDowns:"Ningún retroceso.",
+ varByDim:"Por dimensión: antes y ahora", barsNote:(a,b)=>`Barra superior: ${a}. Barra inferior: ${b}. Bajo el nombre, la etapa mediana.`, distStages:"Distribución por etapas", ups:"Suben de etapa", downs:"Bajan de etapa", noUps:"Ninguna situación sube de etapa mediana.", noDowns:"Ninguna situación baja de etapa.",
  varMap:"Mapa de variación · 20 situaciones", thVar:"Variación", thPctInit:"% inicial", thPctAdv:"% avanzada",
  plaOf:la=>`Plan de mejora de «${la}» · qué se ha hecho`, printEvo:"Imprime la evolución",
- chips:{a:"Logrado",p:"En progreso",n:"Pendiente"}, goalMeta:(to,m,now)=>`objetivo: etapa ${to} · media ${m} → ${now}`,
- evoPlaNote:"Las prioridades son las que el cuadro de equipo habría propuesto con los datos de la ronda anterior. «Logrado» significa que la media del equipo ha alcanzado la etapa objetivo; «en progreso», que ha subido sin llegar.",
+ chips:{a:"Logrado",p:"En progreso",n:"Pendiente"}, goalMeta:(to,a,b,pa,pb)=>`objetivo: etapa ${to} · mediana: ${a} → ${b} · docentes en el objetivo o más: ${pa}% → ${pb}%`,
+ evoPlaNote:"Las prioridades son las que el cuadro de equipo habría propuesto con los datos de la ronda anterior. «Logrado» significa que la mediana del equipo ha alcanzado la etapa objetivo; «en progreso», que todavía no la ha alcanzado pero la proporción de docentes que ya están en ella ha subido 5 puntos o más.",
  netH1:"Vista de red",
  netIntro:"Para quien agrega varios centros —una fundación, una titularidad, una delegación o toda una red—: suelta aquí las instantáneas que los centros te han hecho llegar, todas de golpe, y obtendrás el resumen global. Se descartan las instantáneas repetidas (mismo identificador), nunca las personas. Todo se calcula en este navegador.",
  dropNet:`Arrastra aquí las instantáneas <b>.selfie-equip.json</b> de los centros (o haz clic para elegirlas)`,
@@ -818,7 +835,7 @@ en:{
  brand:"SELFIE · Teachers' digital competence in AI",
  brandSub:"Individual self-assessment and team dashboard · FECC Framework",
  nav:{self:"My SELFIE", team:"Team", evo:"Progress", net:"Network"},
- footer:`Instrument: <b>Self-assessment of Teachers' Digital Competence in AI</b> (FECC Digital Expert Group), aligned with <i>Competència digital docent en intel·ligència artificial</i> (Catalan Department of Education and VET, December 2025). Working translation; the Catalan text is the original.<br>Everything is computed in your browser: no data is stored or sent. Your answers only travel in the SELFIE code you decide to share.`,
+ footer:`Instrument: <b>Self-assessment of Teachers' Digital Competence in AI</b> (FECC Digital Expert Group), aligned with <i>Competència digital docent en intel·ligència artificial</i> (Catalan Department of Education and VET, December 2025). Working translation; the Catalan text is the original.<br>Everything is computed in your browser: no data is stored or sent. Your answers only travel in the SELFIE code you decide to share.<br>Version 5.0 · Group summaries use the low median: with an even number of values, the lower middle value is taken.`,
  radarAria:"Radar of 20 situations in 4 dimensions", radarDesc:"Values per situation", progressAria:"Questionnaire progress", navAria:"Sections", langAria:"Language",
  h1:`Where do you stand today with AI <em>in your teaching</em>?`,
  intro:"Twenty real situations, four ways to respond. You pick the one closest to what you do. About six minutes, no personal data, and at the end your radar and your next steps.",
@@ -830,7 +847,7 @@ en:{
  codeTypo:"The code has a mistyped character: please check it.", codeBad:"This code is not valid.",
  prev:"← Back", next:"Next →", seeRadar:"See my radar",
  hint:"Choose the option closest to what you do today — not what you would like to do. Keys 1–4 to answer.",
- yourSelfie:"Your SELFIE:", of3:v=>`${v} out of 3`, myProfile:"My profile", byDim:"By dimension", nextSteps:"Your next steps",
+ yourSelfie:"Your SELFIE:", medNote:"median stage across the 20 situations", myProfile:"My profile", byDim:"By dimension", nextSteps:"Your next steps",
  fromTo:(a,b)=>`from ${a} to ${b}`, resource:"Resource:", allAdv:"Advanced level in every dimension: your contribution now is to support the team.",
  yourCode:"Your SELFIE code",
  codeNote:"Your 20 encoded answers (not readable at a glance, but not encryption), a check character against copy errors, your stage if you wish, and four random characters that only tell identical answers apart within one team. No name, no e-mail. Send it to the leadership team through the channel you have agreed (form, e-mail, chat): that is how you join the team snapshot.",
@@ -841,7 +858,7 @@ en:{
  copied:"Code copied to the clipboard.", copyFail:"Select the code and copy it with Ctrl+C.", fileDl:"File downloaded.",
  pngDl:"Radar downloaded as PNG.", pngErr:"The PNG could not be generated in this browser.",
  badgeDl:"Self-assessment badge downloaded as PNG.", badgeErr:"The badge could not be generated in this browser.",
- badgeTitle:"SELF-ASSESSMENT · TEACHERS' DIGITAL COMPETENCE IN AI", badgeSub:(v,d)=>`Overall stage · ${v} out of 3 · ${d}`,
+ badgeTitle:"SELF-ASSESSMENT · TEACHERS' DIGITAL COMPETENCE IN AI", badgeSub:d=>`Overall stage (median) · ${d}`,
  badgeHint:"Paste this code into the tool to see the radar again",
  badgeFoot:"SELF-DECLARATION BASED ON THE FECC INSTRUMENT · CDD-IA FRAMEWORK OF THE CATALAN DEPARTMENT OF EDUCATION",
  teamH1:"Team snapshot",
@@ -863,7 +880,9 @@ en:{
  kIndex:"Team SELFIE index", predominant:"Predominant stage:",
  kStrong:"Strongest dimension", kPriority:"Priority", kRisk:"Security and data",
  riskSub:"at initial level in data, security, verification or copyright",
- kCoh:"Cohesion", coh:["Homogeneous team","Diverse team","Polarised team"], cohSub:v=>`mean dispersion ${v}`,
+ kPolar:"Polarisation", polarShort:["Not polarised","Polarised"], polarNet:["Not polarised","Polarised"], polarSub:(a,d)=>`${a}% initial · ${d}% advanced (threshold: 25% and 25%)`,
+ tMean:"Mean line", meanLine:"Mean (dotted line)", meanLegend:"dotted lines: means", pUpSub:p=>`${p}% intermediate or advanced`, pASub:p=>`${p}% initial`,
+ dimNote:"Each bar shows how teachers are spread in that dimension; on the right, the median stage.",
  kTalent:"In-house talent", talentSub:"teachers with some advanced practice: potential leads",
  teamRadar:"Team radar · 20 situations", tInd:"Individual profiles (anonymous)", tSeg:"Compare by stage",
  teamSeries:n=>`Team (${n})`, eachTeacher:"each teacher",
@@ -871,35 +890,36 @@ en:{
  whereTeam:"Where the team is", strengths:"Strengths", priorities:"Priorities",
  heatTitle:"Heat map · % of the team at each level",
  heatNote:"Quick read: dark columns on the left show where basic training is needed; the “Advanced” column says how many teachers can act as leads in each situation.",
- byStage:"By educational stage", thStage:"Stage", thGlobal:"Overall", thSituation:"Situation", thMean:"Mean", thAdv:"Advanced",
+ byStage:"By educational stage", thStage:"Stage", thGlobal:"Overall", thSituation:"Situation", thMed:"Median", thAdv:"Advanced",
  dafoTitle:"SWOT of the current snapshot", dafoSub:"· draft generated from the data, editable", printDash:"Print the dashboard",
  quad:["Strengths","Weaknesses","Opportunities","Threats"], rule:"rule:",
  dafoNote:"Each statement shows the rule that generated it. The leadership team should check it, complete it with what the data cannot see and turn it into decisions.",
  plaTitle:"Suggested improvement plan · three priorities",
- plaMeta:(d,m,a,b)=>`(D${d} · mean ${m}, from ${a} to ${b})`, teamGoal:"Team goal:",
+ plaMeta:(d,a,b)=>`(D${d} · median: ${a} · goal: ${b})`, teamGoal:"Team goal:",
  plaNote:"The goal is, literally, the descriptor of the next level in the instrument: what the team should be able to say about itself in a year. Repeating the SELFIE at the end of the year makes it measurable.",
  R:{
-  dimStrong:(lv,nom,m)=>`The team is at the ${lv} stage in “${nom}” (mean ${m}).`, rDimStrong:"dimension mean ≥ 1.75",
-  dimWeak:(nom,m)=>`“${nom}” sits between the initial and basic stages (mean ${m}): it is the underlying training priority.`, rDimWeak:"dimension mean < 1",
-  dimSpread:(curt,s)=>`Very uneven practice in “${curt}” (dispersion ${s}): students get different experiences depending on the teacher.`, rDimSpread:"dispersion ≥ 0.85",
+  dimStrong:(lv,nom)=>`The team is at the ${lv} stage in “${nom}”.`, rDimStrong:"dimension median ≥ Intermediate",
+  dimWeak:nom=>`“${nom}” is at the initial stage: it is the underlying training priority.`, rDimWeak:"dimension median = Initial",
+  teamPolar:(a,d)=>`Polarised team: ${a}% of teachers are at the initial stage and ${d}% at the advanced stage. Students get very different experiences depending on the teacher.`, rTeamPolar:"≥ 25% of teachers initial and ≥ 25% advanced",
+  dimSpread:(curt,a,d)=>`Polarised practice in “${curt}”: ${a}% of teachers initial and ${d}% advanced.`, rDimSpread:"dimension with ≥ 25% initial and ≥ 25% advanced",
   oneRef:curt=>`A single advanced lead in “${curt}”: the knowledge depends on one person.`, rOneRef:"exactly 1 person with a D answer",
   refs:list=>`In-house leads available (teachers with some advanced practice): ${list}.`, refIn:(n,curt)=>`${n} in ${curt}`, rRefs:"≥ 2 people with a D answer per dimension",
-  itemStrong:(nm,m)=>`Specific strength: ${nm} (mean ${m}).`, rItemStrong:"situation with mean ≥ 2",
-  itemWeak:(nm,m)=>`Specific weak point: ${nm} (mean ${m}).`, rItemWeak:"situation with mean < 1",
+  itemStrong:(nm,lv)=>`Specific strength: ${nm} (median: ${lv}).`, rItemStrong:"situation with median ≥ Intermediate",
+  itemWeak:nm=>`Specific weak point: ${nm} (median: initial).`, rItemWeak:"situation with median = Initial",
   notStarted:(p,nm)=>`${p}% of the team has not started yet in ${nm}.`, rNotStarted:"≥ 40% at initial level",
   zone:(nm,p)=>`Progress zone in ${nm}: most at basic level and ${p}% already intermediate or advanced, who can support peer learning.`, rZone:"≥ 40% basic and ≥ 25% intermediate/advanced (top 3)",
   risk:p=>`${p}% of the team declares an initial level in data, security, verification or copyright: exposure to privacy incidents and misinformation.`, rRisk:"≥ 25% with an A in situations 3, 4, 5 or 10",
-  iris:"Transparency and authorship (situation 7) below the intermediate stage: students' AI use may outpace the assessment criteria. Resource: IRIS Generator.", rIris:"situation 7 with mean < 1.5",
-  protocols:"School protocols (situation 20) are still unknown to much of the team: a staff session on the FECC Protocol would have an immediate effect.", rProtocols:"situation 20 with mean < 1.5",
-  sharing:"There is a culture of sharing (situation 19): a school bank of AI resources and practices can be formalised.", rSharing:"situation 19 with mean ≥ 1.5",
+  iris:"Transparency and authorship (situation 7) below the intermediate stage: students' AI use may outpace the assessment criteria. Resource: IRIS Generator.", rIris:"situation 7 with median ≤ Basic",
+  protocols:"School protocols (situation 20) are still unknown to much of the team: a staff session on the FECC Protocol would have an immediate effect.", rProtocols:"situation 20 with median ≤ Basic",
+  sharing:"There is a culture of sharing (situation 19): a school bank of AI resources and practices can be formalised.", rSharing:"situation 19 with median ≥ Intermediate",
   partic:p=>`Participation of ${p}%: the snapshot may not represent the whole team.`, rPartic:"participation < 60%",
-  gap:(g,a,b)=>`A gap of ${g} points between ${a} and ${b}: unequal experience for students depending on the stage.`, rGap:"gap between stages ≥ 0.6",
+  gap:(a,la,b,lb)=>`Different predominant stage by educational stage: ${a} (${la}) and ${b} (${lb}). Unequal experience for students.`, rGap:"different predominant stage between educational stages (groups reaching the minimum size)",
   dept:"The Department's framework (2025) and the FECC instrument share dimensions: training can be aligned directly with the official descriptors.", rContext:"context",
-  noF:"No clear team-level strengths yet: the starting point is shared, which makes common training easier.", rNoF:"no dimension ≥ 1.75",
-  noD:"No dimension below the basic stage: improvement is about depth, not basics.", rNoD:"no dimension < 1"
+  noF:"No clear team-level strengths yet: the starting point is shared, which makes common training easier.", rNoF:"no dimension with median ≥ Intermediate",
+  noD:"No dimension at the initial stage: improvement is about depth, not basics.", rNoD:"no dimension with median = Initial"
  },
  evoH1:"Team progress",
- evoIntro:"Compare two SELFIE rounds: the start of the year and now, for example. Each round can come from a snapshot saved in the team dashboard or from a text with codes. The comparison is of the team (distributions and means), never of people.",
+ evoIntro:"Compare two SELFIE rounds: the start of the year and now, for example. Each round can come from a snapshot saved in the team dashboard or from a text with codes. The comparison is of the team (distributions and medians), never of people.",
  slot:{A:"Previous round",B:"Current round"}, selfies:"SELFIES", label:"Label", slotPh:{A:"E.g. October 2026",B:"E.g. June 2027"},
  evoPastePh:"Paste SELFIE codes here or drop school snapshots (.selfie-equip.json) or network snapshots (.selfie-xarxa.json)",
  add:"Add", openSnap:"Open a snapshot", takeTeam:n=>`Take the team from the dashboard (${n})`, evoDemo:"Load two sample rounds",
@@ -909,21 +929,22 @@ en:{
  evoEmpty:"Load both rounds to see the progress.",
  L:{
   idx:(a,b,d,la,lb,na,nb)=>`The team SELFIE index went from ${a} to ${b} (${d} points) between “${la}” and “${lb}”${na!==nb?`, with ${na} and ${nb} SELFIES respectively`:""}.`,
-  dims:(best,db,worst,dw)=>`The dimension that grew most is “${best}” (${db}); the least, “${worst}” (${dw}).`,
+  pred:(a,b,dir)=>dir>0?`The team's predominant stage rises: ${a} → ${b}.`:dir<0?`The team's predominant stage falls: ${a} → ${b}.`:`The team's predominant stage holds (${b}): the middle teacher has not changed stage.`,
+  dimsCh:(ups,downs)=>[ups?`Dimensions moving up a stage: ${ups}.`:"", downs?`Dimensions moving down a stage: ${downs}.`:""].filter(Boolean).join(" "),
+  dimsNone:"No dimension changes its median stage. Smaller gains show in the index, the distributions and the mean line.",
   stages:(a0,b0,a3,b3)=>`The share of teachers at the initial stage went from ${a0}% to ${b0}%; at the advanced stage, from ${a3}% to ${b3}%.`,
   risk:(a,b)=>`Security and data: from ${a}% to ${b}% of teachers at initial level in any of situations 3, 4, 5 or 10.`,
-  coh:(a,b,dir)=>`Cohesion: mean dispersion from ${a} to ${b} — the team ${dir<0?"has become more homogeneous":dir>0?"has polarised":"keeps the same cohesion"}.`,
+  polar:(a,b)=>a&&b?"The team remains polarised: 25% or more of teachers at the initial stage and 25% or more at the advanced stage.":a?"The team is no longer polarised.":b?"The team has polarised: 25% or more of teachers at the initial stage and 25% or more at the advanced stage.":"The team is not polarised in either round.",
   downs:list=>`Setbacks to watch: ${list}.`,
   plan:(la,ass,tot,prog,pend)=>`“${la}” improvement plan: ${ass} of ${tot} priorities achieved, ${prog} in progress, ${pend} pending.`
  },
  kTeamIdx:"Team index", before:"before", stage:"stage", kInitial:"At initial stage", kAdvanced:"At advanced stage", pp:"pp", inInitial:"at initial level",
- cohShort:["Homogeneous","Diverse","Polarised"], dispersion:"dispersion",
  autoRead:"Automatic reading", radarVs:(a,b)=>`Radar · ${a} vs ${b}`, replay:"▶ Replay the progress",
- varByDim:"Change by dimension", distStages:"Distribution by stage", ups:"Biggest gains", downs:"Declines", noUps:"No relevant gains.", noDowns:"No declines.",
+ varByDim:"By dimension: before and now", barsNote:(a,b)=>`Top bar: ${a}. Bottom bar: ${b}. Under the name, the median stage.`, distStages:"Distribution by stage", ups:"Moving up a stage", downs:"Moving down a stage", noUps:"No situation moves up a median stage.", noDowns:"No situation moves down a stage.",
  varMap:"Change map · 20 situations", thVar:"Change", thPctInit:"% initial", thPctAdv:"% advanced",
  plaOf:la=>`“${la}” improvement plan · what came of it`, printEvo:"Print the progress",
- chips:{a:"Achieved",p:"In progress",n:"Pending"}, goalMeta:(to,m,now)=>`goal: ${to} stage · mean ${m} → ${now}`,
- evoPlaNote:"The priorities are those the team dashboard would have proposed with the previous round's data. “Achieved” means the team mean reached the target stage; “in progress”, that it rose without reaching it.",
+ chips:{a:"Achieved",p:"In progress",n:"Pending"}, goalMeta:(to,a,b,pa,pb)=>`goal: ${to} stage · median: ${a} → ${b} · teachers at goal or above: ${pa}% → ${pb}%`,
+ evoPlaNote:"The priorities are those the team dashboard would have proposed with the previous round's data. “Achieved” means the team median reached the target stage; “in progress”, that it has not yet, but the share of teachers already there rose by 5 points or more.",
  netH1:"Network view",
  netIntro:"For whoever aggregates several schools —a foundation, a school owner, a regional office or a whole network—: drop here the snapshots the schools have sent you, all at once, and get the overall summary. Duplicate snapshots (same identifier) are discarded, never people. Everything is computed in this browser.",
  dropNet:`Drop the schools' <b>.selfie-equip.json</b> snapshots here (or click to choose them)`,
@@ -982,11 +1003,14 @@ const L = "ABCD";
 const dimOf = i => DIMS.find(d=>d.items.includes(i));
 const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
 const sd = a => { if(a.length<2) return 0; const m=mean(a); return Math.sqrt(mean(a.map(v=>(v-m)**2))); };
+/* Mediana baixa: amb un nombre parell de dades es pren el valor central inferior (criteri conservador).
+   L'escala és ordinal (0–3) i la mediana baixa sempre és una etapa real. */
+const medLow = a => { if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); return s[Math.floor((s.length-1)/2)]; };
 const pct = (n,d) => d ? Math.round(100*n/d) : 0;
 const lvName = v => LEVELS[Math.min(3,Math.max(0,Math.round(v)))];
 const fmt = v => (Math.round(v*100)/100).toFixed(2);
 function flash(id,msg){ const el=$(id); if(!el) return; el.textContent=msg; clearTimeout(el._t); el._t=setTimeout(()=>el.textContent="",4000); }
-function dimScores(ans){ return DIMS.map(d=>mean(d.items.map(i=>ans[i]))); }
+function dimScores(ans){ return DIMS.map(d=>medLow(d.items.map(i=>ans[i]))); }   /* etapa del docent a cada dimensió */
 function randId(n=4){ const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s=""; const a=new Uint32Array(n); crypto.getRandomValues(a); for(let i=0;i<n;i++) s+=c[a[i]%c.length]; return s; }
 const rand2 = () => randId(4);   /* sufix de 4 caràcters (1 M de combinacions); el lector accepta també els antics de 2 */
 
@@ -1064,7 +1088,7 @@ function radar20(series, opts={}){
   /* sèries */
   series.forEach(se=>{
     const pts = se.values.map((v,i)=>pt(i,Math.max(0,v)).join(",")).join(" ");
-    s += `<polygon points="${pts}" fill="${se.color}" fill-opacity="${se.bold?.22:.06}" stroke="${se.color}" stroke-width="${se.bold?2.6:1.4}" ${se.dashed?'stroke-dasharray="6 4"':''} stroke-linejoin="round"/>`;
+    s += `<polygon points="${pts}" fill="${se.color}" fill-opacity="${se.bold?.22:se.dotted?0:.06}" stroke="${se.color}" stroke-width="${se.bold?2.6:se.dotted?1.8:1.4}" ${se.dashed?'stroke-dasharray="6 4"':se.dotted?'stroke-dasharray="1.5 4.5" stroke-linecap="round"':''} stroke-linejoin="round"/>`;
     if (se.bold) se.values.forEach((v,i)=>{ const [x,y]=pt(i,Math.max(0,v)); s += `<circle cx="${x}" cy="${y}" r="3.2" fill="${se.color}"/>`; });
   });
   return s + `</svg>`;
@@ -1179,12 +1203,12 @@ function nextSteps(ans){
 
 function renderResult(){
   const t = T();
-  const ans = self.ans, ds = dimScores(ans), overall = mean(ans);
+  const ans = self.ans, ds = dimScores(ans), overall = medLow(ans);   /* etapa global = mediana baixa de les 20 respostes */
   const code = makeCode(ans, self.etapa, self.id);
   app.innerHTML = `
   <div class="card">
     <div class="row" style="justify-content:space-between;margin-bottom:10px">
-      <h1 style="margin:0" id="resH" tabindex="-1">${t.yourSelfie} <em>${esc(lvName(overall))}</em> <span class="muted" style="font-size:.9rem;font-weight:600">(${t.of3(fmt(overall))})</span></h1>
+      <h1 style="margin:0" id="resH" tabindex="-1">${t.yourSelfie} <em>${esc(lvName(overall))}</em> <span class="muted" style="font-size:.9rem;font-weight:600">(${t.medNote})</span></h1>
       <span class="small muted">${today()}</span>
     </div>
     <div class="res">
@@ -1196,7 +1220,7 @@ function renderResult(){
         <div class="gauges">${DIMS.map((d,k)=>`
           <div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span>
             <span class="track"><i style="width:${ds[k]/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span>
-            <span class="val">${esc(lvName(ds[k]))} <span class="muted">${fmt(ds[k])}</span></span></div>`).join("")}</div>
+            <span class="val">${esc(lvName(ds[k]))}</span></div>`).join("")}</div>
         <h2 style="margin-top:16px">${t.nextSteps}</h2>
         <div class="next">${nextSteps(ans).map(n=>`<div style="--c:${n.d.c};--bg:${n.d.bg}"><b>${n.i+1}. ${esc(ITEMS[n.i].k)} · ${t.fromTo(LEVELS[n.from].toLowerCase(), LEVELS[n.from+1].toLowerCase())}</b>${esc(n.text)}${n.rec?`<div class="small muted" style="margin-top:3px">${t.resource} ${esc(n.rec)}</div>`:""}</div>`).join("") || `<div style="--c:var(--ok);--bg:#effaf4">${t.allAdv}</div>`}</div>
       </div>
@@ -1256,7 +1280,7 @@ function drawBadge(ans, ds, overall, code){
     x.textAlign="center"; x.fillStyle="#fff";
     x.globalAlpha=.9; x.font="700 17px "+FONT; x.fillText(t.badgeTitle, W/2, 58); x.globalAlpha=1;
     x.font="800 64px "+FONT; x.fillText(LEVELS[lv], W/2, 130);
-    x.font="600 20px "+FONT; x.fillText(t.badgeSub(fmt(overall), today()), W/2, 166);
+    x.font="600 20px "+FONT; x.fillText(t.badgeSub(today()), W/2, 166);
     const svg=$("radarWrap").querySelector("svg"); const xml=new XMLSerializer().serializeToString(svg);
     const url=URL.createObjectURL(new Blob([xml],{type:"image/svg+xml;charset=utf-8"})); const img=new Image();
     img.onload=()=>{
@@ -1285,7 +1309,7 @@ function svgToPng(svg, name){
 }
 
 /* ------------------------------ EQUIP ------------------------------ */
-const team = { people:[], plantilla:0, minN:5, showInd:false, bySeg:false, pasted:"", roundName:"", center:"" };
+const team = { people:[], plantilla:0, minN:5, showInd:false, bySeg:false, showMean:false, pasted:"", roundName:"", center:"" };
 function snapshotOf(people, name, plantilla, center){
   return { format:"selfie-equip-1", id: randId(8), name: name||"", center: center||"", date:new Date().toISOString().slice(0,10), plantilla: plantilla||0, n: people.length, codes: people.map(p=>p.code) };
 }
@@ -1374,47 +1398,65 @@ function loadDemo(){
   renderTeam(); flash("st",T().demoLoaded);
 }
 
-/* ---- càlculs d'equip ---- */
+/* ---- càlculs de grup ----
+   Estadístic central: MEDIANA BAIXA (vegeu medLow). La unitat és sempre el docent:
+   · etapa d'un docent = mediana baixa de les seves 20 respostes; en una dimensió, mediana baixa de les respostes d'aquella dimensió
+   · valor d'un grup (equip, etapa educativa, ronda, xarxa) = mediana baixa dels valors dels seus docents
+   Com que les instantànies conserven tots els codis, la mediana es calcula sempre sobre totes les persones, mai sobre medianes de subgrups.
+   L'índex 0–100 és l'únic indicador continu i es manté amb la mitjana. */
+const POLAR = 0.25;      /* polarització: ≥ 25% de docents en etapa inicial i ≥ 25% en avançada alhora */
+const isPolar = (dist,n) => n>0 && dist[0]/n >= POLAR && dist[3]/n >= POLAR;
+const distOf = v => [0,1,2,3].map(l=>v.filter(x=>x===l).length);
+const geq = (dist,l,n) => pct(dist.slice(l).reduce((a,b)=>a+b,0), n);      /* % de docents en el nivell l o més */
+/* ordenacions ordinals: primer la mediana; en cas d'empat, les proporcions de la distribució (mai la mitjana) */
+const byStrong = (a,b) => b.med-a.med || b.pUp-a.pUp || b.pD-a.pD || a.pA-b.pA;
+const byWeak = (a,b) => a.med-b.med || b.pA-a.pA || a.pUp-b.pUp || a.pD-b.pD;
 function stats(people){
   const n = people.length;
-  const itemVals = ITEMS.map((_,i)=>people.map(p=>p.ans[i]));
-  const item = itemVals.map(v=>({ m:mean(v), sd:sd(v), dist:[0,1,2,3].map(l=>v.filter(x=>x===l).length), pA:pct(v.filter(x=>x===0).length,n), pD:pct(v.filter(x=>x===3).length,n) }));
-  const dim = DIMS.map(d=>{ const per = people.map(p=>mean(d.items.map(i=>p.ans[i]))); return { m:mean(per), sd:sd(per), nD: people.filter(p=>d.items.some(i=>p.ans[i]===3)).length, per }; });
-  const overall = people.map(p=>mean(p.ans));
-  const stage = [0,1,2,3].map(l=>overall.filter(v=>Math.round(v)===l).length);
+  const item = ITEMS.map((_,i)=>{ const v = people.map(p=>p.ans[i]), dist = distOf(v);
+    return { i, med:medLow(v), m:mean(v), dist, pA:pct(dist[0],n), pD:pct(dist[3],n), pUp:pct(dist[2]+dist[3],n) }; });
+  const dim = DIMS.map((d,k)=>{ const per = people.map(p=>medLow(d.items.map(i=>p.ans[i]))), dist = distOf(per);
+    return { k, med:medLow(per), per, dist, pA:pct(dist[0],n), pD:pct(dist[3],n), pUp:pct(dist[2]+dist[3],n), polar:isPolar(dist,n),
+             nD: people.filter(p=>d.items.some(i=>p.ans[i]===3)).length }; });
+  const overall = people.map(p=>medLow(p.ans));          /* etapa de cada docent */
+  const stage = distOf(overall);
+  const pred = medLow(overall);                           /* etapa predominant: la del docent del mig */
   const risk = people.filter(p=>RISC_ITEMS.some(i=>p.ans[i]===0)).length;
-  const index = Math.round(mean(overall)/3*100);
-  const coh = mean(dim.map(d=>d.sd));
+  const index = Math.round(mean(people.map(p=>mean(p.ans)))/3*100);
   const segs = {}; people.forEach(p=>{ if(p.etapa){ (segs[p.etapa]=segs[p.etapa]||[]).push(p);} });
-  return { n, item, dim, overall, stage, risk, index, coh, segs };
+  return { n, item, dim, overall, stage, pred, polar:isPolar(stage,n), risk, index, segs };
 }
 
 function dafo(S){
   const R = T().R;
   const F=[], D=[], O=[], A=[];
   const nm = i => `${i+1}. ${ITEMS[i].k}`;
+  const low = l => LEVELS[l].toLowerCase();
+  if (S.polar) D.push({t:R.teamPolar(pct(S.stage[0],S.n), pct(S.stage[3],S.n)), r:R.rTeamPolar});
   DIMS.forEach((d,k)=>{
-    if (S.dim[k].m >= 1.75) F.push({t:R.dimStrong(lvName(S.dim[k].m).toLowerCase(), d.nom, fmt(S.dim[k].m)), r:R.rDimStrong});
-    if (S.dim[k].m < 1) D.push({t:R.dimWeak(d.nom, fmt(S.dim[k].m)), r:R.rDimWeak});
-    if (S.dim[k].sd >= 0.85) D.push({t:R.dimSpread(d.curt, fmt(S.dim[k].sd)), r:R.rDimSpread});
-    if (S.dim[k].nD === 1) A.push({t:R.oneRef(d.curt), r:R.rOneRef});
+    const x = S.dim[k];
+    if (x.med >= 2) F.push({t:R.dimStrong(low(x.med), d.nom), r:R.rDimStrong});
+    if (x.med === 0) D.push({t:R.dimWeak(d.nom), r:R.rDimWeak});
+    if (x.polar) D.push({t:R.dimSpread(d.curt, x.pA, x.pD), r:R.rDimSpread});
+    if (x.nD === 1) A.push({t:R.oneRef(d.curt), r:R.rOneRef});
   });
   const refs = DIMS.map((d,k)=>S.dim[k].nD>=2?R.refIn(S.dim[k].nD, d.curt):null).filter(Boolean);
   if (refs.length) F.push({t:R.refs(refs.join(", ")), r:R.rRefs});
-  const top = S.item.map((x,i)=>({i,m:x.m})).sort((a,b)=>b.m-a.m);
-  top.slice(0,2).filter(x=>x.m>=2).forEach(x=>F.push({t:R.itemStrong(nm(x.i), fmt(x.m)), r:R.rItemStrong}));
-  top.slice(-2).filter(x=>x.m<1).forEach(x=>D.push({t:R.itemWeak(nm(x.i), fmt(x.m)), r:R.rItemWeak}));
-  S.item.forEach((x,i)=>{ if (x.pA>=40) D.push({t:R.notStarted(x.pA, nm(i)), r:R.rNotStarted}); });
-  S.item.map((x,i)=>({i, pB:pct(x.dist[1],S.n), pCD:pct(x.dist[2]+x.dist[3],S.n)})).filter(z=>z.pB>=40 && z.pCD>=25).sort((a,b)=>b.pCD-a.pCD).slice(0,3)
+  [...S.item].sort(byStrong).slice(0,2).filter(x=>x.med>=2).forEach(x=>F.push({t:R.itemStrong(nm(x.i), low(x.med)), r:R.rItemStrong}));
+  const weak = [...S.item].sort(byWeak).slice(0,2).filter(x=>x.med===0);
+  weak.forEach(x=>D.push({t:R.itemWeak(nm(x.i)), r:R.rItemWeak}));
+  S.item.forEach(x=>{ if (x.pA>=40 && !weak.includes(x)) D.push({t:R.notStarted(x.pA, nm(x.i)), r:R.rNotStarted}); });
+  S.item.map(x=>({i:x.i, pB:pct(x.dist[1],S.n), pCD:x.pUp})).filter(z=>z.pB>=40 && z.pCD>=25).sort((a,b)=>b.pCD-a.pCD).slice(0,3)
     .forEach(z=>O.push({t:R.zone(nm(z.i), z.pCD), r:R.rZone}));
   const riskPct = pct(S.risk,S.n);
   if (riskPct >= 25) A.push({t:R.risk(riskPct), r:R.rRisk});
-  if (S.item[6].m < 1.5) A.push({t:R.iris, r:R.rIris});
-  if (S.item[19].m < 1.5) O.push({t:R.protocols, r:R.rProtocols});
-  if (S.item[18].m >= 1.5) O.push({t:R.sharing, r:R.rSharing});
+  if (S.item[6].med <= 1) A.push({t:R.iris, r:R.rIris});
+  if (S.item[19].med <= 1) O.push({t:R.protocols, r:R.rProtocols});
+  if (S.item[18].med >= 2) O.push({t:R.sharing, r:R.rSharing});
   if (team.plantilla && S.n/team.plantilla < 0.6) A.push({t:R.partic(pct(S.n,team.plantilla)), r:R.rPartic});
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN);
-  if (segKeys.length>=2){ const ms = segKeys.map(k=>({k, m:mean(S.segs[k].map(p=>mean(p.ans)))})).sort((a,b)=>b.m-a.m); const gap = ms[0].m-ms[ms.length-1].m; if (gap>=0.6) A.push({t:R.gap(fmt(gap), ETAPES[ms[0].k], ETAPES[ms[ms.length-1].k]), r:R.rGap}); }
+  if (segKeys.length>=2){ const ms = segKeys.map(k=>({k, st:stats(S.segs[k]).pred})).sort((a,b)=>b.st-a.st); const hi = ms[0], lo = ms[ms.length-1];
+    if (hi.st-lo.st >= 1) A.push({t:R.gap(ETAPES[hi.k], low(hi.st), ETAPES[lo.k], low(lo.st)), r:R.rGap}); }
   O.push({t:R.dept, r:R.rContext});
   if (!F.length) F.push({t:R.noF, r:R.rNoF});
   if (!D.length) D.push({t:R.noD, r:R.rNoD});
@@ -1423,19 +1465,34 @@ function dafo(S){
 }
 
 function pla(S){
-  /* tres prioritats: situacions amb mitjana més baixa, una per dimensió com a màxim, amb l'acció = descriptor del nivell següent a la mitjana */
-  const cand = S.item.map((x,i)=>({i,m:x.m,d:dimOf(i)})).sort((a,b)=>a.m-b.m);
+  /* tres prioritats: situacions amb la mediana més baixa (en cas d'empat, més docents en inicial), una per dimensió com a màxim;
+     l'objectiu és el descriptor del nivell següent a la mediana */
+  const cand = S.item.map(x=>({...x, d:dimOf(x.i)})).sort(byWeak);
   const out=[], used=new Set();
   for (const c of cand){ if (used.has(c.d.id)) continue; used.add(c.d.id); out.push(c); if (out.length===3) break; }
-  return out.map(c=>{ const lv=Math.min(2,Math.max(0,Math.floor(c.m))); return {i:c.i, d:c.d, m:c.m, lv, from:LEVELS[lv], to:LEVELS[lv+1], action:ITEMS[c.i].o[lv+1], rec:RECURSOS[c.i]}; });
+  return out.map(c=>{ const lv=Math.min(2,c.med); return {i:c.i, d:c.d, med:c.med, lv, from:LEVELS[lv], to:LEVELS[lv+1], action:ITEMS[c.i].o[lv+1], rec:RECURSOS[c.i]}; });
+}
+
+/* barra apilada: com es reparteixen els docents entre les quatre etapes */
+function stackBar(dist, n, cls){
+  return `<div class="stack${cls?" "+cls:""}" role="img" aria-label="${esc(LEVELS.map((l,i)=>`${l} ${pct(dist[i],n)}%`).join(", "))}">${dist.map((c,l)=>c?`<div style="width:${c/n*100}%;background:${LHEX[l]};color:${LTXT[l]}" title="${LEVELS[l]}: ${c}">${pct(c,n)>=14?pct(c,n)+"%":""}</div>`:"").join("")}</div>`;
+}
+function dimStacks(S){
+  return `<div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span>${stackBar(S.dim[k].dist, S.n, "sm")}<span class="val">${LEVELS[S.dim[k].med]}</span></div>`).join("")}</div>
+        <p class="note" style="margin:6px 0 0">${T().dimNote}</p>`;
+}
+function segTable(S, segKeys){
+  const t = T();
+  return `<div class="tscroll"><table class="heat"><thead><tr><th>${t.thStage}</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thGlobal}</th></tr></thead>
+    <tbody>${segKeys.map(k=>{const g=stats(S.segs[k]); return `<tr><td><b>${ETAPES[k]}</b></td><td class="c">${g.n}</td>${g.dim.map(x=>`<td class="c">${LEVELS[x.med]}</td>`).join("")}<td class="m">${LEVELS[g.pred]}</td></tr>`;}).join("")}</tbody></table></div>`;
 }
 
 function heatTable(S){
   const t = T();
-  return `<table class="heat">
-      <thead><tr><th></th><th>${t.thSituation}</th>${LEVELS.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:center">${t.thMean}</th><th style="text-align:center">${t.thAdv}</th></tr></thead>
-      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="8">D${k+1} · ${esc(d.nom)} — ${fmt(S.dim[k].m)}</td></tr>`+d.items.map(i=>`<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td>${S.item[i].dist.map((c,l)=>{const p=pct(c,S.n);return `<td class="c" style="background:rgba(14,124,138,${(p/100*0.55).toFixed(2)})">${p?p+"%":"·"}</td>`;}).join("")}<td class="m" style="color:${d.hex}">${fmt(S.item[i].m)}</td><td class="c">${S.item[i].dist[3]||"·"}</td></tr>`).join("")).join("")}</tbody>
-    </table>`;
+  return `<div class="tscroll"><table class="heat">
+      <thead><tr><th></th><th>${t.thSituation}</th>${LEVELS.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:center">${t.thMed}</th><th style="text-align:center">${t.thAdv}</th></tr></thead>
+      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="8">D${k+1} · ${esc(d.nom)} — ${LEVELS[S.dim[k].med]}</td></tr>`+d.items.map(i=>`<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td>${S.item[i].dist.map((c,l)=>{const p=pct(c,S.n);return `<td class="c" style="background:rgba(14,124,138,${(p/100*0.55).toFixed(2)})">${p?p+"%":"·"}</td>`;}).join("")}<td class="m" style="color:${d.hex}">${LEVELS[S.item[i].med]}</td><td class="c">${S.item[i].dist[3]||"·"}</td></tr>`).join("")).join("")}</tbody>
+    </table></div>`;
 }
 function renderDash(){
   const box = $("dash"); if(!box) return;
@@ -1443,26 +1500,29 @@ function renderDash(){
   const P = team.people;
   if (!P.length){ box.innerHTML = `<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">${t.dashEmpty}</div>`; return; }
   const S = stats(P);
-  const best = S.dim.reduce((a,b,k)=>b.m>S.dim[a].m?k:a,0), worst = S.dim.reduce((a,b,k)=>b.m<S.dim[a].m?k:a,0);
-  const cohTxt = t.coh[S.coh<0.5?0:S.coh<0.85?1:2];
+  const best = [...S.dim].sort(byStrong)[0].k, worst = [...S.dim].reverse().sort(byWeak)[0].k;
   const riskPct = pct(S.risk,S.n);
   const talent = P.filter(p=>p.ans.some(v=>v===3)).length;
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN).sort();
   const hidden = Object.keys(S.segs).length - segKeys.length;
-  const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:t.teamSeries(S.n)}];
-  if (team.bySeg) segKeys.forEach((k,i)=>series.push({values:ITEMS.map((_,j)=>mean(S.segs[k].map(p=>p.ans[j]))), color:["#7c5ca8","#2f7f3a","#b45309","#b42318","#2563eb","#db2777"][i%6], label:`${ETAPES[k]} (${S.segs[k].length})`}));
-  if (team.showInd) P.forEach(p=>series.unshift({values:p.ans, color:"#5b7078", bold:false}));
+  /* radar: la mediana de l'equip es dibuixa l'última (a sobre); a sota, perfils individuals, etapes educatives i, si es demana, la mitjana */
+  const series = [];
+  if (team.showInd) P.forEach(p=>series.push({values:p.ans, color:"#5b7078", bold:false}));
+  if (team.bySeg) segKeys.forEach((k,i)=>series.push({values:ITEMS.map((_,j)=>medLow(S.segs[k].map(p=>p.ans[j]))), color:["#7c5ca8","#2f7f3a","#b45309","#b42318","#2563eb","#db2777"][i%6], label:`${ETAPES[k]} (${S.segs[k].length})`}));
+  if (team.showMean) series.push({values:S.item.map(x=>x.m), color:"#12313b", dotted:true, label:t.meanLine});
+  series.push({values:S.item.map(x=>x.med), color:"#0e7c8a", bold:true, label:t.teamSeries(S.n)});
   const DF = dafo(S), PL = pla(S);
-  const stageTotal = S.stage.reduce((a,b)=>a+b,0);
+  const stageTotal = S.n;
+  const top3 = [...S.item].sort(byStrong).slice(0,3), low3 = [...S.item].sort(byWeak).slice(0,3);
 
   box.innerHTML = `
   <div class="kpis sec">
     <div class="kpi"><div class="t">${t.kParticipation}</div><div class="v">${S.n}${team.plantilla?` <span class="muted" style="font-size:1rem">/ ${team.plantilla}</span>`:""}</div><div class="s">${team.plantilla?pct(S.n,team.plantilla)+t.ofStaff:t.withSelfie}</div></div>
-    <div class="kpi"><div class="t">${t.kIndex}</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">${t.predominant} <b>${lvName(mean(S.overall))}</b></div></div>
-    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">${t.kStrong}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${fmt(S.dim[best].m)} · ${lvName(S.dim[best].m)}</div></div>
-    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">${t.kPriority}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${fmt(S.dim[worst].m)} · ${lvName(S.dim[worst].m)}</div></div>
+    <div class="kpi"><div class="t">${t.kIndex}</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">${t.predominant} <b>${LEVELS[S.pred]}</b></div></div>
+    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">${t.kStrong}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${LEVELS[S.dim[best].med]} · ${t.pUpSub(S.dim[best].pUp)}</div></div>
+    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">${t.kPriority}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${LEVELS[S.dim[worst].med]} · ${t.pASub(S.dim[worst].pA)}</div></div>
     <div class="kpi ${riskPct>=40?'bad':riskPct>=25?'warn':'ok'}"><div class="t">${t.kRisk}</div><div class="v">${riskPct}%</div><div class="s">${t.riskSub}</div></div>
-    <div class="kpi ${S.coh<0.5?'ok':S.coh<0.85?'warn':'bad'}"><div class="t">${t.kCoh}</div><div class="v" style="font-size:1.15rem">${cohTxt}</div><div class="s">${t.cohSub(fmt(S.coh))}</div></div>
+    <div class="kpi ${S.polar?'bad':'ok'}"><div class="t">${t.kPolar}</div><div class="v" style="font-size:1.15rem">${t.polarShort[+S.polar]}</div><div class="s">${t.polarSub(pct(S.stage[0],S.n), pct(S.stage[3],S.n))}</div></div>
     <div class="kpi ok"><div class="t">${t.kTalent}</div><div class="v">${talent}</div><div class="s">${t.talentSub}</div></div>
   </div>
 
@@ -1473,9 +1533,10 @@ function renderDash(){
         <div class="toggles noprint" style="margin-bottom:6px">
           <label><input type="checkbox" id="tInd" ${team.showInd?'checked':''}> ${t.tInd}</label>
           <label><input type="checkbox" id="tSeg" ${team.bySeg?'checked':''} ${segKeys.length?'':'disabled'}> ${t.tSeg}</label>
+          <label><input type="checkbox" id="tMean" ${team.showMean?'checked':''}> ${t.tMean}</label>
         </div>
         <div class="radar-wrap" id="teamRadar">${radar20(series)}</div>
-        <div class="legend">${series.filter(s=>s.label).map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("")}${team.showInd?`<span><i style="background:#5b7078"></i>${t.eachTeacher}</span>`:""}</div>
+        <div class="legend">${[...series].reverse().filter(s=>s.label).map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("")}${team.showInd?`<span><i style="background:#5b7078"></i>${t.eachTeacher}</span>`:""}</div>
         ${hidden?`<p class="note">${t.hiddenSeg(hidden, team.minN)}</p>`:""}
       </div>
       <div>
@@ -1483,10 +1544,10 @@ function renderDash(){
         <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]};color:${LTXT[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l} (${S.stage[i]})</span>`).join("")}</div>
         <h2 style="margin-top:14px">${t.byDim}</h2>
-        <div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="track"><i style="width:${S.dim[k].m/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span><span class="val">${fmt(S.dim[k].m)} <span class="muted small">±${fmt(S.dim[k].sd)}</span></span></div>`).join("")}</div>
+        ${dimStacks(S)}
         <div class="grid2" style="margin-top:14px">
-          <div><h2>${t.strengths}</h2><div class="plist">${S.item.map((x,i)=>({x,i})).sort((a,b)=>b.x.m-a.x.m).slice(0,3).map(({x,i})=>`<div style="--c:${dimOf(i).c}"><span class="n">${i+1}</span>${esc(ITEMS[i].k)}<span class="m">${fmt(x.m)}</span></div>`).join("")}</div></div>
-          <div><h2>${t.priorities}</h2><div class="plist">${S.item.map((x,i)=>({x,i})).sort((a,b)=>a.x.m-b.x.m).slice(0,3).map(({x,i})=>`<div style="--c:${dimOf(i).c}"><span class="n">${i+1}</span>${esc(ITEMS[i].k)}<span class="m">${fmt(x.m)}</span></div>`).join("")}</div></div>
+          <div><h2>${t.strengths}</h2><div class="plist">${top3.map(x=>`<div style="--c:${dimOf(x.i).c}"><span class="n">${x.i+1}</span>${esc(ITEMS[x.i].k)}<span class="m">${LEVELS[x.med]}</span></div>`).join("")}</div></div>
+          <div><h2>${t.priorities}</h2><div class="plist">${low3.map(x=>`<div style="--c:${dimOf(x.i).c}"><span class="n">${x.i+1}</span>${esc(ITEMS[x.i].k)}<span class="m">${LEVELS[x.med]}</span></div>`).join("")}</div></div>
         </div>
       </div>
     </div>
@@ -1499,8 +1560,7 @@ function renderDash(){
   </div>
 
   ${segKeys.length?`<div class="card sec"><h2>${t.byStage}</h2>
-    <table class="heat"><thead><tr><th>${t.thStage}</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thGlobal}</th></tr></thead>
-    <tbody>${segKeys.map(k=>{const g=S.segs[k]; return `<tr><td><b>${ETAPES[k]}</b></td><td class="c">${g.length}</td>${DIMS.map(d=>`<td class="c">${fmt(mean(g.map(p=>mean(d.items.map(i=>p.ans[i])))))}</td>`).join("")}<td class="m">${fmt(mean(g.map(p=>mean(p.ans))))}</td></tr>`;}).join("")}</tbody></table></div>`:""}
+    ${segTable(S, segKeys)}</div>`:""}
 
   <div class="card sec">
     <div class="row" style="justify-content:space-between"><h2 style="margin:0">${t.dafoTitle} <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">${t.dafoSub}</span></h2><button class="btn ghost noprint" id="printDash">${t.printDash}</button></div>
@@ -1512,17 +1572,18 @@ function renderDash(){
 
   <div class="card sec">
     <h2>${t.plaTitle}</h2>
-    <div class="pla">${PL.map((p,k)=>`<div style="--c:${p.d.c}"><b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">${t.plaMeta(DIMS.indexOf(p.d)+1, fmt(p.m), p.from.toLowerCase(), p.to.toLowerCase())}</span><br>${t.teamGoal} ${esc(p.action)}${p.rec?`<br><span class="small muted">${t.resource} ${esc(p.rec)}</span>`:""}</div>`).join("")}</div>
+    <div class="pla">${PL.map((p,k)=>`<div style="--c:${p.d.c}"><b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">${t.plaMeta(DIMS.indexOf(p.d)+1, LEVELS[p.med].toLowerCase(), p.to.toLowerCase())}</span><br>${t.teamGoal} ${esc(p.action)}${p.rec?`<br><span class="small muted">${t.resource} ${esc(p.rec)}</span>`:""}</div>`).join("")}</div>
     <p class="note" style="margin-top:8px">${t.plaNote}</p>
   </div>`;
 
   $("tInd").addEventListener("change", e=>{ team.showInd=e.target.checked; renderDash(); });
   $("tSeg").addEventListener("change", e=>{ team.bySeg=e.target.checked; renderDash(); });
+  $("tMean").addEventListener("change", e=>{ team.showMean=e.target.checked; renderDash(); });
   $("printDash").addEventListener("click", ()=>window.print());
 }
 
 /* ------------------------------ EVOLUCIÓ ------------------------------ */
-const evo = { A:{label:"", people:[], plantilla:0, pasted:""}, B:{label:"", people:[], plantilla:0, pasted:""} };
+const evo = { A:{label:"", people:[], plantilla:0, pasted:""}, B:{label:"", people:[], plantilla:0, pasted:""}, showMean:false };
 
 function renderEvo(){
   const t = T();
@@ -1582,9 +1643,9 @@ function loadEvoDemo(){
   const A=[], B=[];
   DEMO_SEEDS.forEach((s,i)=>{
     const pa = parseCode(`SF1-${s}-${(i+10).toString(36).toUpperCase().padStart(2,"0")}`); if(!pa) return; A.push({...pa,alias:null});
-    /* millora: les situacions 2,3,4,5,7,20 pugen un nivell en 2 de cada 3 docents; la 9 i la 13 baixen en algun cas (per veure retrocessos) */
+    /* millora: les situacions 2,3,4,5,7,8,20 pugen un nivell en 2 de cada 3 docents; la 9 i la 13 baixen en algun cas (per veure retrocessos) */
     const ans = pa.ans.slice();
-    [1,2,3,4,6,19].forEach(j=>{ if ((i+j)%3!==0 && ans[j]<3) ans[j]++; });
+    [1,2,3,4,6,7,19].forEach(j=>{ if ((i+j)%3!==0 && ans[j]<3) ans[j]++; });
     if (i%7===0 && ans[8]>0) ans[8]--;
     if (i%2===0 && ans[12]<3) ans[12]++;
     const pb = parseCode(makeCode(ans, pa.etapa, (i+40).toString(36).toUpperCase().padStart(2,"0"))); if(pb) B.push({...pb,alias:null});
@@ -1610,42 +1671,51 @@ const dsym = v => v>0.04?"▲":v<-0.04?"▼":"=";
 const dcls = v => v>0.04?"up":v<-0.04?"down":"flat";
 const sgn = (v,dec=2) => (v>0?"+":"")+ (Math.round(v*10**dec)/10**dec).toFixed(dec);
 
-function renderEvoDash(){
+function renderEvoDash(skipAnim){
   const box=$("evoDash"); if(!box) return;
   const t = T();
   const A=evo.A.people, B=evo.B.people;
   if (!A.length || !B.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">${t.evoEmpty}</div>`; return; }
   const SA=stats(A), SB=stats(B);
   const la=evo.A.label||t.slot.A, lb=evo.B.label||t.slot.B;
+  const low = l => LEVELS[l].toLowerCase();
   const dIdx=SB.index-SA.index;
   const riskA=pct(SA.risk,SA.n), riskB=pct(SB.risk,SB.n);
   const talA=A.filter(p=>p.ans.some(v=>v===3)).length, talB=B.filter(p=>p.ans.some(v=>v===3)).length;
   const stA=SA.stage.map(c=>pct(c,SA.n)), stB=SB.stage.map(c=>pct(c,SB.n));
-  const dDim=DIMS.map((d,k)=>SB.dim[k].m-SA.dim[k].m);
-  const dItem=ITEMS.map((_,i)=>SB.item[i].m-SA.item[i].m);
-  const maxAbs=Math.max(0.5,...dDim.map(Math.abs));
-  const moves=dItem.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
-  const ups=moves.filter(m=>m.v>0.04).slice(0,3), downs=moves.filter(m=>m.v<-0.04).sort((a,b)=>a.v-b.v).slice(0,3);
-  /* pla de la ronda anterior contrastat amb l'actual */
-  const PLA=pla(SA).map(p=>{ const target=p.lv+1; const now=SB.item[p.i].m; const st= now>=target?"a": now>p.m+0.04?"p":"n"; return {...p, now, st}; });
+  /* canvis d'etapa mediana: enters entre −3 i +3 */
+  const dDim=DIMS.map((d,k)=>SB.dim[k].med-SA.dim[k].med);
+  const dItem=ITEMS.map((_,i)=>SB.item[i].med-SA.item[i].med);
+  const moves=dItem.map((v,i)=>({i,v,up:SB.item[i].pUp-SA.item[i].pUp}));
+  const ups=moves.filter(m=>m.v>0).sort((x,y)=>y.v-x.v||y.up-x.up).slice(0,3), downs=moves.filter(m=>m.v<0).sort((x,y)=>x.v-y.v||x.up-y.up).slice(0,3);
+  /* pla de la ronda anterior contrastat amb l'actual: assolit si la mediana arriba a l'etapa objectiu;
+     en progrés si encara no hi arriba però la proporció de docents a l'objectiu o més puja 5 punts o més */
+  const PLA=pla(SA).map(p=>{ const target=p.lv+1, now=SB.item[p.i].med, ga=geq(SA.item[p.i].dist,target,SA.n), gb=geq(SB.item[p.i].dist,target,SB.n);
+    return {...p, now, ga, gb, st: now>=target?"a": gb-ga>=5?"p":"n"}; });
   /* lectura automàtica */
   const R=[];
   R.push({c:dcls(dIdx/10), t:t.L.idx(SA.index, SB.index, sgn(dIdx,0), la, lb, SA.n, SB.n)});
-  const kBest=dDim.indexOf(Math.max(...dDim)), kWorst=dDim.indexOf(Math.min(...dDim));
-  R.push({c:"ok", t:t.L.dims(DIMS[kBest].nom, sgn(dDim[kBest]), DIMS[kWorst].nom, sgn(dDim[kWorst]))});
-  if (stA[0]!==stB[0]) R.push({c:dcls(stA[0]-stB[0]), t:t.L.stages(stA[0], stB[0], stA[3], stB[3])});
+  R.push({c:SB.pred>SA.pred?"ok":SB.pred<SA.pred?"bad":"", t:t.L.pred(low(SA.pred), low(SB.pred), SB.pred-SA.pred)});
+  const dimTxt = k => `«${DIMS[k].curt}» (${t.fromTo(low(SA.dim[k].med), low(SB.dim[k].med))})`;
+  const dUp=DIMS.map((_,k)=>k).filter(k=>dDim[k]>0).map(dimTxt).join(", "), dDown=DIMS.map((_,k)=>k).filter(k=>dDim[k]<0).map(dimTxt).join(", ");
+  R.push({c:dDown?"bad":dUp?"ok":"", t:(dUp||dDown)?t.L.dimsCh(dUp,dDown):t.L.dimsNone});
+  if (stA[0]!==stB[0] || stA[3]!==stB[3]) R.push({c:dcls(stA[0]!==stB[0]?stA[0]-stB[0]:stB[3]-stA[3]), t:t.L.stages(stA[0], stB[0], stA[3], stB[3])});
   R.push({c:dcls(riskA-riskB), t:t.L.risk(riskA, riskB)});
-  R.push({c:dcls(SA.coh-SB.coh), t:t.L.coh(fmt(SA.coh), fmt(SB.coh), SB.coh<SA.coh-0.04?-1:SB.coh>SA.coh+0.04?1:0)});
-  if (downs.length) R.push({c:"bad", t:t.L.downs(downs.map(m=>`${m.i+1}. ${ITEMS[m.i].k} (${sgn(m.v)})`).join(", "))});
+  R.push({c:SB.polar?"bad":SA.polar?"ok":"", t:t.L.polar(SA.polar, SB.polar)});
+  if (downs.length) R.push({c:"bad", t:t.L.downs(downs.map(m=>`${m.i+1}. ${ITEMS[m.i].k} (${t.fromTo(low(SA.item[m.i].med), low(SB.item[m.i].med))})`).join(", "))});
   const ass=PLA.filter(p=>p.st==="a").length; R.push({c:ass===PLA.length?"ok":ass?"":"bad", t:t.L.plan(la, ass, PLA.length, PLA.filter(p=>p.st==="p").length, PLA.filter(p=>p.st==="n").length)});
+  /* radar: medianes de les dues rondes; la ronda actual es dibuixa l'última (és la que s'anima). Les mitjanes, opcionals, en línia de punts */
+  const ser=[];
+  if (evo.showMean) ser.push({values:SA.item.map(x=>x.m),color:"#6f8a90",dotted:true},{values:SB.item.map(x=>x.m),color:"#12313b",dotted:true});
+  ser.push({values:SA.item.map(x=>x.med),color:"#6f8a90",dashed:true},{values:SB.item.map(x=>x.med),color:"#0e7c8a",bold:true});
 
   box.innerHTML=`
   <div class="kpis sec">
-    <div class="kpi ${dcls(dIdx)}"><div class="t">${t.kTeamIdx}</div><div class="v">${SB.index} <span class="delta ${dcls(dIdx)}" style="font-size:1rem">${dsym(dIdx)} ${sgn(dIdx,0)}</span></div><div class="s">${t.before} ${SA.index} · ${t.stage} ${lvName(mean(SB.overall))}</div></div>
+    <div class="kpi ${dcls(dIdx)}"><div class="t">${t.kTeamIdx}</div><div class="v">${SB.index} <span class="delta ${dcls(dIdx)}" style="font-size:1rem">${dsym(dIdx)} ${sgn(dIdx,0)}</span></div><div class="s">${t.before} ${SA.index} · ${t.stage} ${LEVELS[SB.pred]}</div></div>
     <div class="kpi ${dcls(stA[0]-stB[0])}"><div class="t">${t.kInitial}</div><div class="v">${stB[0]}% <span class="delta ${dcls(stA[0]-stB[0])}" style="font-size:1rem">${dsym(stB[0]-stA[0])} ${sgn(stB[0]-stA[0],0)} ${t.pp}</span></div><div class="s">${t.before} ${stA[0]}%</div></div>
     <div class="kpi ${dcls(stB[3]-stA[3])}"><div class="t">${t.kAdvanced}</div><div class="v">${stB[3]}% <span class="delta ${dcls(stB[3]-stA[3])}" style="font-size:1rem">${dsym(stB[3]-stA[3])} ${sgn(stB[3]-stA[3],0)} ${t.pp}</span></div><div class="s">${t.before} ${stA[3]}%</div></div>
     <div class="kpi ${dcls(riskA-riskB)}"><div class="t">${t.kRisk}</div><div class="v">${riskB}% <span class="delta ${dcls(riskA-riskB)}" style="font-size:1rem">${dsym(riskB-riskA)} ${sgn(riskB-riskA,0)} ${t.pp}</span></div><div class="s">${t.before} ${riskA}% ${t.inInitial}</div></div>
-    <div class="kpi ${dcls(SA.coh-SB.coh)}"><div class="t">${t.kCoh}</div><div class="v" style="font-size:1.15rem">${t.cohShort[SB.coh<0.5?0:SB.coh<0.85?1:2]}</div><div class="s">${t.dispersion} ${fmt(SA.coh)} → ${fmt(SB.coh)}</div></div>
+    <div class="kpi ${SB.polar?'bad':'ok'}"><div class="t">${t.kPolar}</div><div class="v" style="font-size:1.15rem">${t.polarShort[+SB.polar]}</div><div class="s">${t.before}: ${t.polarShort[+SA.polar].toLowerCase()}</div></div>
     <div class="kpi ${dcls(talB-talA)}"><div class="t">${t.kTalent}</div><div class="v">${talB} <span class="delta ${dcls(talB-talA)}" style="font-size:1rem">${dsym(talB-talA)} ${sgn(talB-talA,0)}</span></div><div class="s">${t.talentSub.split(":")[0]}</div></div>
   </div>
 
@@ -1658,12 +1728,14 @@ function renderEvoDash(){
     <div class="grid2">
       <div>
         <h2>${t.radarVs(esc(la), esc(lb))}</h2>
-        <div class="radar-wrap" id="evoRadar">${radar20([{values:SA.item.map(x=>x.m),color:"#6f8a90",dashed:true},{values:SB.item.map(x=>x.m),color:"#0e7c8a",bold:true}])}</div>
-        <div class="legend"><span><i style="background:#6f8a90"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span><button type="button" class="helpLink noprint" id="replayEvo" style="margin:0 0 0 auto">${t.replay}</button></div>
+        <div class="toggles noprint" style="margin-bottom:6px"><label><input type="checkbox" id="tMeanE" ${evo.showMean?'checked':''}> ${t.tMean}</label></div>
+        <div class="radar-wrap" id="evoRadar">${radar20(ser)}</div>
+        <div class="legend"><span><i style="background:#6f8a90"></i>${esc(la)} (${SA.n})</span><span><i style="background:#0e7c8a"></i>${esc(lb)} (${SB.n})</span>${evo.showMean?`<span>${t.meanLegend}</span>`:""}<button type="button" class="helpLink noprint" id="replayEvo" style="margin:0 0 0 auto">${t.replay}</button></div>
       </div>
       <div>
         <h2>${t.varByDim}</h2>
-        <div class="dbars">${DIMS.map((d,k)=>{const v=dDim[k]; const w=Math.abs(v)/maxAbs*50; const left=v>=0?50:50-w; return `<div class="dbar" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="ax"><s></s><i style="left:${left}%;width:${w}%"></i></span><span class="delta ${dcls(v)}">${dsym(v)} ${sgn(v)}</span></div>`;}).join("")}</div>
+        <div class="dimevo">${DIMS.map((d,k)=>{const v=dDim[k]; return `<div style="--c:${d.c}"><span class="lab">${esc(d.curt)}<span class="delta ${dcls(v)}">${v?`${LEVELS[SA.dim[k].med]} → ${LEVELS[SB.dim[k].med]} ${dsym(v)}`:`= ${LEVELS[SB.dim[k].med]}`}</span></span><div class="two">${stackBar(SA.dim[k].dist, SA.n, "sm")}${stackBar(SB.dim[k].dist, SB.n, "sm")}</div></div>`;}).join("")}</div>
+        <p class="note" style="margin:6px 0 0">${t.barsNote(esc(la), esc(lb))}</p>
         <h2 style="margin-top:16px">${t.distStages}</h2>
         <div class="twostack">
           <span class="muted">${esc(la)}</span><div class="stack">${stA.map((p,l)=>p?`<div style="width:${p}%;background:${LHEX[l]};color:${LTXT[l]}">${p}%</div>`:"").join("")}</div>
@@ -1671,8 +1743,8 @@ function renderEvoDash(){
         </div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l}</span>`).join("")}</div>
         <div class="grid2" style="margin-top:14px">
-          <div><h2>${t.ups}</h2><div class="plist">${ups.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m up">${sgn(m.v)}</span></div>`).join("")||`<span class="note">${t.noUps}</span>`}</div></div>
-          <div><h2>${t.downs}</h2><div class="plist">${downs.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m down">${sgn(m.v)}</span></div>`).join("")||`<span class="note">${t.noDowns}</span>`}</div></div>
+          <div><h2>${t.ups}</h2><div class="plist">${ups.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m up">▲ ${LEVELS[SB.item[m.i].med]}</span></div>`).join("")||`<span class="note">${t.noUps}</span>`}</div></div>
+          <div><h2>${t.downs}</h2><div class="plist">${downs.map(m=>`<div style="--c:${dimOf(m.i).c}"><span class="n">${m.i+1}</span>${esc(ITEMS[m.i].k)}<span class="m down">▼ ${LEVELS[SB.item[m.i].med]}</span></div>`).join("")||`<span class="note">${t.noDowns}</span>`}</div></div>
         </div>
       </div>
     </div>
@@ -1680,25 +1752,26 @@ function renderEvoDash(){
 
   <div class="card sec">
     <h2>${t.varMap}</h2>
-    <table class="heat">
+    <div class="tscroll"><table class="heat">
       <thead><tr><th></th><th>${t.thSituation}</th><th style="text-align:center">${esc(la)}</th><th style="text-align:center">${esc(lb)}</th><th style="text-align:center">${t.thVar}</th><th style="text-align:center">${t.thPctInit}</th><th style="text-align:center">${t.thPctAdv}</th></tr></thead>
-      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="7">D${k+1} · ${esc(d.nom)} — ${fmt(SA.dim[k].m)} → ${fmt(SB.dim[k].m)} <span class="delta ${dcls(dDim[k])}">${dsym(dDim[k])} ${sgn(dDim[k])}</span></td></tr>`+d.items.map(i=>{const v=dItem[i]; return `<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td><td class="c">${fmt(SA.item[i].m)}</td><td class="c" style="font-weight:800">${fmt(SB.item[i].m)}</td><td class="c delta ${dcls(v)}" style="background:${v>0.04?`rgba(23,122,82,${Math.min(0.45,Math.abs(v)/2)})`:v<-0.04?`rgba(180,35,24,${Math.min(0.45,Math.abs(v)/2)})`:"transparent"}">${dsym(v)} ${sgn(v)}</td><td class="c">${SA.item[i].pA}% → ${SB.item[i].pA}%</td><td class="c">${SA.item[i].pD}% → ${SB.item[i].pD}%</td></tr>`;}).join("")).join("")}</tbody>
-    </table>
+      <tbody>${DIMS.map((d,k)=>`<tr class="dimrow" style="--c:${d.c};--bg:${d.bg}"><td colspan="7">D${k+1} · ${esc(d.nom)} — ${LEVELS[SA.dim[k].med]} → ${LEVELS[SB.dim[k].med]} <span class="delta ${dcls(dDim[k])}">${dsym(dDim[k])}</span></td></tr>`+d.items.map(i=>{const v=dItem[i]; return `<tr style="--c:${d.c}"><td class="n">${i+1}</td><td title="${esc(ITEMS[i].t)}">${esc(ITEMS[i].k)}</td><td class="c">${LEVELS[SA.item[i].med]}</td><td class="c" style="font-weight:800">${LEVELS[SB.item[i].med]}</td><td class="c delta ${dcls(v)}" style="background:${v>0?`rgba(23,122,82,${Math.min(0.45,0.22*v)})`:v<0?`rgba(180,35,24,${Math.min(0.45,-0.22*v)})`:"transparent"}">${dsym(v)}${v?" "+sgn(v,0):""}</td><td class="c">${SA.item[i].pA}% → ${SB.item[i].pA}%</td><td class="c">${SA.item[i].pD}% → ${SB.item[i].pD}%</td></tr>`;}).join("")).join("")}</tbody>
+    </table></div>
   </div>
 
   <div class="card sec">
     <div class="row" style="justify-content:space-between"><h2 style="margin:0">${t.plaOf(esc(la))}</h2><button class="btn ghost noprint" id="printEvo">${t.printEvo}</button></div>
-    <div class="pla" style="margin-top:10px">${PLA.map((p,k)=>`<div style="--c:${p.d.c}"><span class="chipst ${p.st}">${t.chips[p.st]}</span> <b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">${t.goalMeta(p.to.toLowerCase(), fmt(p.m), fmt(p.now))}</span></div>`).join("")}</div>
+    <div class="pla" style="margin-top:10px">${PLA.map((p,k)=>`<div style="--c:${p.d.c}"><span class="chipst ${p.st}">${t.chips[p.st]}</span> <b>${k+1}. ${esc(ITEMS[p.i].k)}</b> <span class="muted small">${t.goalMeta(p.to.toLowerCase(), low(p.med), low(p.now), p.ga, p.gb)}</span></div>`).join("")}</div>
     <p class="note" style="margin-top:8px">${t.evoPlaNote}</p>
   </div>`;
   $("printEvo").addEventListener("click", ()=>window.print());
-  const fromV = SA.item.map(x=>x.m), toV = SB.item.map(x=>x.m);
-  animateRadar($("evoRadar").querySelector("svg"), fromV, toV);
+  $("tMeanE").addEventListener("change", e=>{ evo.showMean=e.target.checked; renderEvoDash(true); });
+  const fromV = SA.item.map(x=>x.med), toV = SB.item.map(x=>x.med);
+  if (!skipAnim) animateRadar($("evoRadar").querySelector("svg"), fromV, toV);
   $("replayEvo").addEventListener("click", ()=>animateRadar($("evoRadar").querySelector("svg"), fromV, toV));
 }
 
 /* ------------------------------ XARXA ------------------------------ */
-const net = { snaps:[], showCenters:false, roundName:"" };
+const net = { snaps:[], showCenters:false, showMean:false, roundName:"" };
 function networkSnapshotOf(){
   return { format:"selfie-xarxa-1", id:randId(8), name: net.roundName||"", date:new Date().toISOString().slice(0,10), n: net.snaps.length,
     snapshots: net.snaps.map(s=>({ id:s.id, name:s.name, center:s.center, date:s.date, plantilla:s.plantilla, codes:s.people.map(p=>p.code) })) };
@@ -1783,27 +1856,30 @@ function renderNetDash(){
   const t = T();
   if (!net.snaps.length){ box.innerHTML=`<div class="card" style="margin-top:14px;text-align:center;color:var(--muted)">${t.netEmpty}</div>`; return; }
   const all = net.snaps.flatMap(s=>s.people);
-  const S = stats(all);
+  const S = stats(all);                 /* medianes sobre tots els docents de la xarxa, mai sobre medianes de centre */
   const centres = net.snaps.length, docents = all.length;
   const withPl = net.snaps.filter(s=>s.plantilla>0);
   const part = withPl.length ? pct(withPl.reduce((a,s)=>a+s.people.length,0), withPl.reduce((a,s)=>a+s.plantilla,0)) : null;
   const rows = net.snaps.map(s=>{ const st=stats(s.people); return { s, st, idx:st.index, risk:pct(st.risk,st.n), part: s.plantilla?pct(s.people.length,s.plantilla):null }; }).sort((a,b)=>b.idx-a.idx);
   const idxs = rows.map(r=>r.idx), spread = sd(idxs);
-  const best = S.dim.reduce((a,b,k)=>b.m>S.dim[a].m?k:a,0), worst = S.dim.reduce((a,b,k)=>b.m<S.dim[a].m?k:a,0);
+  const best = [...S.dim].sort(byStrong)[0].k, worst = [...S.dim].reverse().sort(byWeak)[0].k;
   const riskPct = pct(S.risk,S.n);
   const small = rows.filter(r=>r.s.people.length<team.minN).length;
-  const series = [{values:S.item.map(x=>x.m), color:"#0e7c8a", bold:true, label:t.netSeries(docents)}];
-  if (net.showCenters) rows.filter(r=>r.s.people.length>=team.minN).forEach(r=>series.unshift({values:r.st.item.map(x=>x.m), color:"#6f8a90", bold:false}));
-  const stageTotal = S.stage.reduce((a,b)=>a+b,0);
+  const series = [];
+  if (net.showCenters) rows.filter(r=>r.s.people.length>=team.minN).forEach(r=>series.push({values:r.st.item.map(x=>x.med), color:"#6f8a90", bold:false}));
+  if (net.showMean) series.push({values:S.item.map(x=>x.m), color:"#12313b", dotted:true});
+  series.push({values:S.item.map(x=>x.med), color:"#0e7c8a", bold:true, label:t.netSeries(docents)});
+  const stageTotal = S.n;
   const segKeys = Object.keys(S.segs).filter(k=>S.segs[k].length>=team.minN).sort();
   box.innerHTML = `
   <div class="kpis sec">
     <div class="kpi"><div class="t">${t.kCenters}</div><div class="v">${centres}</div><div class="s">${small?t.smallCenters(small, team.minN):t.snapsLoaded}</div></div>
     <div class="kpi"><div class="t">${t.kTeachers}</div><div class="v">${docents}</div><div class="s">${part!==null?t.partWhere(part):t.aggregated}</div></div>
-    <div class="kpi"><div class="t">${t.kNetIdx}</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">${t.predominant} <b>${lvName(mean(S.overall))}</b></div></div>
-    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">${t.kStrong}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${fmt(S.dim[best].m)}</div></div>
-    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">${t.kNetPriority}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${fmt(S.dim[worst].m)}</div></div>
+    <div class="kpi"><div class="t">${t.kNetIdx}</div><div class="v">${S.index}<span class="muted" style="font-size:1rem">/100</span></div><div class="s">${t.predominant} <b>${LEVELS[S.pred]}</b></div></div>
+    <div class="kpi ok" style="--c:${DIMS[best].c}"><div class="t">${t.kStrong}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[best].curt)}</div><div class="s">${LEVELS[S.dim[best].med]} · ${t.pUpSub(S.dim[best].pUp)}</div></div>
+    <div class="kpi" style="--c:${DIMS[worst].c}"><div class="t">${t.kNetPriority}</div><div class="v" style="font-size:1.15rem">${esc(DIMS[worst].curt)}</div><div class="s">${LEVELS[S.dim[worst].med]} · ${t.pASub(S.dim[worst].pA)}</div></div>
     <div class="kpi ${riskPct>=40?'bad':riskPct>=25?'warn':'ok'}"><div class="t">${t.kRisk}</div><div class="v">${riskPct}%</div><div class="s">${t.riskSub}</div></div>
+    <div class="kpi ${S.polar?'bad':'ok'}"><div class="t">${t.kPolar}</div><div class="v" style="font-size:1.15rem">${t.polarNet[+S.polar]}</div><div class="s">${t.polarSub(pct(S.stage[0],S.n), pct(S.stage[3],S.n))}</div></div>
     <div class="kpi ${spread<8?'ok':spread<15?'warn':'bad'}"><div class="t">${t.kSpread}</div><div class="v" style="font-size:1.15rem">${t.spread[spread<8?0:spread<15?1:2]}</div><div class="s">${t.spreadSub(Math.min(...idxs), Math.max(...idxs), fmt(spread))}</div></div>
   </div>
 
@@ -1811,29 +1887,28 @@ function renderNetDash(){
     <div class="grid2">
       <div>
         <h2>${t.netRadar}</h2>
-        <div class="toggles noprint" style="margin-bottom:6px"><label><input type="checkbox" id="tCenters" ${net.showCenters?'checked':''}> ${t.overlay(team.minN)}</label></div>
+        <div class="toggles noprint" style="margin-bottom:6px"><label><input type="checkbox" id="tCenters" ${net.showCenters?'checked':''}> ${t.overlay(team.minN)}</label><label><input type="checkbox" id="tMeanN" ${net.showMean?'checked':''}> ${t.tMean}</label></div>
         <div class="radar-wrap">${radar20(series)}</div>
-        <div class="legend"><span><i style="background:#0e7c8a"></i>${t.netSeries(docents)}</span>${net.showCenters?`<span><i style="background:#6f8a90"></i>${t.eachCenter}</span>`:""}</div>
+        <div class="legend"><span><i style="background:#0e7c8a"></i>${t.netSeries(docents)}</span>${net.showCenters?`<span><i style="background:#6f8a90"></i>${t.eachCenter}</span>`:""}${net.showMean?`<span><i style="background:#12313b"></i>${t.meanLine}</span>`:""}</div>
       </div>
       <div>
         <h2>${t.whereNet}</h2>
         <div class="stack">${S.stage.map((c,l)=>c?`<div style="width:${c/stageTotal*100}%;background:${LHEX[l]};color:${LTXT[l]}" title="${LEVELS[l]}: ${c}">${pct(c,stageTotal)}%</div>`:"").join("")}</div>
         <div class="legend">${LEVELS.map((l,i)=>`<span><i style="background:${LHEX[i]}"></i>${l} (${S.stage[i]})</span>`).join("")}</div>
         <h2 style="margin-top:14px">${t.byDim}</h2>
-        <div class="gauges">${DIMS.map((d,k)=>`<div class="gauge" style="--c:${d.c}"><span class="lab">${esc(d.curt)}</span><span class="track"><i style="width:${S.dim[k].m/3*100}%"></i><s style="left:33.3%"></s><s style="left:66.6%"></s></span><span class="val">${fmt(S.dim[k].m)} <span class="muted small">±${fmt(S.dim[k].sd)}</span></span></div>`).join("")}</div>
+        ${dimStacks(S)}
         ${segKeys.length?`<h2 style="margin-top:14px">${t.byStage}</h2>
-        <table class="heat"><thead><tr><th>${t.thStage}</th><th style="text-align:center">n</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thGlobal}</th></tr></thead>
-        <tbody>${segKeys.map(k=>{const g=S.segs[k]; return `<tr><td><b>${ETAPES[k]}</b></td><td class="c">${g.length}</td>${DIMS.map(d=>`<td class="c">${fmt(mean(g.map(p=>mean(d.items.map(i=>p.ans[i])))))}</td>`).join("")}<td class="m">${fmt(mean(g.map(p=>mean(p.ans))))}</td></tr>`;}).join("")}</tbody></table>`:""}
+        ${segTable(S, segKeys)}`:""}
       </div>
     </div>
   </div>
 
   <div class="card sec">
     <div class="row" style="justify-content:space-between"><h2 style="margin:0">${t.perCenter}</h2><button class="btn ghost noprint" id="printNet">${t.printNet}</button></div>
-    <table class="heat" style="margin-top:8px">
+    <div class="tscroll"><table class="heat" style="margin-top:8px">
       <thead><tr><th>${t.thCenter}</th><th>${t.thRound}</th><th style="text-align:center">n</th><th style="text-align:center">${t.thPart}</th><th style="text-align:center">${t.thIdx}</th><th style="text-align:center">${t.thStage}</th>${DIMS.map(d=>`<th style="text-align:center;color:${d.hex}">${esc(d.curt)}</th>`).join("")}<th style="text-align:center">${t.thRisk}</th></tr></thead>
-      <tbody>${rows.filter(r=>r.s.people.length>=team.minN).map((r,i)=>`<tr><td><b>${esc(r.s.center||t.centerN(i+1))}</b></td><td class="muted">${esc(r.s.name)}${r.s.date?` · ${r.s.date}`:""}</td><td class="c">${r.s.people.length}</td><td class="c">${r.part!==null?r.part+"%":"·"}</td><td class="m">${r.idx}</td><td class="c">${lvName(mean(r.st.overall))}</td>${DIMS.map((d,k)=>`<td class="c" style="background:rgba(14,124,138,${(r.st.dim[k].m/3*0.45).toFixed(2)})">${fmt(r.st.dim[k].m)}</td>`).join("")}<td class="c ${r.risk>=40?'down':r.risk>=25?'':'up'}">${r.risk}%</td></tr>`).join("")}</tbody>
-    </table>
+      <tbody>${rows.filter(r=>r.s.people.length>=team.minN).map((r,i)=>`<tr><td><b>${esc(r.s.center||t.centerN(i+1))}</b></td><td class="muted">${esc(r.s.name)}${r.s.date?` · ${r.s.date}`:""}</td><td class="c">${r.s.people.length}</td><td class="c">${r.part!==null?r.part+"%":"·"}</td><td class="m">${r.idx}</td><td class="c">${LEVELS[r.st.pred]}</td>${DIMS.map((d,k)=>`<td class="c" style="background:rgba(14,124,138,${(r.st.dim[k].med/3*0.45).toFixed(2)})">${LEVELS[r.st.dim[k].med]}</td>`).join("")}<td class="c ${r.risk>=40?'down':r.risk>=25?'':'up'}">${r.risk}%</td></tr>`).join("")}</tbody>
+    </table></div>
     <p class="note">${small?t.smallNote(small, team.minN):""}${t.netReading}</p>
   </div>
 
@@ -1842,6 +1917,7 @@ function renderNetDash(){
     ${heatTable(S)}
   </div>`;
   $("tCenters").addEventListener("change", e=>{ net.showCenters=e.target.checked; renderNetDash(); });
+  $("tMeanN").addEventListener("change", e=>{ net.showMean=e.target.checked; renderNetDash(); });
   $("printNet").addEventListener("click", ()=>window.print());
 }
 
@@ -1874,7 +1950,7 @@ render();
 if (location.hash === "#demo") loadDemo();
 if (location.hash === "#evolucio-demo") loadEvoDemo();
 if (location.hash === "#xarxa-demo") loadNetDemo();
-window.__selfie = { team, self, evo, net, stats, dafo, pla, parseCode, makeCode, encodeAns, decodeAns, codeLooksTypo, radar20, snapshotOf, networkSnapshotOf, peopleFromSnapshot, loadDemo, loadEvoDemo, loadNetDemo, addSnap, animateRadar, RG, setLang, render, UI, TX, get LANG(){ return LANG; } };   /* accés per a proves */
+window.__selfie = { team, self, evo, net, stats, dafo, pla, medLow, isPolar, parseCode, makeCode, encodeAns, decodeAns, codeLooksTypo, radar20, snapshotOf, networkSnapshotOf, peopleFromSnapshot, loadDemo, loadEvoDemo, loadNetDemo, addSnap, animateRadar, RG, setLang, render, UI, TX, get LANG(){ return LANG; } };   /* accés per a proves */
 </script>
 </body>
 </html>
